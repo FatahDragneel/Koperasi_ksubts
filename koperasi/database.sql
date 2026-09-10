@@ -405,7 +405,9 @@ INSERT INTO jenis_simpanan (kode, nama, keterangan, wajib) VALUES
 INSERT INTO kelompok (nomor, kode_kelompok, nama_kelompok, plasma, luas_tanah, fee_per_kg) VALUES
 (1,'KT-01','Kelompok Tani 1','',0,0),
 (2,'KT-02','Kelompok Tani 2','',0,0),
-(3,'KT-03','Kelompok Tani 3','',0,0);
+(3,'KT-03','Kelompok Tani 3','',0,0),
+(4,'KT-04','Kelompok Tani 4','',0,0),
+(5,'KT-05','Kelompok Tani 5','',0,0);
 
 INSERT INTO pupuk_produk (kode, nama, jenis, satuan, harga_jual, keterangan) VALUES
 ('PO-G001', 'Pupuk Organik Granul', 'granul', 'kg', 3500, 'Untuk sawit & pangan, kemasan 25/50 kg'),
@@ -440,8 +442,8 @@ INSERT INTO anggota (no_anggota, nik, nama, jenis_kelamin, tempat_lahir, tanggal
 ('AGT-0001', '1371010101800001', 'Budi Santoso', 'L', 'Padang', '1980-01-15', 'Jl. Sawahan No. 12', 'Gunung Pangilun', 'Padang Utara', '081234567890', 'Petani Padi', '1', 1, 1, '2015-03-10', 'aktif', 'budi', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
 ('AGT-0002', '1371010202850002', 'Siti Aminah', 'P', 'Solok', '1985-02-20', 'Jl. Andalas No. 8', 'Andalas', 'Padang Timur', '081298765432', 'Petani Sayur', '2', 2, 1, '2016-07-21', 'aktif', 'siti', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
 ('AGT-0003', '1371010303780003', 'Hasan Basri', 'L', 'Pariaman', '1978-03-08', 'Kampung Dalam', 'Lubuk Begalung', 'Lubuk Begalung', '082112223333', 'Peternak', '3', 3, 1, '2014-01-05', 'aktif', 'hasan', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
-('AGT-0004', '1371010404900004', 'Rina Marlina', 'P', 'Padang', '1990-04-12', 'Jl. Bypass No. 90', 'Kuranji', 'Kuranji', '085266778899', 'Pedagang Hasil Tani', '1', 1, 1, '2018-11-02', 'aktif', 'rina', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
-('AGT-0005', '1371010505750005', 'Joni Iskandar', 'L', 'Bukittinggi', '1975-05-30', 'Jl. Raya Tabing', 'Batipuh Panjang', 'Koto Tangah', '081355667788', 'Petani Palawija', '2', 2, 1, '2013-09-18', 'aktif', 'joni', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
+('AGT-0004', '1371010404900004', 'Rina Marlina', 'P', 'Padang', '1990-04-12', 'Jl. Bypass No. 90', 'Kuranji', 'Kuranji', '085266778899', 'Pedagang Hasil Tani', '4', 4, 1, '2018-11-02', 'aktif', 'rina', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
+('AGT-0005', '1371010505750005', 'Joni Iskandar', 'L', 'Bukittinggi', '1975-05-30', 'Jl. Raya Tabing', 'Batipuh Panjang', 'Koto Tangah', '081355667788', 'Petani Palawija', '5', 5, 1, '2013-09-18', 'aktif', 'joni', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
 
 INSERT INTO simpanan (anggota_id, jenis_id, tanggal, jumlah, keterangan, created_by) VALUES
 (1, 1, '2015-03-10', 500000, 'Simpanan pokok awal', 1),

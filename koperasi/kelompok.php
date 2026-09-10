@@ -104,36 +104,7 @@ include __DIR__ . '/includes/app_header.php';
 <div class="row" style="margin-bottom:14px;align-items:center;">
   <p style="color:var(--muted);margin:0;"><?= (int)$jml ?> kelompok. Ketua dan HP terisi otomatis setelah jabatan Ketua dipilih di Detail.</p>
   <span style="flex:1;"></span>
-  <a class="btn btn-green" href="#formTambah">+ Tambah kelompok</a>
-</div>
-<div class="card" id="formTambah" style="margin-bottom:16px;">
-  <h3>Tambah kelompok</h3>
-  <form method="post">
-    <?= csrf_field() ?>
-    <input type="hidden" name="act" value="tambah">
-    <div class="grid-2">
-      <div><label>Kode (opsional)</label><input name="kode_kelompok" placeholder="mis. KT-04"></div>
-      <div><label>Nama kelompok</label><input name="nama_kelompok" placeholder="mis. Kelompok Tani Plasma A"></div>
-    </div>
-    <div class="grid-2">
-      <div><label>Plasma (opsional)</label><input name="plasma" placeholder="mis. Plasma A"></div>
-      <div><label>Tanggal terbentuk</label><input type="date" name="tanggal_terbentuk"></div>
-    </div>
-    <div class="grid-2">
-      <div><label>Wilayah / dusun</label><input name="wilayah_dusun"></div>
-      <div><label>Blok hamparan</label><input name="blok_hamparan"></div>
-    </div>
-    <div class="grid-2">
-      <div><label>Lokasi</label><input name="lokasi" placeholder="Dusun / blok kebun"></div>
-      <div><label>Luas tanah kelompok (ha)</label><input type="number" step="0.01" min="0" name="luas_tanah"></div>
-    </div>
-    <div class="grid-2">
-      <div><label>Desa</label><input name="desa"></div>
-      <div><label>Kecamatan</label><input name="kecamatan"></div>
-    </div>
-    <label>Fee per kg (Rp)</label><input type="number" step="1" min="0" name="fee_per_kg">
-    <button class="btn btn-green" style="margin-top:14px;">Simpan kelompok</button>
-  </form>
+  <button class="btn btn-green" type="button" onclick="tambahKel()">+ Tambah kelompok</button>
 </div>
 <div class="table-wrap">
   <table>
@@ -225,6 +196,13 @@ function isiKel(r) {
   document.getElementById('kelDesa').value = r.desa || '';
   document.getElementById('kelKec').value = r.kecamatan || '';
   document.getElementById('kelFee').value = r.fee || '';
+}
+function tambahKel() {
+  document.getElementById('kelAct').value = 'tambah';
+  document.getElementById('kelJudul').textContent = 'Tambah kelompok';
+  isiKel({});
+  document.getElementById('kelKetuaInfo').textContent = 'Ketua dipilih nanti di halaman Detail.';
+  openModal('mKel');
 }
 function editKel(r) {
   document.getElementById('kelAct').value = 'simpan';

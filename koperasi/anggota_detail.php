@@ -24,7 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['act'] ?? '') === 'ubah') {
         if ($kid < 1 || in_array($kid, $sudahIds, true)) {
             continue;
         }
-        tambah_anggota_ke_kelompok($id, $kid, 'Anggota');
+        if (!tambah_anggota_ke_kelompok($id, $kid, 'Anggota')) {
+            $huni = penghuni_kelompok($kid, $id);
+            $ik = info_kelompok($kid);
+            flash('err', 'Kelompok ' . ($ik['kode_kelompok'] ?? $kid) . ' sudah diisi ' . ($huni['nama'] ?? 'anggota lain') . '. 1 kelompok hanya untuk 1 anggota.');
+            header('Location: anggota_detail.php?id=' . $id);
+            exit;
+        }
         set_luas_lahan_kelompok($id, $kid, (float)($luasBaru[$i] ?? 0));
         $luasTot += (float)($luasBaru[$i] ?? 0);
         $sudahIds[] = $kid;
@@ -378,7 +384,7 @@ try {
       <?php else: ?>
         <p style="font-size:13px;color:var(--muted);">Belum masuk kelompok. Tambah di bawah.</p>
       <?php endif; ?>
-      <?= html_slot_kelompok(5, $idsSudah, 'Tambah berapa kelompok lagi?', true) ?>
+      <?= html_slot_kelompok(5, array_unique(array_merge($idsSudah, ids_kelompok_terisi($id))), 'Tambah berapa kelompok lagi?', true) ?>
       <div class="grid-2" style="margin-top:12px;">
         <div>
           <label>STDB</label>

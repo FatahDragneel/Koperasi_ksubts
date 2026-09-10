@@ -28,8 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ada = $kid > 0 ? $pdo->query('SELECT COUNT(*) FROM kelompok WHERE id=' . $kid)->fetchColumn() : 0;
         if (!$ada) {
             flash('err', 'Kelompok tidak ditemukan.');
+        } elseif (!tambah_anggota_ke_kelompok($aid, $kid, 'Anggota')) {
+            flash('err', 'Kelompok ini sudah diisi anggota lain. Pilih kelompok lain.');
         } else {
-            tambah_anggota_ke_kelompok($aid, $kid, 'Anggota');
             set_luas_lahan_kelompok($aid, $kid, (float)($_POST['luas_hektar'] ?? 0));
             flash('ok', 'Anda tergabung ke kelompok.');
         }
@@ -165,7 +166,7 @@ if ($staff):
     <?php else: ?>
       <p style="margin-top:12px;color:var(--muted);">Anda belum terhubung ke kelompok tani.</p>
     <?php endif; ?>
-    <?php $opsiGabung = options_kelompok_id([], array_map('intval', array_column($kelompokSaya, 'id_kelompok'))); ?>
+    <?php $opsiGabung = options_kelompok_id([], array_unique(array_merge(array_map('intval', array_column($kelompokSaya, 'id_kelompok')), ids_kelompok_terisi($aid)))); ?>
     <?php if ($opsiGabung !== ''): ?>
     <form method="post" style="margin-top:12px;border-top:1px solid #ece6d6;padding-top:12px;">
       <?= csrf_field() ?>

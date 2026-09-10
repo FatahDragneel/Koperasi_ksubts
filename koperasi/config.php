@@ -537,7 +537,29 @@ function kelompok_anggota(int $anggotaId): array {
     return $st->fetchAll();
 }
 
-function tambah_anggota_ke_kelompok(int $anggotaId, int $idKelompok, string $jabatan = 'Anggota'): void {
+function penghuni_kelompok(int $idKelompok, int $kecualiAid = 0): ?array {
+    ensure_anggota_kelompok_schema();
+    $st = db()->prepare('SELECT ak.anggota_id, a.nama FROM anggota_kelompok ak LEFT JOIN anggota a ON a.id=ak.anggota_id WHERE ak.id_kelompok=? AND ak.anggota_id<>? ORDER BY ak.anggota_id LIMIT 1');
+    $st->execute([$idKelompok, $kecualiAid]);
+    $r = $st->fetch();
+    return $r ?: null;
+}
+
+function ids_kelompok_terisi(int $kecualiAid = 0): array {
+    ensure_anggota_kelompok_schema();
+    $st = db()->prepare('SELECT DISTINCT id_kelompok FROM anggota_kelompok WHERE anggota_id<>?');
+    $st->execute([$kecualiAid]);
+    return array_map('intval', $st->fetchAll(PDO::FETCH_COLUMN));
+}
+
+function info_kelompok(int $idKelompok): ?array {
+    $st = db()->prepare('SELECT * FROM kelompok WHERE id=?');
+    $st->execute([$idKelompok]);
+    $r = $st->fetch();
+    return $r ?: null;
+}
+
+function tambah_anggota_ke_kelompok(int $anggotaId, int $idKelompok, string $jabatan = 'Anggota'): bool {
     ensure_anggota_kelompok_schema();
     $list = jabatan_kelompok_opsi();
     if (!in_array($jabatan, $list, true)) {
@@ -547,7 +569,11 @@ function tambah_anggota_ke_kelompok(int $anggotaId, int $idKelompok, string $jab
     $k->execute([$idKelompok]);
     $nomor = $k->fetchColumn();
     if (!$nomor) {
-        return;
+        return false;
+    }
+    // Aturan: 1 kelompok hanya untuk 1 anggota.
+    if (penghuni_kelompok($idKelompok, $anggotaId)) {
+        return false;
     }
     if ($jabatan === 'Ketua') {
         db()->prepare("UPDATE anggota_kelompok SET jabatan='Anggota' WHERE id_kelompok=? AND jabatan='Ketua'")->execute([$idKelompok]);
@@ -568,6 +594,7 @@ function tambah_anggota_ke_kelompok(int $anggotaId, int $idKelompok, string $jab
     if ($jabatan === 'Ketua') {
         sinkron_ketua_kelompok($idKelompok);
     }
+    return true;
 }
 
 function keluar_anggota_dari_kelompok(int $anggotaId, int $idKelompok): void {
@@ -2319,6 +2346,19 @@ function proses_setujui_pengalihan(int $id, ?int $by = null): string {
         $hash = !empty($dbaru['password_hash']) ? $dbaru['password_hash'] : password_hash('anggota123', PASSWORD_DEFAULT);
         $pdo->prepare('UPDATE anggota SET username=?, password=? WHERE id=?')->execute([$uname, $hash, $baruId]);
         $kelBaru = $dbaru['kelompok'] ?? [];
+        $kelLama = kelompok_anggota($lamaId);
+        if ($kelBaru) {
+            foreach ($kelBaru as $gk) {
+                $kid = (int)($gk['id'] ?? 0);
+                if ($kid > 0 && ($hh = penghuni_kelompok($kid, $lamaId))) {
+                    $ik = info_kelompok($kid);
+                    return 'Kelompok ' . ($ik['kode_kelompok'] ?? $kid) . ' sudah diisi ' . ($hh['nama'] ?? 'anggota lain') . '. 1 kelompok hanya untuk 1 anggota.';
+                }
+            }
+        }
+        foreach ($kelLama as $gk) {
+            keluar_anggota_dari_kelompok($lamaId, (int)$gk['id_kelompok']);
+        }
         if ($kelBaru) {
             foreach ($kelBaru as $gk) {
                 $kid = (int)($gk['id'] ?? 0);
@@ -2328,16 +2368,13 @@ function proses_setujui_pengalihan(int $id, ?int $by = null): string {
                 }
             }
         } else {
-            foreach (kelompok_anggota($lamaId) as $gk) {
+            foreach ($kelLama as $gk) {
                 tambah_anggota_ke_kelompok($baruId, (int)$gk['id_kelompok'], 'Anggota');
             }
         }
         try {
             $pdo->prepare('UPDATE lahan_sawit SET anggota_id=? WHERE anggota_id=?')->execute([$baruId, $lamaId]);
         } catch (Throwable $e) {
-        }
-        foreach (kelompok_anggota($lamaId) as $gk) {
-            keluar_anggota_dari_kelompok($lamaId, (int)$gk['id_kelompok']);
         }
         $ins = $pdo->prepare('INSERT INTO simpanan (anggota_id,jenis_id,tanggal,jumlah,keterangan,created_by) VALUES (?,?,?,?,?,?)');
         $tgl = date('Y-m-d');
