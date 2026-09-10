@@ -1,9 +1,12 @@
 -- Koperasi Produsen Ramah Lingkungan Pasaman Barat
--- Impor di phpMyAdmin (tab Impor) atau: mysql -u root < database.sql
--- PERINGATAN: DROP menghapus data lama. Untuk update tanpa hapus, buka setup.php.
-
--- AMAN: tidak menghapus tabel/data yang sudah ada.
--- Jangan pakai DROP. Pulihkan lewat setup.php atau impor file ini.
+-- CARA PAKAI (pilih SALAH SATU):
+--   A. Instalasi baru + data contoh: impor file ini ke database KOSONG
+--      (phpMyAdmin -> buat DB -> tab Impor -> pilih file ini -> Go).
+--   B. Database sudah ada / sudah dibuka setup.php: JANGAN impor file ini,
+--      cukup buka setup.php (menambah tabel/kolom yang kurang tanpa hapus data).
+-- ERROR #1062 Duplicate entry? Artinya DB sudah terisi (habis setup.php atau
+-- impor 2x). Solusi: JANGAN impor ulang (data sudah ada), ATAU kosongkan dulu:
+-- phpMyAdmin -> klik database -> centang semua tabel -> Hapus/Drop -> impor ulang.
 CREATE DATABASE IF NOT EXISTS koperasi_bina_tani CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE koperasi_bina_tani;
 

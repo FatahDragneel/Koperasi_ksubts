@@ -57,9 +57,14 @@ dengan usaha utama **produksi pupuk organik**.
 ## Instalasi lokal (XAMPP)
 
 1. Salin folder `koperasi/` ke `C:\xampp\htdocs\koperasi`.
-2. Jalankan Apache + MySQL, buka `http://localhost/koperasi/setup.php`
-   (membuat database + semua tabel, tanpa menghapus data).
-   Untuk data contoh: impor `koperasi/database.sql` via phpMyAdmin.
+2. Jalankan Apache + MySQL, lalu pilih **salah satu**:
+   - **Opsi A (disarankan)** — instalasi baru + data contoh: di phpMyAdmin buat
+     database `koperasi_bina_tani`, tab **Import**, pilih `koperasi/database.sql`.
+   - **Opsi B** — database sudah ada: buka `http://localhost/koperasi/setup.php`
+     (melengkapi tabel/kolom yang kurang tanpa menghapus data).
+   > Jangan lakukan keduanya berurutan — impor setelah setup menimbulkan
+   > error `#1062 Duplicate entry`. Kalau sudah terlanjur: abaikan saja
+   > (data sudah ada) atau kosongkan database lalu impor ulang dari Opsi A.
 3. Login awal: `admin` / `admin123` — **segera ganti sandinya**.
 
 Instalasi hosting: ikuti `koperasi/PANDUAN-HOSTINGER.txt`.
