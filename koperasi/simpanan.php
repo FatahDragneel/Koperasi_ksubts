@@ -8,9 +8,10 @@ $staff = in_array($u['role'], ['admin', 'pengurus']);
 $set = setting();
 
 if ($staff) {
+    $mulaiLbl = tgl(tanggal_mulai_wajib_otomatis()->format('Y-m-d'));
     $nSync = sinkron_simpanan_wajib_semua($u['id'] ?? null);
     if ($nSync > 0) {
-        flash('ok', "Simpanan wajib dilengkapi otomatis: $nSync setoran (Jan 2026 sampai bulan ini) untuk anggota aktif. Saldo s.d. 31 Des 2025 diisi di menu Saldo awal.");
+        flash('ok', "Simpanan wajib dilengkapi otomatis: $nSync setoran (sejak $mulaiLbl sampai bulan ini) untuk anggota aktif.");
         header('Location: simpanan.php');
         exit;
     }
@@ -207,7 +208,6 @@ include __DIR__ . '/includes/app_header.php';
 <div class="row" style="margin-bottom:16px;justify-content:flex-end;">
   <a class="btn btn-ghost" href="cetak.php?<?= e($qsCetak) ?>" target="_blank"><?= $adaFilter ? 'Cetak hasil pencarian' : 'Cetak daftar' ?></a>
   <?php if ($staff): ?>
-  <a class="btn btn-ghost" href="simpanan_saldo_awal.php">Saldo awal wajib &amp; sukarela</a>
   <button class="btn btn-green" type="button" onclick="openModal('mWajib')">+ Simpanan wajib (semua anggota)</button>
   <button class="btn btn-gold" type="button" onclick="openModal('mSukarela')">+ Simpanan sukarela</button>
   <?php endif; ?>
@@ -240,7 +240,7 @@ include __DIR__ . '/includes/app_header.php';
     <?= csrf_field() ?>
     <input type="hidden" name="act" value="wajib_semua">
     <h3>Simpanan wajib semua anggota</h3>
-    <p style="font-size:13px;color:var(--muted);margin:8px 0 12px;">Dicatat sekaligus ke <?= (int)$nAktif ?> anggota aktif. Yang sudah setor bulan itu dilewati. Bukan potongan amprah. Wajib otomatis bulanan mulai Jan 2026; saldo sampai 31 Des 2025 lewat menu Saldo awal.</p>
+    <p style="font-size:13px;color:var(--muted);margin:8px 0 12px;">Dicatat sekaligus ke <?= (int)$nAktif ?> anggota aktif. Yang sudah setor bulan itu dilewati. Bukan potongan amprah. Wajib otomatis bulanan dihitung sejak bulan pendirian (<?= e(tgl(tanggal_mulai_wajib_otomatis()->format('Y-m-d'))) ?>).</p>
     <label>Bulan</label>
     <input type="month" name="bulan" value="<?= date('Y-m') ?>" required>
     <label>Jumlah per orang (Rp)</label>

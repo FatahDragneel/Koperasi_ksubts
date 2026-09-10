@@ -7,7 +7,20 @@ $pdo = db();
 $u = auth();
 
 $hariNama = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat'];
-$rentang = [1 => 'KT-01–04', 2 => 'KT-05–08', 3 => 'KT-09–12', 4 => 'KT-13–16', 5 => 'KT-17–21'];
+$rentang = [1 => '', 2 => '', 3 => '', 4 => '', 5 => ''];
+try {
+    foreach ($pdo->query('SELECT nomor, kode_kelompok FROM kelompok ORDER BY nomor') as $rk) {
+        $dh = hari_antrean_kelompok((int)$rk['nomor']);
+        $kk = $rk['kode_kelompok'] ?: ('KT-' . $rk['nomor']);
+        $rentang[$dh] .= ($rentang[$dh] !== '' ? ', ' : '') . $kk;
+    }
+} catch (Throwable $e) {
+}
+foreach ($rentang as $rd => $rv) {
+    if ($rv === '') {
+        $rentang[$rd] = '—';
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $act = $_POST['act'] ?? 'isi';
@@ -84,7 +97,8 @@ include __DIR__ . '/includes/app_header.php';
   <a class="btn btn-ghost" href="tbs_sj.php">Surat jalan</a>
 </div>
 <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">
-  Jadwal tetap: Senin KT-01–04 · Selasa KT-05–08 · Rabu KT-09–12 · Kamis KT-13–16 · Jumat KT-17–21.
+  Jadwal truk berputar Senin–Jumat mengikuti nomor urut kelompok:
+  <?php foreach ($hariNama as $hd => $hn): ?><?= e($hn) ?>: <?= e($rentang[$hd]) ?><?= $hd < 5 ? ' · ' : '.' ?><?php endforeach; ?>
 </p>
 <div class="table-wrap">
   <table>

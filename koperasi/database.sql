@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS kelompok (
   no_hp_ketua VARCHAR(30) NULL,
   wilayah_dusun VARCHAR(120) NULL,
   blok_hamparan VARCHAR(120) NULL,
+  plasma VARCHAR(120) NULL,
   tanggal_terbentuk DATE NULL,
   luas_tanah DECIMAL(12,2) NULL DEFAULT 0,
   lokasi VARCHAR(255) NULL,
@@ -400,14 +401,11 @@ INSERT INTO jenis_simpanan (kode, nama, keterangan, wajib) VALUES
 ('SSK', 'Simpanan Sukarela', 'Simpanan bebas sesuai kemampuan anggota', 0),
 ('SHR', 'Simpanan Hari Raya', 'Tabungan khusus menjelang hari raya', 0);
 
-INSERT INTO kelompok (nomor, kode_kelompok, nama_kelompok, luas_tanah, fee_per_kg) VALUES
-(1,'KT-01','Kelompok Tani 1',0,0),(2,'KT-02','Kelompok Tani 2',0,0),(3,'KT-03','Kelompok Tani 3',0,0),
-(4,'KT-04','Kelompok Tani 4',0,0),(5,'KT-05','Kelompok Tani 5',0,0),(6,'KT-06','Kelompok Tani 6',0,0),
-(7,'KT-07','Kelompok Tani 7',0,0),(8,'KT-08','Kelompok Tani 8',0,0),(9,'KT-09','Kelompok Tani 9',0,0),
-(10,'KT-10','Kelompok Tani 10',0,0),(11,'KT-11','Kelompok Tani 11',0,0),(12,'KT-12','Kelompok Tani 12',0,0),
-(13,'KT-13','Kelompok Tani 13',0,0),(14,'KT-14','Kelompok Tani 14',0,0),(15,'KT-15','Kelompok Tani 15',0,0),
-(16,'KT-16','Kelompok Tani 16',0,0),(17,'KT-17','Kelompok Tani 17',0,0),(18,'KT-18','Kelompok Tani 18',0,0),
-(19,'KT-19','Kelompok Tani 19',0,0),(20,'KT-20','Kelompok Tani 20',0,0),(21,'KT-21','Kelompok Tani 21',0,0);
+-- Contoh kelompok (ubah/tambah/hapus via menu Kelompok; plasma bebas per kelompok).
+INSERT INTO kelompok (nomor, kode_kelompok, nama_kelompok, plasma, luas_tanah, fee_per_kg) VALUES
+(1,'KT-01','Kelompok Tani 1','',0,0),
+(2,'KT-02','Kelompok Tani 2','',0,0),
+(3,'KT-03','Kelompok Tani 3','',0,0);
 
 INSERT INTO pupuk_produk (kode, nama, jenis, satuan, harga_jual, keterangan) VALUES
 ('PO-G001', 'Pupuk Organik Granul', 'granul', 'kg', 3500, 'Untuk sawit & pangan, kemasan 25/50 kg'),
@@ -443,7 +441,7 @@ INSERT INTO anggota (no_anggota, nik, nama, jenis_kelamin, tempat_lahir, tanggal
 ('AGT-0002', '1371010202850002', 'Siti Aminah', 'P', 'Solok', '1985-02-20', 'Jl. Andalas No. 8', 'Andalas', 'Padang Timur', '081298765432', 'Petani Sayur', '2', 2, 1, '2016-07-21', 'aktif', 'siti', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
 ('AGT-0003', '1371010303780003', 'Hasan Basri', 'L', 'Pariaman', '1978-03-08', 'Kampung Dalam', 'Lubuk Begalung', 'Lubuk Begalung', '082112223333', 'Peternak', '3', 3, 1, '2014-01-05', 'aktif', 'hasan', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
 ('AGT-0004', '1371010404900004', 'Rina Marlina', 'P', 'Padang', '1990-04-12', 'Jl. Bypass No. 90', 'Kuranji', 'Kuranji', '085266778899', 'Pedagang Hasil Tani', '1', 1, 1, '2018-11-02', 'aktif', 'rina', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
-('AGT-0005', '1371010505750005', 'Joni Iskandar', 'L', 'Bukittinggi', '1975-05-30', 'Jl. Raya Tabing', 'Batipuh Panjang', 'Koto Tangah', '081355667788', 'Petani Palawija', '4', 4, 1, '2013-09-18', 'aktif', 'joni', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
+('AGT-0005', '1371010505750005', 'Joni Iskandar', 'L', 'Bukittinggi', '1975-05-30', 'Jl. Raya Tabing', 'Batipuh Panjang', 'Koto Tangah', '081355667788', 'Petani Palawija', '2', 2, 1, '2013-09-18', 'aktif', 'joni', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
 
 INSERT INTO simpanan (anggota_id, jenis_id, tanggal, jumlah, keterangan, created_by) VALUES
 (1, 1, '2015-03-10', 500000, 'Simpanan pokok awal', 1),

@@ -59,7 +59,7 @@ $anggotaKel = anggota_di_kelompok($nomor);
 $idsKel = array_map(fn($a) => (int)$a['id'], $anggotaKel);
 $calon = $pdo->query("SELECT id, no_anggota, nama FROM anggota WHERE status IN ('aktif','pending') ORDER BY nama")->fetchAll();
 
-$title = 'Kelompok ' . $nomor;
+$title = ($k['kode_kelompok'] ?: ('KT-' . $nomor)) . ' · ' . ($k['nama_kelompok'] ?: ('Kelompok ' . $nomor));
 include __DIR__ . '/includes/app_header.php';
 ?>
 <p style="margin-bottom:12px;"><a class="btn btn-ghost btn-sm" href="kelompok.php">← Daftar kelompok</a></p>
@@ -70,7 +70,7 @@ include __DIR__ . '/includes/app_header.php';
     <input type="hidden" name="act" value="profil">
     <input type="hidden" name="kelompok_id" value="<?= $id ?>">
     <h3><?= e($k['kode_kelompok'] ?: ('KT-'.str_pad((string)$nomor, 2, '0', STR_PAD_LEFT))) ?></h3>
-    <p style="font-size:13px;color:var(--muted);"><?= e($k['nama_kelompok'] ?: ('Kelompok Tani '.$nomor)) ?></p>
+    <p style="font-size:13px;color:var(--muted);"><?= e($k['nama_kelompok'] ?: ('Kelompok Tani '.$nomor)) ?><?= !empty($k['plasma']) ? ' · Plasma: ' . e($k['plasma']) : '' ?></p>
     <p style="margin:10px 0;padding:10px;background:#f4faf5;border-radius:10px;">
       <strong>Ketua</strong><br>
       <?= e($k['nama_ketua'] ?: 'Belum dipilih') ?><br>
@@ -113,7 +113,7 @@ include __DIR__ . '/includes/app_header.php';
 </div>
 
 <div class="card" style="margin-top:18px;">
-  <h3>Anggota Kelompok <?= $nomor ?></h3>
+  <h3>Anggota <?= e($k['kode_kelompok'] ?: ('Kelompok ' . $nomor)) ?></h3>
   <div class="table-wrap" style="margin-top:12px;">
     <table>
       <thead>

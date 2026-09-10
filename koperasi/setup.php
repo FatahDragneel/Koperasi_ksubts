@@ -123,6 +123,7 @@ $cols = [
         'blok_hamparan' => "VARCHAR(120) NULL",
         'tanggal_terbentuk' => "DATE NULL",
         'fee_per_kg' => "DECIMAL(12,2) NOT NULL DEFAULT 0",
+        'plasma' => "VARCHAR(120) NULL",
     ],
 ];
 foreach ($cols as $table => $list) {
@@ -142,12 +143,7 @@ if (has_table($pdo, 'timbangan_tbs')) {
     $add("ALTER TABLE timbangan_tbs MODIFY anggota_id INT NULL");
 }
 
-if (has_table($pdo, 'kelompok') && (int)$pdo->query('SELECT COUNT(*) FROM kelompok')->fetchColumn() < 21) {
-    for ($i = 1; $i <= 21; $i++) {
-        $kode = 'KT-' . str_pad((string)$i, 2, '0', STR_PAD_LEFT);
-        $add("INSERT IGNORE INTO kelompok (nomor, kode_kelompok, nama_kelompok, luas_tanah) VALUES ($i, '$kode', 'Kelompok Tani $i', 0)");
-    }
-}
+// Kelompok tani dibentuk sendiri via menu Kelompok (tidak dibuat otomatis).
 if (has_table($pdo, 'jenis_simpanan') && (int)$pdo->query('SELECT COUNT(*) FROM jenis_simpanan')->fetchColumn() === 0) {
     $add("INSERT INTO jenis_simpanan (kode,nama,keterangan,wajib) VALUES
       ('SPK','Simpanan Pokok','Dibayar sekali saat menjadi anggota',1),

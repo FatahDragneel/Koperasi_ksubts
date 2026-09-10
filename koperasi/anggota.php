@@ -115,12 +115,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (($_POST['status'] ?? 'aktif') === 'aktif') {
             catat_simpanan_awal_anggota($aid, auth()['id'] ?? null);
         }
-        $wajibAwal = (float)str_replace(['.', ','], ['', '.'], (string)($_POST['saldo_awal_wajib'] ?? '0'));
-        $sukAwal = (float)str_replace(['.', ','], ['', '.'], (string)($_POST['saldo_awal_sukarela'] ?? '0'));
-        if (function_exists('simpan_saldo_awal')) {
-            simpan_saldo_awal($aid, 'SWJ', $wajibAwal, auth()['id'] ?? null);
-            simpan_saldo_awal($aid, 'SSK', $sukAwal, auth()['id'] ?? null);
-        }
         flash('ok', "Anggota ditambah. Username: $uname / sandi: anggota123");
     }
     header('Location: anggota.php'); exit;
@@ -315,14 +309,6 @@ include __DIR__ . '/includes/app_header.php';
       <div><label>Nomor STDB</label><input name="no_stdb"></div>
     </div>
     <label>Tanggal daftar</label><input type="date" name="tanggal_daftar" value="<?= date('Y-m-d') ?>">
-    <div class="form-sec" style="margin-top:12px;">
-      <h4>Saldo awal simpanan (s.d. 31 Des 2025)</h4>
-      <p style="font-size:12px;color:var(--muted);margin:0 0 8px;">Wajib otomatis tiap bulan mulai 1 Jan 2026. Isi 0 jika tidak ada.</p>
-      <div class="grid-2">
-        <div><label>Saldo awal wajib (Rp)</label><input name="saldo_awal_wajib" type="number" min="0" step="1" value="0"></div>
-        <div><label>Saldo awal sukarela (Rp)</label><input name="saldo_awal_sukarela" type="number" min="0" step="1" value="0"></div>
-      </div>
-    </div>
     <div class="form-sec" style="margin-top:12px;">
       <h4>Berkas (gambar)</h4>
       <div class="grid-2">

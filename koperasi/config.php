@@ -478,6 +478,7 @@ function ensure_kelompok_schema(): void {
             'wilayah_dusun' => "VARCHAR(120) NULL",
             'blok_hamparan' => "VARCHAR(120) NULL",
             'tanggal_terbentuk' => "DATE NULL",
+            'plasma' => "VARCHAR(120) NULL",
         ];
         $kcols = array_column(db()->query('SHOW COLUMNS FROM kelompok')->fetchAll(), 'Field');
         foreach ($addsK as $col => $def) {
@@ -485,14 +486,7 @@ function ensure_kelompok_schema(): void {
                 db()->exec("ALTER TABLE kelompok ADD COLUMN `$col` $def");
             }
         }
-        $n = (int)db()->query('SELECT COUNT(*) FROM kelompok')->fetchColumn();
-        if ($n < 21) {
-            $ins = db()->prepare('INSERT IGNORE INTO kelompok (nomor, kode_kelompok, nama_kelompok, luas_tanah, lokasi) VALUES (?, ?, ?, 0, ?)');
-            for ($i = 1; $i <= 21; $i++) {
-                $kode = 'KT-' . str_pad((string)$i, 2, '0', STR_PAD_LEFT);
-                $ins->execute([$i, $kode, 'Kelompok Tani ' . $i, '']);
-            }
-        }
+        // Kelompok dibentuk sendiri via menu Kelompok (tidak dibuat otomatis).
         db()->exec("UPDATE kelompok SET kode_kelompok = CONCAT('KT-', LPAD(nomor, 2, '0')) WHERE kode_kelompok IS NULL OR kode_kelompok=''");
         db()->exec("UPDATE kelompok SET nama_kelompok = CONCAT('Kelompok Tani ', nomor) WHERE nama_kelompok IS NULL OR nama_kelompok=''");
         ensure_anggota_schema();
@@ -1402,35 +1396,9 @@ function tanggal_berdiri_koperasi(): DateTime {
     return new DateTime(sprintf('%04d-01-01', $tahun));
 }
 
-function tanggal_saldo_awal_simpanan(): string {
-    return '2025-12-31';
-}
-
 function tanggal_mulai_wajib_otomatis(): DateTime {
-    return new DateTime('2026-01-01');
-}
-
-function ket_saldo_awal_simpanan(): string {
-    return 'Saldo awal s.d. 31 Des 2025';
-}
-
-function simpan_saldo_awal(int $anggotaId, string $kodeJenis, float $jumlah, ?int $by = null): bool {
-    $jid = jenis_simpanan_id($kodeJenis);
-    if (!$jid) {
-        return false;
-    }
-    $ket = ket_saldo_awal_simpanan();
-    $tgl = tanggal_saldo_awal_simpanan();
-    $tbl = tabel_simpanan_jenis($jid);
-    $st = db()->prepare("SELECT id FROM `$tbl` WHERE anggota_id=? AND jenis_id=? AND keterangan=? ORDER BY id LIMIT 1");
-    $st->execute([$anggotaId, $jid, $ket]);
-    $id = $st->fetchColumn();
-    if ($id) {
-        db()->prepare("UPDATE `$tbl` SET jumlah=?, tanggal=? WHERE id=?")->execute([$jumlah, $tgl, $id]);
-        return true;
-    }
-    insert_simpanan_row($anggotaId, $jid, $tgl, $jumlah, $ket, $by);
-    return true;
+    // Mulai bulan pendirian koperasi (September 2026). Saldo awal ditiadakan.
+    return tanggal_berdiri_koperasi();
 }
 
 function catat_simpanan_wajib_tunggakan(int $anggotaId, ?int $by = null): int {
@@ -1446,8 +1414,8 @@ function catat_simpanan_wajib_tunggakan(int $anggotaId, ?int $by = null): int {
     if (!$jenis) {
         return 0;
     }
-    $st = db()->prepare('SELECT DATE_FORMAT(tanggal, "%Y-%m") ym FROM simpanan WHERE anggota_id=? AND jenis_id=? AND keterangan<>?');
-    $st->execute([$anggotaId, $jenis, ket_saldo_awal_simpanan()]);
+    $st = db()->prepare('SELECT DATE_FORMAT(tanggal, "%Y-%m") ym FROM simpanan WHERE anggota_id=? AND jenis_id=?');
+    $st->execute([$anggotaId, $jenis]);
     $punya = array_flip($st->fetchAll(PDO::FETCH_COLUMN));
     $ins = db()->prepare('INSERT INTO simpanan (anggota_id,jenis_id,tanggal,jumlah,keterangan,created_by) VALUES (?,?,?,?,?,?)');
     $cur = tanggal_mulai_wajib_otomatis();
@@ -1501,7 +1469,25 @@ function catat_simpanan_awal_anggota(int $anggotaId, ?int $by = null): void {
 
 function label_kelompok($v): string {
     $n = nomor_kelompok($v);
-    return $n > 0 ? 'Kelompok ' . $n : '—';
+    if ($n < 1) {
+        return '—';
+    }
+    static $cache = null;
+    if ($cache === null) {
+        $cache = [];
+        try {
+            foreach (db()->query('SELECT nomor, kode_kelompok, nama_kelompok FROM kelompok') as $r) {
+                $cache[(int)$r['nomor']] = $r;
+            }
+        } catch (Throwable $e) {
+        }
+    }
+    if (isset($cache[$n])) {
+        $kode = $cache[$n]['kode_kelompok'] ?: ('KT-' . str_pad((string)$n, 2, '0', STR_PAD_LEFT));
+        $nama = $cache[$n]['nama_kelompok'] ?: ('Kelompok ' . $n);
+        return $kode . ' — ' . $nama;
+    }
+    return 'Kelompok ' . $n;
 }
 
 function nomor_kelompok($v): int {
@@ -1511,11 +1497,11 @@ function nomor_kelompok($v): int {
     $s = trim((string)$v);
     if ($s !== '' && ctype_digit($s)) {
         $n = (int)$s;
-        return ($n >= 1 && $n <= 21) ? $n : 0;
+        return $n >= 1 ? $n : 0;
     }
     if (preg_match('/(\d{1,2})/', $s, $m)) {
         $n = (int)$m[1];
-        return ($n >= 1 && $n <= 21) ? $n : 0;
+        return $n >= 1 ? $n : 0;
     }
     return 0;
 }
@@ -1576,6 +1562,14 @@ function options_kelompok_id(array $selectedIds = [], array $kecualiIds = []): s
 }
 
 function html_slot_kelompok(int $max = 5, array $kecualiIds = [], string $labelJml = 'Berapa kelompok yang dimiliki?', bool $bolehNol = false): string {
+    try {
+        $adaKel = (int)db()->query('SELECT COUNT(*) FROM kelompok')->fetchColumn();
+    } catch (Throwable $e) {
+        $adaKel = 1;
+    }
+    if ($adaKel < 1 && !$bolehNol) {
+        return '<div class="alert alert-err">Belum ada kelompok tani. Minta pengurus membentuk kelompok dulu di menu Kelompok.</div>';
+    }
     $opts = '<option value="">Pilih kelompok</option>' . options_kelompok_id([], $kecualiIds);
     $html = '<label>' . e($labelJml) . '</label>';
     $html .= '<select name="jml_kelompok" id="jmlKel" onchange="tampilSlotKel()">';
@@ -1614,9 +1608,6 @@ function options_kelompok($selected = ''): string {
         }
     } catch (Throwable $e) {
         // fallback
-    }
-    for ($i = 1; $i <= 21; $i++) {
-        $html .= '<option value="' . $i . '"' . ($sel === $i ? ' selected' : '') . '>KT-' . str_pad((string)$i, 2, '0', STR_PAD_LEFT) . ' — Kelompok ' . $i . '</option>';
     }
     return $html;
 }
@@ -2009,11 +2000,20 @@ function catat_angsuran_pecah(int $pinjamanId, float $jumlah, string $tgl, strin
 }
 
 function hari_antrean_kelompok(int $nomor): int {
-    if ($nomor <= 4) return 1;
-    if ($nomor <= 8) return 2;
-    if ($nomor <= 12) return 3;
-    if ($nomor <= 16) return 4;
-    return 5;
+    // Jadwal berputar Senin-Jumat mengikuti nomor urut kelompok.
+    if ($nomor < 1) {
+        return 1;
+    }
+    return (($nomor - 1) % 5) + 1;
+}
+
+function nomor_kelompok_baru(): int {
+    try {
+        $mx = (int)db()->query('SELECT COALESCE(MAX(nomor),0) FROM kelompok')->fetchColumn();
+    } catch (Throwable $e) {
+        $mx = 0;
+    }
+    return $mx + 1;
 }
 
 function ids_anggota_kelompok(int $idKelompok): array {

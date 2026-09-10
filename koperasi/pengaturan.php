@@ -207,7 +207,7 @@ include __DIR__ . '/includes/app_header.php';
     <h3>Tanggal berdiri &amp; simpan pinjam</h3>
     <label>Tanggal berdiri koperasi</label>
     <input type="date" name="tanggal_berdiri" value="<?= e(substr((string)$tglBerdiri, 0, 10)) ?>" required>
-    <p style="font-size:12px;color:var(--muted);margin:6px 0 12px;">Saldo wajib &amp; sukarela sampai 31 Des 2025 diisi di menu Simpanan → Saldo awal. Setoran wajib otomatis tiap bulan hanya dari 1 Jan 2026.</p>
+    <p style="font-size:12px;color:var(--muted);margin:6px 0 12px;">Setoran wajib otomatis tiap bulan dihitung mulai bulan pendirian koperasi di atas (September 2026).</p>
     <label>Bagi hasil (% per bulan)</label>
     <input name="bagi_hasil_persen" type="number" step="0.01" min="0" max="100" value="<?= e($s['bagi_hasil_persen'] ?? 1) ?>" required>
     <label>Simpanan pokok (Rp, sekali)</label>
