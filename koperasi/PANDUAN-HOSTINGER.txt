@@ -1,0 +1,54 @@
+ONLINEKAN DI HOSTINGER — Koperasi Bina Tani Sejahtera
+=====================================================
+
+Paket: Hostinger (hPanel) + domain. PHP 8.1 atau 8.2. MySQL.
+
+1) DATABASE (hPanel → Databases → MySQL Databases)
+   - Buat database, contoh: u123456789_koperasi
+   - Buat user + sandi KUAT, contoh: u123456789_kopuser
+   - Assign user ke database (ALL PRIVILEGES)
+   - Catat: host biasanya "localhost", nama DB, user, sandi
+
+2) IMPORT TABEL
+   - hPanel → phpMyAdmin → pilih database itu
+   - Import file database.sql (dari folder koperasi)
+   - Jangan DROP database yang sudah ada data
+
+3) UBAH config.php SEBELUM UPLOAD (baris DB_*)
+   define('DB_HOST', 'localhost');
+   define('DB_NAME', 'u123456789_koperasi');   // nama DB Hostinger
+   define('DB_USER', 'u123456789_kopuser');    // user Hostinger
+   define('DB_PASS', 'SandiKuatAnda');
+   define('AUTH_KEY', 'ganti-jadi-kalimat-rahasia-panjang');
+
+4) UPLOAD FILE
+   - File Manager Hostinger → public_html
+     (kalau domain utama: public_html/
+      kalau subdomain: public_html/koperasi/ )
+   - Upload SEMUA isi folder koperasi (bukan folder XAMPP)
+   - Pastikan ada: config.php, index.php, includes/, assets/, uploads/
+   - Folder uploads: permission 755 (bisa tulis unggahan)
+
+5) HAPUS SETELAH JALAN
+   - Hapus setup.php dari server (jangan dibiarkan online)
+
+6) SSL
+   - hPanel → SSL → pasang SSL gratis (Let's Encrypt)
+   - Paksa HTTPS jika ada tombol "Force HTTPS"
+
+7) UJI
+   - https://domainanda.com/          situs umum
+   - https://domainanda.com/login-admin.php
+   - Login admin, GANTI SANDI admin123 segera
+   - Coba registrasi, unggah foto, simpanan
+
+8) SANDI
+   - Jangan pakai admin123 / anggota123 di internet
+   - Ganti lewat menu Pengaturan / data anggota
+
+CATATAN
+- Jangan upload folder C:\xampp\mysql
+- .htaccess sudah blokir config.php, .sql, dan folder uploads (berkas lewat berkas.php)
+- Kalau error 500: PHP version 8.1+, cek error_log di hPanel
+- Kalau "gagal konek database": DB_NAME/USER/PASS salah (bukan root kosong)
+- Backup: phpMyAdmin → Export rutin
