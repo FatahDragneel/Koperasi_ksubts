@@ -33,7 +33,6 @@ $__jenis = trim((string)($s['jenis_koperasi'] ?? '')) !== '' ? $s['jenis_koperas
       <a href="index.php#layanan">Layanan</a>
       <a href="index.php#berita">Berita</a>
       <a href="index.php#kontak">Kontak</a>
-      <a href="registrasi.php">Daftar</a>
       <a href="login-admin.php">Admin</a>
       <a href="login-anggota.php">Masuk Anggota</a>
     </div>

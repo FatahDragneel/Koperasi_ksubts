@@ -170,9 +170,9 @@ include __DIR__ . '/includes/public_header.php';
     </div>
     <div class="about-panel">
       <h3>Siap menjadi anggota?</h3>
-      <p>Daftar daring, atau datang ke kantor dengan fotokopi KTP.</p>
-      <p style="margin:16px 0 24px;opacity:.9;">Pengurus memverifikasi pendaftaran sebelum akun diaktifkan.</p>
-      <a class="btn btn-gold" href="registrasi.php">Daftar anggota</a>
+      <p>Datang ke kantor dengan fotokopi KTP — pengurus mendaftarkan dan mengaktifkan akun Anda.</p>
+      <p style="margin:16px 0 24px;opacity:.9;">Lihat lokasi dan kontak kami di bawah.</p>
+      <a class="btn btn-gold" href="index.php#kontak">Hubungi kami</a>
     </div>
   </div>
 </section>

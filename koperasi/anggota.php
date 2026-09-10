@@ -74,14 +74,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $nama = trim($_POST['nama'] ?? '');
         $no = trim($_POST['no_anggota'] ?? '');
-        $kelIds = array_values(array_filter(array_map('intval', (array)($_POST['kelompok_id'] ?? []))));
-        $luasArr = array_values((array)($_POST['luas_kel'] ?? []));
-        $luasTot = 0;
-        foreach ($luasArr as $i => $v) {
-            if (!empty($kelIds[$i])) {
-                $luasTot += (float)$v;
-            }
-        }
         if ($nama === '' || $no === '') {
             flash('err', 'Isi nomor dan nama anggota.');
             header('Location: anggota.php');
@@ -93,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 trim($_POST['tempat_lahir'] ?? ''), $_POST['tanggal_lahir'] ?: null,
                 trim($_POST['alamat'] ?? ''), trim($_POST['desa'] ?? ''), trim($_POST['kecamatan'] ?? ''),
                 trim($_POST['no_hp'] ?? ''), trim($_POST['pekerjaan'] ?? 'Petani'),
-                (string)($kelIds[0] ?? ''), $luasTot ?: null,
+                '', null,
                 (($_POST['stdb'] ?? '') === 'sudah') ? 'sudah' : 'belum',
                 trim($_POST['no_stdb'] ?? ''),
                 $_POST['tanggal_daftar'] ?: date('Y-m-d'),
@@ -108,10 +100,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->prepare('UPDATE anggota SET username=?, password=? WHERE id=?')
             ->execute([$uname, password_hash('anggota123', PASSWORD_DEFAULT), $aid]);
         update_berkas_anggota($aid);
-        foreach ($kelIds as $i => $kid) {
-            tambah_anggota_ke_kelompok($aid, $kid, 'Anggota');
-            set_luas_lahan_kelompok($aid, $kid, (float)($luasArr[$i] ?? 0));
-        }
         if (($_POST['status'] ?? 'aktif') === 'aktif') {
             catat_simpanan_awal_anggota($aid, auth()['id'] ?? null);
         }
@@ -303,7 +291,6 @@ include __DIR__ . '/includes/app_header.php';
       <div><label>No. HP</label><input name="no_hp"></div>
       <div><label>Pekerjaan</label><input name="pekerjaan" value="Petani"></div>
     </div>
-    <?= html_slot_kelompok(5) ?>
     <div class="grid-2">
       <div><label>STDB</label><select name="stdb"><option value="belum">Belum</option><option value="sudah">Sudah</option></select></div>
       <div><label>Nomor STDB</label><input name="no_stdb"></div>
@@ -324,16 +311,5 @@ include __DIR__ . '/includes/app_header.php';
   </form>
 </div>
 <script>
-function tampilSlotKel() {
-  const el = document.getElementById('jmlKel');
-  if (!el) return;
-  const n = parseInt(el.value, 10) || 1;
-  document.querySelectorAll('.slot-kel').forEach(function (box) {
-    const i = parseInt(box.dataset.n, 10);
-    const on = i <= n;
-    box.style.display = on ? '' : 'none';
-    box.querySelectorAll('select,input').forEach(function (inp) { inp.disabled = !on; });
-  });
-}
 </script>
 <?php include __DIR__ . '/includes/app_footer.php'; ?>

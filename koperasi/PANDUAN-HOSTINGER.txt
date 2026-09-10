@@ -42,7 +42,7 @@ Paket: Hostinger (hPanel) + domain. PHP 8.1 atau 8.2. MySQL.
    - https://domainanda.com/          situs umum
    - https://domainanda.com/login-admin.php
    - Login admin, GANTI SANDI admin123 segera
-   - Coba registrasi, unggah foto, simpanan
+   - Coba tambah anggota & kelompok, unggah foto, simpanan
 
 8) SANDI
    - Jangan pakai admin123 / anggota123 di internet

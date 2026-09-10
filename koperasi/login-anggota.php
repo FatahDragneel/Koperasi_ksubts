@@ -63,7 +63,6 @@ $s = setting();
       <input type="password" name="password" required>
       <button class="btn btn-green" style="width:100%;margin-top:18px;" type="submit">Masuk anggota</button>
       <p style="margin-top:16px;font-size:13px;text-align:center;">
-        Belum terdaftar? <a href="registrasi.php" style="color:var(--green);font-weight:700;">Daftar anggota baru</a><br>
         Pengurus? <a href="login-admin.php" style="color:var(--green);font-weight:700;">Login admin</a><br>
         <a href="index.php" style="color:var(--green);font-weight:700;">← Situs umum</a>
       </p>
