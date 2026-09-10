@@ -42,6 +42,17 @@ function print_head(string $judul, array $s): void { ?>
 if ($jenis === 'anggota') {
     if (!$staff) { http_response_code(403); exit('Khusus pengurus'); }
     $rows = $pdo->query('SELECT * FROM anggota ORDER BY no_anggota')->fetchAll();
+    $kelCetak = [];
+    $luasCetak = [];
+    try {
+        foreach ($pdo->query('SELECT ak.anggota_id, k.kode_kelompok FROM anggota_kelompok ak JOIN kelompok k ON k.id=ak.id_kelompok ORDER BY k.nomor') as $kr) {
+            $kelCetak[(int)$kr['anggota_id']][] = $kr['kode_kelompok'];
+        }
+        foreach ($pdo->query('SELECT anggota_id, COALESCE(SUM(luas_hektar),0) t FROM lahan_sawit GROUP BY anggota_id') as $lr) {
+            $luasCetak[(int)$lr['anggota_id']] = (float)$lr['t'];
+        }
+    } catch (Throwable $e) {
+    }
     print_head('Daftar Anggota', $s); ?>
     <table>
       <thead><tr><th>No. Anggota</th><th>Nama</th><th>Kelompok</th><th>Luas (ha)</th><th>STDB</th><th>Status</th></tr></thead>
@@ -50,8 +61,8 @@ if ($jenis === 'anggota') {
         <tr>
           <td><?= e($r['no_anggota']) ?></td>
           <td><?= e($r['nama']) ?></td>
-          <td><?= label_kelompok($r['kelompok_tani']) ?></td>
-          <td><?= e($r['luas_tanah']) ?></td>
+          <td><?= !empty($kelCetak[(int)$r['id']]) ? e(implode(', ', $kelCetak[(int)$r['id']])) : label_kelompok($r['kelompok_tani']) ?></td>
+          <td><?= e($luasCetak[(int)$r['id']] ?? $r['luas_tanah']) ?></td>
           <td><?= e($r['stdb']) ?></td>
           <td><?= e($r['status']) ?></td>
         </tr>

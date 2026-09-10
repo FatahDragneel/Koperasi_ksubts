@@ -22,6 +22,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user']['username'] = $uname;
             flash('ok', 'Username diperbarui. Login berikutnya pakai username baru.');
         }
+    } elseif ($act === 'gabung' && !$staff && !empty($u['anggota_id'])) {
+        $aid = (int)$u['anggota_id'];
+        $kid = (int)($_POST['id_kelompok'] ?? 0);
+        $ada = $kid > 0 ? $pdo->query('SELECT COUNT(*) FROM kelompok WHERE id=' . $kid)->fetchColumn() : 0;
+        if (!$ada) {
+            flash('err', 'Kelompok tidak ditemukan.');
+        } else {
+            tambah_anggota_ke_kelompok($aid, $kid, 'Anggota');
+            set_luas_lahan_kelompok($aid, $kid, (float)($_POST['luas_hektar'] ?? 0));
+            flash('ok', 'Anda tergabung ke kelompok.');
+        }
+    } elseif ($act === 'keluar_kel' && !$staff && !empty($u['anggota_id'])) {
+        keluar_anggota_dari_kelompok((int)$u['anggota_id'], (int)($_POST['id_kelompok'] ?? 0));
+        flash('ok', 'Anda keluar dari kelompok.');
     } elseif (!empty($_POST['password'])) {
         if ($_POST['password'] !== ($_POST['password2'] ?? '')) {
             flash('err', 'Konfirmasi sandi tidak sama.');
@@ -127,7 +141,7 @@ if ($staff):
     <?php if (!empty($kelompokSaya)): ?>
       <div class="table-wrap" style="margin-top:10px;">
         <table>
-          <thead><tr><th>Kode</th><th>Nama</th><th>Jabatan saya</th><th>Ketua</th></tr></thead>
+          <thead><tr><th>Kode</th><th>Nama</th><th>Jabatan saya</th><th>Ketua</th><th></th></tr></thead>
           <tbody>
           <?php foreach ($kelompokSaya as $gk): ?>
             <tr>
@@ -135,6 +149,14 @@ if ($staff):
               <td><?= e($gk['nama_kelompok']) ?></td>
               <td><?= e($gk['jabatan'] ?: 'Anggota') ?></td>
               <td><?= e($gk['nama_ketua'] ?: '—') ?><?= !empty($gk['no_hp_ketua']) ? '<br><small>'.e($gk['no_hp_ketua']).'</small>' : '' ?></td>
+              <td>
+                <form method="post" onsubmit="return confirm('Keluar dari <?= e($gk['kode_kelompok']) ?>?');">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="act" value="keluar_kel">
+                  <input type="hidden" name="id_kelompok" value="<?= (int)$gk['id_kelompok'] ?>">
+                  <button class="btn btn-danger btn-sm">Keluar</button>
+                </form>
+              </td>
             </tr>
           <?php endforeach; ?>
           </tbody>
@@ -142,6 +164,19 @@ if ($staff):
       </div>
     <?php else: ?>
       <p style="margin-top:12px;color:var(--muted);">Anda belum terhubung ke kelompok tani.</p>
+    <?php endif; ?>
+    <?php $opsiGabung = options_kelompok_id([], array_map('intval', array_column($kelompokSaya, 'id_kelompok'))); ?>
+    <?php if ($opsiGabung !== ''): ?>
+    <form method="post" style="margin-top:12px;border-top:1px solid #ece6d6;padding-top:12px;">
+      <?= csrf_field() ?>
+      <input type="hidden" name="act" value="gabung">
+      <h4 style="font-size:13px;margin-bottom:8px;">Gabung kelompok</h4>
+      <label>Kelompok</label>
+      <select name="id_kelompok" required><option value="">Pilih kelompok</option><?= $opsiGabung ?></select>
+      <label>Luas lahan saya di kelompok ini (ha)</label>
+      <input name="luas_hektar" type="number" step="0.01" min="0" value="0">
+      <button class="btn btn-green btn-sm" style="margin-top:10px;">Gabung</button>
+    </form>
     <?php endif; ?>
   </div>
 </div>
@@ -162,7 +197,7 @@ if ($staff):
             <td><?= e($l['jumlah_pokok'] ?: '—') ?></td>
           </tr>
         <?php endforeach; if (!$lahan): ?>
-          <tr><td colspan="5">Belum ada data lahan. Hubungi pengurus untuk mencatat luas kebun.</td></tr>
+          <tr><td colspan="5">Belum ada data lahan. Gabung kelompok di atas sambil mengisi luas kebun.</td></tr>
         <?php endif; ?>
         </tbody>
       </table>
