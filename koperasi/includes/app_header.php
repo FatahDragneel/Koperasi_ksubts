@@ -64,7 +64,6 @@ function nav_active($file) {
         <a class="<?= nav_active('anggota.php') ?>" href="anggota.php">☺ Anggota</a>
         <a class="<?= nav_active('pengalihan.php') ?>" href="pengalihan.php">⇄ Pengalihan hak</a>
         <a class="<?= nav_active('kelompok.php') ?>" href="kelompok.php">▣ Kelompok</a>
-        <a class="<?= nav_active('tbs_lahan.php') ?>" href="tbs_lahan.php">▤ Lahan sawit</a>
         <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php">🌱 Pupuk organik</a>
         <a class="<?= nav_active('verifikasi.php') ?>" href="verifikasi.php">☑ Verifikasi anggota</a>
         <a class="<?= nav_active('verifikasi_bayar.php') ?>" href="verifikasi_bayar.php">☑ Verifikasi bayar</a>

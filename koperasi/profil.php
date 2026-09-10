@@ -162,7 +162,7 @@ if ($staff):
             <td><?= e($l['jumlah_pokok'] ?: '—') ?></td>
           </tr>
         <?php endforeach; if (!$lahan): ?>
-          <tr><td colspan="5">Belum ada data lahan. Hubungi pengurus untuk mencatat di Lahan sawit.</td></tr>
+          <tr><td colspan="5">Belum ada data lahan. Hubungi pengurus untuk mencatat luas kebun.</td></tr>
         <?php endif; ?>
         </tbody>
       </table>

@@ -214,7 +214,7 @@ include __DIR__ . '/includes/app_header.php';
             <td><?= e(($l['atas_nama_shm'] ?? '') ?: '—') ?><?php if (!empty($l['no_shm'])): ?><br><small><?= e($l['no_shm']) ?></small><?php endif; ?></td>
           </tr>
         <?php endforeach; if (!$lahan): ?>
-          <tr><td colspan="5">Belum ada. Tambah / ubah di menu <a href="tbs_lahan.php">Lahan sawit</a>.</td></tr>
+          <tr><td colspan="5">Belum ada. Luas lahan dicatat lewat data kelompok anggota ini.</td></tr>
         <?php endif; ?>
         </tbody>
       </table>
