@@ -37,11 +37,11 @@ dengan usaha utama **produksi pupuk organik**.
 ## Fitur
 
 - **Situs publik**: beranda, profil, KBLI usaha, legalitas, pengumuman, kontak.
-- **Berita Acara Pendirian** (`berita_acara.php`): data rapat pendirian
-  (pendiri, pengurus/pengawas terpilih, modal, rencana usaha, kuasa),
-  cetak dokumen resmi (PDF), dan tombol **terapkan ke struktur & pengaturan**.
+- **Berita Acara Pendirian** (di **Pengaturan**): data rapat pendirian
+  (pendiri, rencana usaha, kuasa) — pengurus & modal otomatis dari struktur
+  dan simpanan (tidak isi dua kali), plus cetak dokumen resmi (PDF).
   > Daftar pendiri + pimpinan/notulis rapat + nama pembina/penasehat/manajer
-  > belum diisi — lengkapi di halaman Berita Acara / Pengaturan.
+  > belum diisi — lengkapi di Pengaturan.
 - **Struktur organisasi**: bagan RAT → pembina/penasehat, pengurus
   (termasuk wakil ketua & wakil sekretaris), badan pengawas, manajer,
   unit kantor & unit usaha — semua bisa diubah di **Pengaturan**.
@@ -71,11 +71,11 @@ Instalasi hosting: ikuti `koperasi/PANDUAN-HOSTINGER.txt`.
 
 ## Melengkapi data koperasi
 
-1. Login admin → buka **📜 Berita acara** → lengkapi daftar pendiri
-   (`Nama|NIK|Alamat` per baris, minimal 9 orang), pimpinan/notulis, waktu
-   rapat, lalu **Simpan & terapkan ke struktur**.
-2. Buka **Pengaturan** → lengkapi NIB, NIK koperasi, NPWP, nomor akta/badan
+1. Login admin → buka **Pengaturan** → kartu Berita acara: lengkapi daftar
+   pendiri (`Nama|NIK|Alamat` per baris, minimal 9 orang), pimpinan/notulis,
+   dan waktu rapat; kartu lain: NIB, NIK koperasi, NPWP, nomor akta/badan
    hukum, telepon, logo, pembina/penasehat, manajer, dan unit-unit usaha.
+   Lalu **Simpan** — pengurus & modal otomatis dipakai dokumen BA.
 3. Hasilnya tampil di **Profil koperasi**, bagan struktur, dan situs publik.
 
 Catatan: nama database MySQL (`koperasi_bina_tani`) hanya nama teknis internal

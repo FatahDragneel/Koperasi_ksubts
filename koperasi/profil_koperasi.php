@@ -29,9 +29,11 @@ try {
     $jmlAgt = (int)db()->query("SELECT COUNT(*) FROM anggota WHERE status IN ('aktif','pasif')")->fetchColumn();
 } catch (Throwable $e) {
 }
+$ba = berita_acara($s);
+$jmlPendiriBA = count(daftar_pendiri_ba($ba['pendiri_txt']));
 ?>
 <?php if ($staff): ?>
-<p style="margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap;"><a class="btn btn-green btn-sm" href="pengaturan.php">Ubah semua di Pengaturan</a><a class="btn btn-ghost btn-sm" href="berita_acara.php">Berita Acara Pendirian</a></p>
+<p style="margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap;"><a class="btn btn-green btn-sm" href="pengaturan.php">Ubah semua di Pengaturan</a><a class="btn btn-ghost btn-sm" href="pengaturan.php?cetak_ba=1" target="_blank">Cetak BA / PDF</a></p>
 <?php endif; ?>
 <div class="card" style="margin-bottom:16px;">
   <h3>Informasi dasar &amp; identitas</h3>
@@ -49,6 +51,17 @@ try {
     <p style="margin-top:8px;"><strong>Arti / filosofi logo</strong><br><?= nl2br(e($s['logo_filosofi'])) ?></p>
   <?php endif; ?>
   <p style="margin-top:12px;"><strong>Latar belakang</strong><br><?= nl2br(e($p('sejarah'))) ?></p>
+</div>
+
+<div class="card" id="ba" style="margin-bottom:16px;">
+  <h3>Berita acara pendirian</h3>
+  <div class="grid-2" style="margin-top:12px;">
+    <p><strong>Nomor</strong><br><?= e($ba['nomor'] !== '' ? $ba['nomor'] : '—') ?></p>
+    <p><strong>Tanggal rapat</strong><br><?= e(tgl_panjang($ba['tanggal'])) ?></p>
+    <p><strong>Tempat</strong><br><?= e($ba['tempat'] !== '' ? $ba['tempat'] : '—') ?></p>
+    <p><strong>Jumlah pendiri</strong><br><?= $jmlPendiriBA ?> orang</p>
+  </div>
+  <p style="margin-top:12px;"><a class="btn btn-green btn-sm" href="pengaturan.php?cetak_ba=1" target="_blank">Cetak / PDF</a></p>
 </div>
 
 <div class="cards" style="grid-template-columns:1fr 1fr;margin-bottom:16px;">

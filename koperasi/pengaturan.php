@@ -1,5 +1,133 @@
 <?php
 require __DIR__ . '/config.php';
+
+if (isset($_GET['cetak_ba'])) {
+    require_login();
+    $s = setting();
+    $ba = berita_acara($s);
+    $stukBA = struktur_koperasi($s);
+    $pendiriBA = daftar_pendiri_ba($ba['pendiri_txt']);
+    $jmlBA = count($pendiriBA);
+    $pokokBA = (float)($s['simpanan_pokok'] ?? 0);
+    $wajibBA = (float)($s['simpanan_wajib'] ?? 0);
+    $totalBA = $jmlBA * ($pokokBA + $wajibBA);
+    $namaKopBA = $s['nama_koperasi'] ?? default_profil_koperasi()['nama_koperasi'];
+    $staffBA = in_array((auth()['role'] ?? ''), ['admin', 'pengurus'], true);
+    $hariBA = hari_indo($ba['tanggal']);
+    $g = static function (string $k) use ($stukBA): string {
+        return trim((string)($stukBA[$k] ?? ''));
+    };
+    $pwBA = [];
+    foreach (preg_split('/\r\n|\r|\n/', (string)($stukBA['pengawas_anggota_txt'] ?? '')) as $lnBA) {
+        $lnBA = trim($lnBA);
+        if ($lnBA !== '') {
+            $pwBA[] = $lnBA;
+        }
+    }
+    ?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Berita Acara Pendirian — <?= e($namaKopBA) ?></title>
+<style>
+  body { font-family: Georgia, 'Times New Roman', serif; color: #111; margin: 32px; line-height: 1.7; }
+  .kop { text-align: center; border-bottom: 3px double #111; padding-bottom: 12px; margin-bottom: 20px; }
+  .kop h1 { font-size: 20px; margin: 0; text-transform: uppercase; }
+  .kop p { margin: 2px 0; font-size: 13px; }
+  h2 { text-align: center; font-size: 17px; text-transform: uppercase; margin: 18px 0 4px; text-decoration: underline; }
+  .nomor { text-align: center; font-size: 14px; margin-bottom: 18px; }
+  p.just { text-align: justify; font-size: 14.5px; }
+  table.daftar { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0 18px; }
+  table.daftar th, table.daftar td { border: 1px solid #111; padding: 6px 8px; text-align: left; vertical-align: top; }
+  ol.keputusan { font-size: 14.5px; text-align: justify; }
+  ol.keputusan li { margin-bottom: 8px; }
+  .ttd { display: flex; justify-content: space-between; gap: 24px; margin-top: 28px; font-size: 14px; }
+  .ttd .kol { flex: 1; text-align: center; }
+  .ttd .nama { margin-top: 72px; font-weight: bold; text-decoration: underline; }
+  .catatan { font-size: 12px; color: #444; border-top: 1px solid #999; margin-top: 28px; padding-top: 8px; }
+  @media print { .no-print { display: none; } body { margin: 12mm; } }
+</style>
+</head>
+<body>
+<p class="no-print"><button onclick="window.print()">Cetak / Simpan PDF</button> <a href="<?= $staffBA ? 'pengaturan.php' : 'profil_koperasi.php#ba' ?>">Kembali</a></p>
+<div class="kop">
+  <h1><?= e($namaKopBA) ?></h1>
+  <p><?= e($s['alamat'] ?? '') ?></p>
+  <p><?= e(trim(($s['telepon'] ?? '') . ' ' . ($s['email'] ?? ''))) ?></p>
+</div>
+<h2>Berita Acara Rapat Pendirian Koperasi</h2>
+<div class="nomor">Nomor: <?= e($ba['nomor'] !== '' ? $ba['nomor'] : '..../..../....') ?></div>
+
+<p class="just">Pada hari <strong><?= e($hariBA !== '' ? $hariBA : '........') ?></strong>, tanggal <strong><?= e(tgl_panjang($ba['tanggal'])) ?></strong>,
+pukul <?= e(($ba['waktu_mulai'] !== '' ? $ba['waktu_mulai'] : '....') . ' s.d. ' . ($ba['waktu_selesai'] !== '' ? $ba['waktu_selesai'] : '....')) ?> WIB,
+bertempat di <strong><?= e($ba['tempat'] !== '' ? $ba['tempat'] : '........') ?></strong>, telah diselenggarakan <strong>Rapat Pendirian
+<?= e($namaKopBA) ?></strong> yang dihadiri oleh <strong><?= $jmlBA ?> (<?= e(terbilang_id($jmlBA)) ?>) orang</strong> pendiri
+sebagaimana tercantum dalam daftar hadir berikut:</p>
+
+<table class="daftar">
+  <thead><tr><th style="width:36px;">No</th><th>Nama</th><th style="width:170px;">NIK</th><th>Alamat</th><th style="width:90px;">Tanda tangan</th></tr></thead>
+  <tbody>
+  <?php foreach ($pendiriBA as $iBA => $pBA): ?>
+    <tr>
+      <td><?= $iBA + 1 ?></td>
+      <td><?= e($pBA['nama'] !== '' ? $pBA['nama'] : '—') ?></td>
+      <td><?= e($pBA['nik'] !== '' ? $pBA['nik'] : '—') ?></td>
+      <td><?= e($pBA['alamat'] !== '' ? $pBA['alamat'] : '—') ?></td>
+      <td><?= $iBA + 1 ?>. .........</td>
+    </tr>
+  <?php endforeach; if (!$pendiriBA): ?>
+    <tr><td colspan="5" style="text-align:center;">(Daftar pendiri belum diisi — lengkapi di Pengaturan)</td></tr>
+  <?php endif; ?>
+  </tbody>
+</table>
+
+<p class="just">Rapat dipimpin oleh <strong><?= e($ba['pimpinan'] !== '' ? $ba['pimpinan'] : '........') ?></strong> selaku Pimpinan Rapat dan
+<strong><?= e($ba['notulis'] !== '' ? $ba['notulis'] : '........') ?></strong> selaku Notulis. Setelah bermusyawarah untuk mufakat,
+rapat <strong>memutuskan</strong> hal-hal sebagai berikut:</p>
+
+<ol class="keputusan">
+  <li>Menyetujui pendirian koperasi dengan nama <strong><?= e($namaKopBA) ?></strong>, jenis <strong><?= e($s['jenis_koperasi'] ?? 'Koperasi Produsen') ?></strong>,
+    berkedudukan di <?= e($s['alamat'] ?? '........') ?>.</li>
+  <li>Menyetujui Rancangan Anggaran Dasar (AD) dan Anggaran Rumah Tangga (ART) koperasi sebagaimana terlampir dan menjadi bagian tidak terpisahkan dari berita acara ini.</li>
+  <li>Mengangkat Pengurus dan Pengawas koperasi untuk masa jabatan <strong><?= e($g('masa_jabatan') !== '' ? $g('masa_jabatan') : '........') ?></strong> sebagai berikut:
+    <br>Pengurus: Ketua — <strong><?= e($g('ketua') !== '' ? $g('ketua') : '........') ?></strong>;
+    Wk. Ketua — <strong><?= e($g('wakil_ketua') !== '' ? $g('wakil_ketua') : '........') ?></strong>;
+    Sekretaris — <strong><?= e($g('sekretaris') !== '' ? $g('sekretaris') : '........') ?></strong>;
+    Wk. Sekretaris — <strong><?= e($g('wakil_sekretaris') !== '' ? $g('wakil_sekretaris') : '........') ?></strong>;
+    Bendahara — <strong><?= e($g('bendahara') !== '' ? $g('bendahara') : '........') ?></strong>.
+    <br>Pengawas: Ketua — <strong><?= e($g('pengawas_ketua') !== '' ? $g('pengawas_ketua') : '........') ?></strong><?php if ($pwBA): ?>; Anggota — <strong><?= e(implode('; ', $pwBA)) ?></strong><?php endif; ?>.</li>
+  <li>Menetapkan modal koperasi berupa Simpanan Pokok sebesar <strong><?= rupiah($pokokBA) ?></strong> per orang dan Simpanan Wajib
+    sebesar <strong><?= rupiah($wajibBA) ?></strong> per orang per bulan. Jumlah modal yang disetor para pendiri pada saat pendirian adalah
+    <strong><?= rupiah($totalBA) ?> (<?= e(terbilang_id($totalBA)) ?> rupiah)</strong>.</li>
+  <li>Menetapkan rencana usaha koperasi sebagai berikut:
+    <br><?= nl2br(e($ba['usaha_txt'] !== '' ? $ba['usaha_txt'] : '........')) ?></li>
+  <li><?= nl2br(e($ba['kuasa_txt'] !== '' ? $ba['kuasa_txt'] : '........')) ?></li>
+</ol>
+
+<p class="just">Demikian berita acara ini dibuat dengan sebenarnya, untuk dipergunakan sebagaimana mestinya.</p>
+
+<p style="font-size:14px;"><?= e($ba['tempat'] !== '' ? $ba['tempat'] : '........') ?>, <?= e(tgl_panjang($ba['tanggal'])) ?></p>
+<div class="ttd">
+  <div class="kol">Pimpinan Rapat<div class="nama"><?= e($ba['pimpinan'] !== '' ? $ba['pimpinan'] : '( .................... )') ?></div></div>
+  <div class="kol">Notulis<div class="nama"><?= e($ba['notulis'] !== '' ? $ba['notulis'] : '( .................... )') ?></div></div>
+</div>
+<div class="ttd">
+  <div class="kol">Ketua Terpilih<div class="nama"><?= e($g('ketua') !== '' ? $g('ketua') : '( .................... )') ?></div></div>
+  <div class="kol">Sekretaris Terpilih<div class="nama"><?= e($g('sekretaris') !== '' ? $g('sekretaris') : '( .................... )') ?></div></div>
+  <div class="kol">Bendahara Terpilih<div class="nama"><?= e($g('bendahara') !== '' ? $g('bendahara') : '( .................... )') ?></div></div>
+</div>
+
+<div class="catatan">
+  Catatan: lengkapi dokumen dengan (1) fotokopi KTP para pendiri, (2) Rancangan AD/ART yang ditandatangani, (3) surat bukti setoran modal,
+  dan (4) berita acara di atas materai sesuai ketentuan. Konsultasikan ke Dinas Koperasi &amp; UKM setempat sebelum pengesahan badan hukum.
+</div>
+</body>
+</html>
+    <?php
+    exit;
+}
+
 require_staff();
 $title = 'Pengaturan koperasi';
 $pdo = db();
@@ -139,7 +267,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($namaLogo) {
         $logoFile = $namaLogo;
     }
-    $pdo->prepare('UPDATE pengaturan SET nama_koperasi=?, alamat=?, telepon=?, email=?, ketua=?, visi=?, misi=?, bagi_hasil_persen=?, simpanan_pokok=?, simpanan_wajib=?, tahun_berdiri=?, tanggal_berdiri=?, no_akta=?, no_badan_hukum=?, nib=?, npwp=?, iusp=?, iup=?, jenis_koperasi=?, sejarah=?, logo_filosofi=?, logo_file=?, nilai_koperasi=?, nik_koperasi=?, rapat_anggota=?, cabang=?, whatsapp=?, sosmed=?, struktur_json=?, motto=?, kegiatan_usaha=?, prestasi=?, karyawan_ket=?, tgl_badan_hukum=?, kbli=?, sertifikasi=? WHERE id=1')
+    $baLama = json_decode((string)($sOld['ba_json'] ?? ''), true);
+    if (!is_array($baLama)) {
+        $baLama = [];
+    }
+    $baData = array_merge($baLama, [
+        'nomor' => trim((string)($_POST['ba_nomor'] ?? '')),
+        'tanggal' => trim((string)($_POST['ba_tanggal'] ?? '')),
+        'waktu_mulai' => trim((string)($_POST['ba_waktu_mulai'] ?? '')),
+        'waktu_selesai' => trim((string)($_POST['ba_waktu_selesai'] ?? '')),
+        'tempat' => trim((string)($_POST['ba_tempat'] ?? '')),
+        'pimpinan' => trim((string)($_POST['ba_pimpinan'] ?? '')),
+        'notulis' => trim((string)($_POST['ba_notulis'] ?? '')),
+        'pendiri_txt' => trim((string)($_POST['ba_pendiri_txt'] ?? '')),
+        'usaha_txt' => trim((string)($_POST['ba_usaha_txt'] ?? '')),
+        'kuasa_txt' => trim((string)($_POST['ba_kuasa_txt'] ?? '')),
+    ]);
+    // Bersihkan kunci lama yang duplikat (pengurus/modal kini dari struktur & simpanan).
+    foreach (['ketua', 'wakil_ketua', 'sekretaris', 'wakil_sekretaris', 'bendahara', 'pengawas_ketua', 'pengawas_anggota', 'masa_jabatan', 'modal_pokok', 'modal_wajib'] as $kl) {
+        unset($baData[$kl]);
+    }
+    $pdo->prepare('UPDATE pengaturan SET nama_koperasi=?, alamat=?, telepon=?, email=?, ketua=?, visi=?, misi=?, bagi_hasil_persen=?, simpanan_pokok=?, simpanan_wajib=?, tahun_berdiri=?, tanggal_berdiri=?, no_akta=?, no_badan_hukum=?, nib=?, npwp=?, iusp=?, iup=?, jenis_koperasi=?, sejarah=?, logo_filosofi=?, logo_file=?, nilai_koperasi=?, nik_koperasi=?, rapat_anggota=?, cabang=?, whatsapp=?, sosmed=?, struktur_json=?, motto=?, kegiatan_usaha=?, prestasi=?, karyawan_ket=?, tgl_badan_hukum=?, kbli=?, sertifikasi=?, ba_json=? WHERE id=1')
         ->execute([
             trim($_POST['nama_koperasi']),
             trim($_POST['alamat']),
@@ -177,6 +325,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             trim($_POST['tgl_badan_hukum'] ?? '') ?: null,
             trim($_POST['kbli'] ?? ''),
             trim($_POST['sertifikasi'] ?? ''),
+            json_encode($baData, JSON_UNESCAPED_UNICODE),
         ]);
     $n = sinkron_simpanan_wajib_semua(auth()['id'] ?? null);
     flash('ok', 'Pengaturan disimpan. Tampil di Profil koperasi. Simpanan wajib: ' . $n . ' setoran bulan baru.');
@@ -198,9 +347,11 @@ if (!$tglBerdiri) {
     $tglBerdiri = $defP['tanggal_berdiri'];
 }
 $stuk = struktur_koperasi($s);
+$ba = berita_acara($s);
+$jmlPendiriBA = count(daftar_pendiri_ba($ba['pendiri_txt']));
 include __DIR__ . '/includes/app_header.php';
 ?>
-<p style="margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap;"><a class="btn btn-ghost btn-sm" href="profil_koperasi.php">Lihat halaman Profil koperasi</a><a class="btn btn-ghost btn-sm" href="berita_acara.php">Berita Acara Pendirian</a></p>
+<p style="margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap;"><a class="btn btn-ghost btn-sm" href="profil_koperasi.php">Lihat halaman Profil koperasi</a><a class="btn btn-green btn-sm" href="pengaturan.php?cetak_ba=1" target="_blank">Cetak BA / PDF</a></p>
 <form method="post" enctype="multipart/form-data" class="cards" style="grid-template-columns:1fr 1fr;">
   <?= csrf_field() ?>
   <div class="card">
@@ -335,6 +486,39 @@ include __DIR__ . '/includes/app_header.php';
     $formUnit('ubawah', $stuk['unit_bawah'] ?? [], 'Unit pendukung (bawah)');
     $formUnit('ukanan', $stuk['unit_kanan'] ?? [], 'Unit usaha (kanan)');
     ?>
+  </div>
+  <div class="card" id="ba" style="grid-column:1/-1;">
+    <h3>Berita acara pendirian — rapat</h3>
+    <p style="font-size:12px;color:var(--muted);margin:6px 0 12px;">Nama pengurus, masa jabatan, dan besaran simpanan diambil otomatis dari kartu Struktur &amp; Tanggal berdiri di halaman ini — cukup isi sekali.</p>
+    <label>Nomor berita acara</label>
+    <input name="ba_nomor" value="<?= e($ba['nomor']) ?>" placeholder="cth. 001/PENDIRIAN/KOP/KPRL-PB/IX/2026">
+    <div class="grid-2">
+      <div><label>Tanggal rapat</label><input type="date" name="ba_tanggal" value="<?= e(substr($ba['tanggal'], 0, 10)) ?>"></div>
+      <div><label>Waktu (mulai — selesai)</label>
+        <div style="display:flex;gap:8px;"><input name="ba_waktu_mulai" value="<?= e($ba['waktu_mulai']) ?>" placeholder="09.00"><input name="ba_waktu_selesai" value="<?= e($ba['waktu_selesai']) ?>" placeholder="12.00"></div>
+      </div>
+    </div>
+    <label>Tempat rapat</label>
+    <input name="ba_tempat" value="<?= e($ba['tempat']) ?>">
+    <div class="grid-2">
+      <div><label>Pimpinan rapat</label><input name="ba_pimpinan" value="<?= e($ba['pimpinan']) ?>"></div>
+      <div><label>Notulis</label><input name="ba_notulis" value="<?= e($ba['notulis']) ?>"></div>
+    </div>
+  </div>
+  <div class="card" style="grid-column:1/-1;">
+    <h3>Daftar pendiri (<?= $jmlPendiriBA ?> orang)</h3>
+    <?php if ($jmlPendiriBA < 9): ?>
+    <div class="alert alert-err">Pendiri baru <?= $jmlPendiriBA ?> orang. Koperasi primer sekurang-kurangnya didirikan oleh <strong>9 orang</strong>.</div>
+    <?php endif; ?>
+    <p style="font-size:12px;color:var(--muted);margin:6px 0 8px;">Satu baris satu orang, format: <code>Nama|NIK|Alamat</code></p>
+    <textarea name="ba_pendiri_txt" style="min-height:180px;" placeholder="Nama Lengkap|1371xxxxxxxxxxxx|Alamat..."><?= e($ba['pendiri_txt']) ?></textarea>
+  </div>
+  <div class="card" style="grid-column:1/-1;">
+    <h3>Rencana usaha &amp; kuasa (dokumen BA)</h3>
+    <label>Rencana usaha (muncul di dokumen)</label>
+    <textarea name="ba_usaha_txt" style="min-height:110px;"><?= e($ba['usaha_txt']) ?></textarea>
+    <label>Kuasa pengurusan badan hukum</label>
+    <textarea name="ba_kuasa_txt"><?= e($ba['kuasa_txt']) ?></textarea>
   </div>
   <div class="card" style="grid-column:1/-1;">
     <h3>Jangkauan &amp; kontak</h3>

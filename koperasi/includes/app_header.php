@@ -66,7 +66,6 @@ function nav_active($file) {
         <a class="<?= nav_active('kelompok.php') ?>" href="kelompok.php">▣ Kelompok</a>
         <a class="<?= nav_active('tbs_lahan.php') ?>" href="tbs_lahan.php">▤ Lahan sawit</a>
         <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php">🌱 Pupuk organik</a>
-        <a class="<?= nav_active('berita_acara.php') ?>" href="berita_acara.php">📜 Berita acara</a>
         <a class="<?= nav_active('verifikasi.php') ?>" href="verifikasi.php">☑ Verifikasi anggota</a>
         <a class="<?= nav_active('verifikasi_bayar.php') ?>" href="verifikasi_bayar.php">☑ Verifikasi bayar</a>
         <a class="<?= nav_active('simpanan.php') ?>" href="simpanan.php">⛁ Simpanan</a>
@@ -82,7 +81,7 @@ function nav_active($file) {
         <a class="<?= nav_active('pinjaman.php') ?>" href="pinjaman.php">⇄ Pinjaman Saya</a>
         <a class="<?= nav_active('pinjaman_bayar.php') ?>" href="pinjaman_bayar.php">↻ Bayar angsuran</a>
         <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php">🌱 Pupuk organik</a>
-        <a class="<?= nav_active('berita_acara.php') ?>" href="berita_acara.php">📜 Berita acara</a>
+        <a class="<?= nav_active('profil_koperasi.php') ?>" href="profil_koperasi.php#ba">📜 Berita acara</a>
         <a class="<?= nav_active('profil.php') ?>" href="profil.php">◉ Data &amp; usaha saya</a>
       <?php endif; ?>
       <?php if (in_array($u['role'], ['admin','pengurus'])): ?>
