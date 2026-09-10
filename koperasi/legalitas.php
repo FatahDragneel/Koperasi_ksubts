@@ -2,12 +2,18 @@
 require __DIR__ . '/config.php';
 $s = setting();
 $title = 'Legalitas · ' . ($s['nama_koperasi'] ?? 'Koperasi');
+$kbliTxt = trim((string)($s['kbli'] ?? ''));
+if ($kbliTxt === '') {
+    $kbliTxt = kbli_usaha_default();
+}
 $baris = [
     ['Akta pendirian', $s['no_akta'] ?? '', 'Dokumen notaris berisi Anggaran Dasar koperasi.'],
     ['SK / nomor badan hukum', $s['no_badan_hukum'] ?? '', 'Pengesahan sebagai badan hukum koperasi.'],
     ['NIB', $s['nib'] ?? '', 'Nomor Induk Berusaha melalui OSS.'],
+    ['Bidang usaha (KBLI)', $kbliTxt, 'Usaha utama & pendukung sesuai NIB/OSS.'],
+    ['Sertifikasi', $s['sertifikasi'] ?? '', 'ISPO / organik / SNI pupuk bila sudah dimiliki.'],
     ['NPWP badan', $s['npwp'] ?? '', 'Nomor pajak atas nama koperasi.'],
-    ['Izin unit simpan pinjam (IUSP)', $s['iusp'] ?? '', 'Hanya diisi jika koperasi punya izin USP/KSP resmi.'],
+    ['Izin unit simpan pinjam (IUSP)', $s['iusp'] ?? '', 'Hanya diisi jika koperasi punya izin USP resmi.'],
     ['Izin usaha perkebunan (IUP)', $s['iup'] ?? '', 'Hanya diisi jika koperasi mengelola kebun sebagai pelaku usaha perkebunan.'],
 ];
 include __DIR__ . '/includes/public_header.php';
@@ -31,7 +37,7 @@ include __DIR__ . '/includes/public_header.php';
         <?php foreach ($baris as [$nama, $nomor, $ket]): ?>
           <tr>
             <td><strong><?= e($nama) ?></strong></td>
-            <td><?= $nomor !== '' ? e($nomor) : '<span style="color:var(--muted)">Belum diisi pengurus</span>' ?></td>
+            <td><?= $nomor !== '' ? nl2br(e($nomor)) : '<span style="color:var(--muted)">Belum diisi pengurus</span>' ?></td>
             <td style="font-size:13px;color:var(--muted);"><?= e($ket) ?></td>
           </tr>
         <?php endforeach; ?>

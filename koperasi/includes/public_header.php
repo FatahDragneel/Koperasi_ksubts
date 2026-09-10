@@ -1,4 +1,8 @@
-<?php $s = setting(); $page = $page ?? ''; ?>
+<?php $s = setting(); $page = $page ?? '';
+$__kata = preg_split('/\s+/', trim((string)($s['nama_koperasi'] ?? 'Koperasi')));
+$__inisial = strtoupper(substr($__kata[0] ?? 'K', 0, 1) . substr(end($__kata) ?: 'P', 0, 1));
+$__jenis = trim((string)($s['jenis_koperasi'] ?? '')) !== '' ? $s['jenis_koperasi'] : 'Koperasi Produsen';
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -13,10 +17,10 @@
 <nav class="nav">
   <div class="nav-inner">
     <a class="brand" href="index.php">
-      <div class="logo">BT</div>
+      <div class="logo"><?= e($__inisial) ?></div>
       <div>
-        <small>Koperasi Serba Usaha</small>
-        <strong>Bina Tani Sejahtera</strong>
+        <small><?= e($__jenis) ?></small>
+        <strong><?= e($s['nama_koperasi'] ?? 'Koperasi') ?></strong>
       </div>
     </a>
     <input type="checkbox" id="navCek" class="nav-cek" autocomplete="off">

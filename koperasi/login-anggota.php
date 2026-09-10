@@ -41,8 +41,8 @@ $s = setting();
 <div class="auth-wrap">
   <div class="auth-art">
     <a class="brand" href="index.php">
-      <div class="logo">BT</div>
-      <div><small>Koperasi Serba Usaha</small><strong>Bina Tani Sejahtera</strong></div>
+      <div class="logo"><?= e(strtoupper(implode('', array_map(static function ($w) { return substr($w, 0, 1); }, array_slice(preg_split('/\s+/', trim((string)($s['nama_koperasi'] ?? 'KP'))), 0, 2))))) ?></div>
+      <div><small><?= e($s['jenis_koperasi'] ?? 'Koperasi Produsen') ?></small><strong><?= e($s['nama_koperasi']) ?></strong></div>
     </a>
     <div>
       <div class="kicker">Portal anggota</div>

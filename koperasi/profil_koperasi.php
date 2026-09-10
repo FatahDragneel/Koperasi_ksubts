@@ -31,7 +31,7 @@ try {
 }
 ?>
 <?php if ($staff): ?>
-<p style="margin-bottom:14px;"><a class="btn btn-green btn-sm" href="pengaturan.php">Ubah semua di Pengaturan</a></p>
+<p style="margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap;"><a class="btn btn-green btn-sm" href="pengaturan.php">Ubah semua di Pengaturan</a><a class="btn btn-ghost btn-sm" href="berita_acara.php">Berita Acara Pendirian</a></p>
 <?php endif; ?>
 <div class="card" style="margin-bottom:16px;">
   <h3>Informasi dasar &amp; identitas</h3>
@@ -100,6 +100,8 @@ try {
         <tr><th>Tanggal badan hukum</th><td><?= e(tgl($p('tgl_badan_hukum'))) ?></td></tr>
         <tr><th>Nomor Induk Koperasi (NIK)</th><td><?= e($s['nik_koperasi'] ?: '—') ?></td></tr>
         <tr><th>NIB</th><td><?= e($s['nib'] ?: '—') ?></td></tr>
+        <tr><th>Bidang usaha (KBLI)</th><td><?= trim((string)($s['kbli'] ?? '')) !== '' ? nl2br(e($s['kbli'])) : nl2br(e(kbli_usaha_default())) ?></td></tr>
+        <tr><th>Sertifikasi</th><td><?= trim((string)($s['sertifikasi'] ?? '')) !== '' ? nl2br(e($s['sertifikasi'])) : '—' ?></td></tr>
         <tr><th>NPWP badan</th><td><?= e($s['npwp'] ?: '—') ?></td></tr>
         <tr><th>Izin operasional (IUSP)</th><td><?= e($s['iusp'] ?: '—') ?></td></tr>
         <tr><th>IUP (jika ada)</th><td><?= e($s['iup'] ?: '—') ?></td></tr>
@@ -137,7 +139,7 @@ try {
   <div class="bts-chart">
     <div class="bts-title">
       STRUKTUR ORGANISASI<br>
-      <?= e(strtoupper($s['nama_koperasi'] ?? 'Koperasi Serba Usaha Bina Tani Sejahtera')) ?>
+      <?= e(strtoupper($s['nama_koperasi'] ?? 'Koperasi Produsen')) ?>
     </div>
     <div class="bts-row"><div class="bts-box bts-abu"><div class="bts-hd">R A T</div></div></div>
     <div class="bts-v"></div>

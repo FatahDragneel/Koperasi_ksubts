@@ -29,6 +29,8 @@ if (!function_exists('th_urut')) {
 $s = setting();
 $u = auth();
 $path = basename($_SERVER['PHP_SELF']);
+$__kata = preg_split('/\s+/', trim((string)($s['nama_koperasi'] ?? 'Koperasi')));
+$__inisial = strtoupper(substr($__kata[0] ?? 'K', 0, 1) . substr(end($__kata) ?: 'P', 0, 1));
 function nav_active($file) {
     return basename($_SERVER['PHP_SELF']) === $file ? 'active' : '';
 }
@@ -38,7 +40,7 @@ function nav_active($file) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?= e($title ?? 'Dashboard') ?> · Bina Tani Sejahtera</title>
+  <title><?= e($title ?? 'Dashboard') ?> · <?= e($s['nama_koperasi'] ?? 'Koperasi') ?></title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css?v=24">
 </head>
@@ -49,10 +51,10 @@ function nav_active($file) {
   <aside class="sidebar" id="appSide">
     <div class="side-brand">
       <label class="nav-close" for="navCek">✕</label>
-      <div class="logo">BT</div>
+      <div class="logo"><?= e($__inisial) ?></div>
       <div>
         <small style="color:#e8c547;font-size:10px;letter-spacing:.12em;text-transform:uppercase;">Portal Koperasi</small>
-        <strong style="display:block;font-size:13px;color:#fff;">Bina Tani Sejahtera</strong>
+        <strong style="display:block;font-size:13px;color:#fff;"><?= e($s['nama_koperasi'] ?? 'Koperasi') ?></strong>
       </div>
     </div>
     <nav class="side-nav">
@@ -63,6 +65,8 @@ function nav_active($file) {
         <a class="<?= nav_active('pengalihan.php') ?>" href="pengalihan.php">⇄ Pengalihan hak</a>
         <a class="<?= nav_active('kelompok.php') ?>" href="kelompok.php">▣ Kelompok</a>
         <a class="<?= nav_active('tbs_lahan.php') ?>" href="tbs_lahan.php">▤ Lahan sawit</a>
+        <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php">🌱 Pupuk organik</a>
+        <a class="<?= nav_active('berita_acara.php') ?>" href="berita_acara.php">📜 Berita acara</a>
         <a class="<?= nav_active('verifikasi.php') ?>" href="verifikasi.php">☑ Verifikasi anggota</a>
         <a class="<?= nav_active('verifikasi_bayar.php') ?>" href="verifikasi_bayar.php">☑ Verifikasi bayar</a>
         <a class="<?= nav_active('simpanan.php') ?>" href="simpanan.php">⛁ Simpanan</a>
@@ -77,6 +81,8 @@ function nav_active($file) {
         <a class="<?= nav_active('penarikan.php') ?>" href="penarikan.php">↩ Penarikan simpanan</a>
         <a class="<?= nav_active('pinjaman.php') ?>" href="pinjaman.php">⇄ Pinjaman Saya</a>
         <a class="<?= nav_active('pinjaman_bayar.php') ?>" href="pinjaman_bayar.php">↻ Bayar angsuran</a>
+        <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php">🌱 Pupuk organik</a>
+        <a class="<?= nav_active('berita_acara.php') ?>" href="berita_acara.php">📜 Berita acara</a>
         <a class="<?= nav_active('profil.php') ?>" href="profil.php">◉ Data &amp; usaha saya</a>
       <?php endif; ?>
       <?php if (in_array($u['role'], ['admin','pengurus'])): ?>

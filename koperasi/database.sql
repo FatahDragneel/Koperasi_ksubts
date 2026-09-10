@@ -1,4 +1,4 @@
--- Koperasi Serba Usaha Bina Tani Sejahtera
+-- Koperasi Produsen Hijau Tani Lestari (ramah lingkungan - contoh)
 -- Impor di phpMyAdmin (tab Impor) atau: mysql -u root < database.sql
 -- PERINGATAN: DROP menghapus data lama. Untuk update tanpa hapus, buka setup.php.
 
@@ -9,7 +9,7 @@ USE koperasi_bina_tani;
 
 CREATE TABLE IF NOT EXISTS pengaturan (
   id INT PRIMARY KEY DEFAULT 1,
-  nama_koperasi VARCHAR(150) DEFAULT 'Koperasi Serba Usaha Bina Tani Sejahtera',
+  nama_koperasi VARCHAR(150) DEFAULT 'Koperasi Produsen Hijau Tani Lestari',
   alamat TEXT,
   telepon VARCHAR(30),
   email VARCHAR(80),
@@ -293,6 +293,33 @@ CREATE TABLE IF NOT EXISTS shu_alokasi (
   UNIQUE KEY uq_shu (tahun_buku, anggota_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS pupuk_produk (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  kode VARCHAR(20) NOT NULL UNIQUE,
+  nama VARCHAR(120) NOT NULL,
+  jenis VARCHAR(60) NULL,
+  satuan VARCHAR(20) NOT NULL DEFAULT 'kg',
+  harga_jual DECIMAL(15,2) NOT NULL DEFAULT 0,
+  keterangan TEXT NULL,
+  aktif TINYINT(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS pupuk_mutasi (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  tanggal DATE NOT NULL,
+  produk_id INT NOT NULL,
+  arah ENUM('masuk','keluar') NOT NULL,
+  jumlah DECIMAL(14,2) NOT NULL DEFAULT 0,
+  harga_satuan DECIMAL(15,2) NOT NULL DEFAULT 0,
+  total_nilai DECIMAL(15,2) NOT NULL DEFAULT 0,
+  pihak VARCHAR(120) NULL,
+  anggota_id INT NULL,
+  cara_bayar VARCHAR(20) NOT NULL DEFAULT 'tunai',
+  keterangan VARCHAR(255) NULL,
+  created_by INT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS coa_akun (
   kode VARCHAR(10) PRIMARY KEY,
   nama VARCHAR(120) NOT NULL,
@@ -357,11 +384,11 @@ CREATE TABLE IF NOT EXISTS antrean_truk (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO pengaturan (id, nama_koperasi, alamat, telepon, email, tahun_berdiri, tanggal_berdiri, ketua, visi, misi, bagi_hasil_persen, simpanan_pokok, simpanan_wajib) VALUES
-(1, 'Koperasi Serba Usaha Bina Tani Sejahtera',
- 'Jl. Raya Pertanian No. 45, Kecamatan Kuranji, Kota Padang, Sumatera Barat',
- '0751-123456', 'info@binatanisejahtera.id', 2012, '2012-01-01', 'Ir. Ahmad Fauzi',
- 'Menjadi koperasi unggulan yang memberdayakan petani menuju kesejahteraan berkelanjutan.',
- '1. Menyediakan layanan simpan pinjam yang mudah, adil, dan transparan.\n2. Meningkatkan kapasitas usaha tani anggota melalui permodalan dan pendampingan.\n3. Membangun solidaritas dan gotong royong di kalangan petani.\n4. Mengelola aset koperasi secara profesional dan akuntabel.',
+(1, 'Koperasi Produsen Hijau Tani Lestari',
+ 'Kota Padang, Sumatera Barat',
+ '', '', 2026, '2026-09-10', '',
+ 'Menjadi koperasi produsen ramah lingkungan yang menyejahterakan anggota dan menjaga kelestarian alam.',
+ '1. Memproduksi pupuk organik berkualitas dari bahan baku lokal.\n2. Memasarkan pupuk dan hasil pertanian anggota secara adil dan transparan.\n3. Mengurangi ketergantungan pada pupuk kimia melalui pendampingan budidaya ramah lingkungan.\n4. Mengelola usaha koperasi secara profesional, akuntabel, dan berkelanjutan.',
  1.00, 500000, 50000);
 
 INSERT INTO jenis_simpanan (kode, nama, keterangan, wajib) VALUES
@@ -379,12 +406,18 @@ INSERT INTO kelompok (nomor, kode_kelompok, nama_kelompok, luas_tanah, fee_per_k
 (16,'KT-16','Kelompok Tani 16',0,0),(17,'KT-17','Kelompok Tani 17',0,0),(18,'KT-18','Kelompok Tani 18',0,0),
 (19,'KT-19','Kelompok Tani 19',0,0),(20,'KT-20','Kelompok Tani 20',0,0),(21,'KT-21','Kelompok Tani 21',0,0);
 
+INSERT INTO pupuk_produk (kode, nama, jenis, satuan, harga_jual, keterangan) VALUES
+('PO-G001', 'Pupuk Organik Granul', 'granul', 'kg', 3500, 'Untuk sawit & pangan, kemasan 25/50 kg'),
+('PO-C001', 'Pupuk Organik Cair', 'cair', 'liter', 25000, 'Untuk semprot daun & kocor'),
+('PO-K001', 'Kompos Curah', 'kompos', 'kg', 1500, 'Pembenah tanah, curah');
+
 INSERT INTO coa_akun (kode, nama, kategori, saldo_normal) VALUES
 ('1111','Kas tunai','Aset','debit'),
 ('1112','Bank','Aset','debit'),
 ('1211','Piutang pinjaman anggota','Aset','debit'),
 ('1212','Piutang saprodi','Aset','debit'),
 ('1311','Persediaan / TBS','Aset','debit'),
+('1312','Persediaan pupuk organik','Aset','debit'),
 ('2111','Simpanan pokok','Kewajiban','kredit'),
 ('2112','Simpanan wajib','Kewajiban','kredit'),
 ('2113','Simpanan sukarela','Kewajiban','kredit'),
@@ -393,8 +426,10 @@ INSERT INTO coa_akun (kode, nama, kategori, saldo_normal) VALUES
 ('4111','Pendapatan bagi hasil pinjaman','Pendapatan','kredit'),
 ('4112','Pendapatan lain','Pendapatan','kredit'),
 ('4113','Pendapatan margin TBS','Pendapatan','kredit'),
+('4114','Pendapatan pupuk organik','Pendapatan','kredit'),
 ('5111','Biaya operasional','Biaya','debit'),
-('5112','Pembelian TBS petani','Biaya','debit');
+('5112','Pembelian TBS petani','Biaya','debit'),
+('5113','Biaya produksi pupuk','Biaya','debit');
 
 -- sandi: admin123 / anggota123
 INSERT INTO users (username, password, nama, role) VALUES
@@ -447,6 +482,6 @@ INSERT INTO angsuran (pinjaman_id, pencairan_id, angsuran_ke, tanggal, jumlah, p
 (2, 2, 6, '2026-05-10', 530000, 500000, 30000, 0, 'Pelunasan', 1);
 
 INSERT INTO pengumuman (judul, isi, tanggal, publik) VALUES
-('Rapat Anggota Tahunan 2026', 'RAT akan dilaksanakan pada 15 September 2026 di Aula Koperasi. Seluruh anggota diundang hadir untuk membahas laporan keuangan dan rencana kerja.', '2026-08-01', 1),
-('Program Kredit Pupuk Bersubsidi', 'Koperasi membuka kuota pinjaman pupuk bersubsidi bagi anggota aktif. Pengajuan dibuka hingga 30 Agustus 2026.', '2026-08-10', 1),
+('Rapat Anggota Tahunan 2026', 'RAT akan dilaksanakan sesuai undangan pengurus di Kantor Koperasi. Seluruh anggota diundang hadir untuk membahas laporan keuangan dan rencana kerja.', '2026-08-01', 1),
+('Pupuk Organik Produksi Koperasi', 'Unit produksi pupuk organik telah beroperasi. Anggota mendapat harga khusus untuk pupuk granul, cair, dan kompos. Pemesanan melalui pengurus unit usaha.', '2026-08-10', 1),
 ('Jam Layanan Kantor', 'Kantor koperasi buka Senin–Jumat pukul 08.00–16.00 WIB dan Sabtu 08.00–12.00 WIB. Tutup pada hari libur nasional.', '2026-01-02', 1);

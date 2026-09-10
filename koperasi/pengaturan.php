@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['act'] ?? '') === 'hapus_da
         }
         $pdo->prepare('INSERT INTO pengaturan (id, nama_koperasi, alamat, telepon, email, tahun_berdiri, tanggal_berdiri, ketua, visi, misi, bagi_hasil_persen, simpanan_pokok, simpanan_wajib) VALUES (1,?,?,?,?,?,?,?,?,?,?,?,?)')
             ->execute([
-                'Koperasi Serba Usaha Bina Tani Sejahtera',
+                'Koperasi Produsen Hijau Tani Lestari',
                 '',
                 '',
                 '',
@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($namaLogo) {
         $logoFile = $namaLogo;
     }
-    $pdo->prepare('UPDATE pengaturan SET nama_koperasi=?, alamat=?, telepon=?, email=?, ketua=?, visi=?, misi=?, bagi_hasil_persen=?, simpanan_pokok=?, simpanan_wajib=?, tahun_berdiri=?, tanggal_berdiri=?, no_akta=?, no_badan_hukum=?, nib=?, npwp=?, iusp=?, iup=?, jenis_koperasi=?, sejarah=?, logo_filosofi=?, logo_file=?, nilai_koperasi=?, nik_koperasi=?, rapat_anggota=?, cabang=?, whatsapp=?, sosmed=?, struktur_json=?, motto=?, kegiatan_usaha=?, prestasi=?, karyawan_ket=?, tgl_badan_hukum=? WHERE id=1')
+    $pdo->prepare('UPDATE pengaturan SET nama_koperasi=?, alamat=?, telepon=?, email=?, ketua=?, visi=?, misi=?, bagi_hasil_persen=?, simpanan_pokok=?, simpanan_wajib=?, tahun_berdiri=?, tanggal_berdiri=?, no_akta=?, no_badan_hukum=?, nib=?, npwp=?, iusp=?, iup=?, jenis_koperasi=?, sejarah=?, logo_filosofi=?, logo_file=?, nilai_koperasi=?, nik_koperasi=?, rapat_anggota=?, cabang=?, whatsapp=?, sosmed=?, struktur_json=?, motto=?, kegiatan_usaha=?, prestasi=?, karyawan_ket=?, tgl_badan_hukum=?, kbli=?, sertifikasi=? WHERE id=1')
         ->execute([
             trim($_POST['nama_koperasi']),
             trim($_POST['alamat']),
@@ -167,6 +167,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             trim($_POST['prestasi'] ?? ''),
             trim($_POST['karyawan_ket'] ?? ''),
             trim($_POST['tgl_badan_hukum'] ?? '') ?: null,
+            trim($_POST['kbli'] ?? ''),
+            trim($_POST['sertifikasi'] ?? ''),
         ]);
     $n = sinkron_simpanan_wajib_semua(auth()['id'] ?? null);
     flash('ok', 'Pengaturan disimpan. Tampil di Profil koperasi. Simpanan wajib: ' . $n . ' setoran bulan baru.');
@@ -190,7 +192,7 @@ if (!$tglBerdiri) {
 $stuk = struktur_koperasi($s);
 include __DIR__ . '/includes/app_header.php';
 ?>
-<p style="margin-bottom:14px;"><a class="btn btn-ghost btn-sm" href="profil_koperasi.php">Lihat halaman Profil koperasi</a></p>
+<p style="margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap;"><a class="btn btn-ghost btn-sm" href="profil_koperasi.php">Lihat halaman Profil koperasi</a><a class="btn btn-ghost btn-sm" href="berita_acara.php">Berita Acara Pendirian</a></p>
 <form method="post" enctype="multipart/form-data" class="cards" style="grid-template-columns:1fr 1fr;">
   <?= csrf_field() ?>
   <div class="card">
@@ -238,6 +240,10 @@ include __DIR__ . '/includes/app_header.php';
     </div>
     <label>IUP (opsional)</label>
     <input name="iup" value="<?= e($s['iup'] ?? '') ?>">
+    <label>Bidang usaha / KBLI (satu per baris)</label>
+    <textarea name="kbli" placeholder="<?= e(kbli_usaha_default()) ?>"><?= e(trim((string)($s['kbli'] ?? '')) !== '' ? (string)$s['kbli'] : kbli_usaha_default()) ?></textarea>
+    <label>Sertifikasi (ISPO / organik / SNI pupuk — satu per baris)</label>
+    <textarea name="sertifikasi" placeholder="cth. Sertifikat Organik ..."><?= e($s['sertifikasi'] ?? '') ?></textarea>
   </div>
   <div class="card" style="grid-column:1/-1;">
     <h3>Sejarah, logo, visi, misi, nilai</h3>

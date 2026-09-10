@@ -90,6 +90,11 @@ $cols = [
         'simpanan_pokok' => "DECIMAL(15,2) NOT NULL DEFAULT 500000",
         'simpanan_wajib' => "DECIMAL(15,2) NOT NULL DEFAULT 50000",
         'tanggal_berdiri' => "DATE NULL",
+        'jenis_koperasi' => "VARCHAR(120) NULL",
+        'kbli' => "TEXT NULL",
+        'sertifikasi' => "TEXT NULL",
+        'ba_json' => "LONGTEXT NULL",
+        'struktur_json' => "LONGTEXT NULL",
     ],
     'pinjaman' => [
         'bagi_hasil_persen' => "DECIMAL(5,2) DEFAULT 1.00",
@@ -151,20 +156,22 @@ if (has_table($pdo, 'jenis_simpanan') && (int)$pdo->query('SELECT COUNT(*) FROM 
       ('SHR','Simpanan Hari Raya','Tabungan khusus menjelang hari raya',0)");
 }
 if (has_table($pdo, 'pengaturan') && (int)$pdo->query('SELECT COUNT(*) FROM pengaturan')->fetchColumn() === 0) {
-    $add("INSERT INTO pengaturan (id,nama_koperasi,alamat,telepon,email,tahun_berdiri,tanggal_berdiri,ketua,bagi_hasil_persen,simpanan_pokok,simpanan_wajib)
-      VALUES (1,'Koperasi Serba Usaha Bina Tani Sejahtera','Jl. Raya Pertanian No. 45, Kecamatan Kuranji, Kota Padang, Sumatera Barat','0751-123456','info@binatanisejahtera.id',2012,'2012-01-01','Ir. Ahmad Fauzi',1,500000,50000)");
+    $add("INSERT INTO pengaturan (id,nama_koperasi,alamat,telepon,email,tahun_berdiri,tanggal_berdiri,ketua,bagi_hasil_persen,simpanan_pokok,simpanan_wajib,jenis_koperasi)
+      VALUES (1,'Koperasi Produsen Hijau Tani Lestari','Kota Padang, Sumatera Barat','','',2026,'2026-09-10','',1,500000,50000,'Koperasi Produsen')");
 }
 if (has_table($pdo, 'coa_akun') && (int)$pdo->query('SELECT COUNT(*) FROM coa_akun')->fetchColumn() === 0) {
     $add("INSERT INTO coa_akun (kode,nama,kategori,saldo_normal) VALUES
       ('1111','Kas tunai','Aset','debit'),('1112','Bank','Aset','debit'),
       ('1211','Piutang pinjaman anggota','Aset','debit'),('1212','Piutang saprodi','Aset','debit'),
-      ('1311','Persediaan / TBS','Aset','debit'),
+      ('1311','Persediaan / TBS','Aset','debit'),('1312','Persediaan pupuk organik','Aset','debit'),
       ('2111','Simpanan pokok','Kewajiban','kredit'),('2112','Simpanan wajib','Kewajiban','kredit'),
       ('2113','Simpanan sukarela','Kewajiban','kredit'),('2211','Utang kas kelompok','Kewajiban','kredit'),
       ('3111','Modal / ekuitas','Ekuitas','kredit'),
       ('4111','Pendapatan bagi hasil pinjaman','Pendapatan','kredit'),
       ('4112','Pendapatan lain','Pendapatan','kredit'),('4113','Pendapatan margin TBS','Pendapatan','kredit'),
-      ('5111','Biaya operasional','Biaya','debit'),('5112','Pembelian TBS petani','Biaya','debit')");
+      ('4114','Pendapatan pupuk organik','Pendapatan','kredit'),
+      ('5111','Biaya operasional','Biaya','debit'),('5112','Pembelian TBS petani','Biaya','debit'),
+      ('5113','Biaya produksi pupuk','Biaya','debit')");
 }
 if (has_table($pdo, 'users') && (int)$pdo->query('SELECT COUNT(*) FROM users')->fetchColumn() === 0) {
     $add("INSERT INTO users (username,password,nama,role) VALUES

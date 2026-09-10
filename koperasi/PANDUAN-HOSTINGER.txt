@@ -1,4 +1,4 @@
-ONLINEKAN DI HOSTINGER — Koperasi Bina Tani Sejahtera
+ONLINEKAN DI HOSTINGER — Koperasi Produsen Ramah Lingkungan
 =====================================================
 
 Paket: Hostinger (hPanel) + domain. PHP 8.1 atau 8.2. MySQL.

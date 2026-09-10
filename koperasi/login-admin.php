@@ -30,7 +30,7 @@ $s = setting();
 <div class="auth-wrap admin">
   <div class="auth-art">
     <a class="brand" href="index.php">
-      <div class="logo">BT</div>
+      <div class="logo"><?= e(strtoupper(implode('', array_map(static function ($w) { return substr($w, 0, 1); }, array_slice(preg_split('/\s+/', trim((string)($s['nama_koperasi'] ?? 'KP'))), 0, 2))))) ?></div>
       <div><small>Area internal</small><strong>Pengurus &amp; Admin</strong></div>
     </a>
     <div>

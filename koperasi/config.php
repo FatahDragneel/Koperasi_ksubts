@@ -75,6 +75,7 @@ function setting(): array {
         ensure_logistik_schema();
         ensure_pinjaman_schema();
         ensure_pengalihan_schema();
+        ensure_pupuk_schema();
         ensure_simpanan_sukarela_schema();
         $s = db()->query('SELECT * FROM pengaturan WHERE id = 1')->fetch() ?: [];
     }
@@ -88,31 +89,34 @@ function setting_refresh(): array {
 
 
 function default_struktur_bts(): array {
+    // Bawaan untuk Koperasi Produsen Ramah Lingkungan (contoh).
+    // Nama pengurus dikosongkan: isi lewat menu Pengaturan atau otomatis
+    // dari halaman Berita Acara (tombol "Terapkan ke Struktur").
     return [
-        'pembina' => "Dinas Koperasi & UKM Pasbar\nDinas Perkebunan Pasbar",
-        'ketua' => 'Dt. Unyil',
-        'sekretaris' => 'Indra Gunawan',
-        'bendahara' => 'H. Jhoni Bustanil',
-        'pengawas_ketua' => 'Ahmad Zeni',
-        'pengawas_anggota' => "H. Rommy Candra\nH. Alman Gampo Alam",
-        'ktu' => 'Megawati',
-        'kasir' => 'Fatmayani',
+        'pembina' => "Dinas Koperasi & UKM\nDinas Pertanian / Perkebunan",
+        'ketua' => '',
+        'sekretaris' => '',
+        'bendahara' => '',
+        'pengawas_ketua' => '',
+        'pengawas_anggota' => "",
+        'ktu' => '',
+        'kasir' => '',
         'unit_kiri' => [
-            ['nama' => 'Pembukuan Keuangan', 'orang' => 'Megawati', 'warna' => 'biru'],
-            ['nama' => 'Keanggotaan', 'orang' => 'Fadya F.P', 'warna' => 'biru'],
-            ['nama' => 'Amprahan', 'orang' => 'Iwit', 'warna' => 'biru'],
-            ['nama' => 'Pra PSR Sapras', 'orang' => 'Ayu Lestari', 'warna' => 'merah'],
+            ['nama' => 'Pembukuan & Keuangan', 'orang' => '', 'warna' => 'biru'],
+            ['nama' => 'Keanggotaan', 'orang' => '', 'warna' => 'biru'],
+            ['nama' => 'Administrasi & Arsip', 'orang' => '', 'warna' => 'biru'],
+            ['nama' => 'Lingkungan & K3', 'orang' => '', 'warna' => 'merah'],
         ],
         'unit_bawah' => [
-            ['nama' => 'Kebersihan Kantor', 'orang' => 'Rina', 'warna' => 'biru'],
-            ['nama' => 'Surat-surat Arsip', 'orang' => 'Meldawati', 'warna' => 'biru'],
+            ['nama' => 'Kebersihan & Rumah Tangga', 'orang' => '', 'warna' => 'biru'],
+            ['nama' => 'Keamanan & Gudang', 'orang' => '', 'warna' => 'biru'],
         ],
         'unit_kanan' => [
-            ['nama' => 'Saprodi', 'orang' => '', 'warna' => 'hijau', 'sub' => "Pencatatan|Megawati\nGudang|Rangga"],
-            ['nama' => 'USP', 'orang' => 'Fatmayani', 'warna' => 'hijau', 'sub' => ''],
-            ['nama' => 'Pembibitan', 'orang' => '', 'warna' => 'hijau', 'sub' => "Pencatatan|Meldawati\nKoor. Lapangan|Rangga"],
-            ['nama' => 'Alat Berat', 'orang' => 'Iwit', 'warna' => 'hijau', 'sub' => ''],
-            ['nama' => 'ISPO', 'orang' => 'H. Jhoni Bustanil', 'warna' => 'hijau', 'sub' => ''],
+            ['nama' => 'Produksi Pupuk Organik', 'orang' => '', 'warna' => 'hijau', 'sub' => "Fermentasi & Pengomposan|\nPengemasan & QC|"],
+            ['nama' => 'Perdagangan Pupuk', 'orang' => '', 'warna' => 'hijau', 'sub' => "Grosir & Kemitraan|\nEceran & Toko Tani|"],
+            ['nama' => 'Niaga Hasil Pertanian', 'orang' => '', 'warna' => 'hijau', 'sub' => "TBS & Komoditas Minyak|\nKemitraan PKS|"],
+            ['nama' => 'ISPO & Keberlanjutan', 'orang' => '', 'warna' => 'hijau', 'sub' => ''],
+            ['nama' => 'Saprodi & Pembibitan', 'orang' => '', 'warna' => 'hijau', 'sub' => "Gudang|\nKoor. Lapangan|"],
         ],
     ];
 }
@@ -226,23 +230,147 @@ function struktur_koperasi(?array $s = null): array {
 }
 
 function default_profil_koperasi(): array {
+    // Bawaan untuk Koperasi Produsen Ramah Lingkungan (contoh — sesuaikan
+    // lewat Pengaturan dan halaman Berita Acara Pendirian).
     return [
-        'nama_koperasi' => 'Koperasi Serba Usaha Bina Tani Sejahtera',
-        'jenis_koperasi' => 'Koperasi Serba Usaha (KSU)',
-        'tanggal_berdiri' => '2015-02-05',
-        'tgl_badan_hukum' => '2015-03-04',
-        'no_akta' => '132/PAD/III.19/BPMP2T/III-2015',
-        'alamat' => 'Tanjung Pangkal, Kejorongan Tanjuang Pangka, Nagari Lingkuang Aua, Kec. Pasaman, Kabupaten Pasaman Barat',
-        'sejarah' => "Koperasi ini berawal bergabung dalam KUD Lingkuang II. Pada bulan Juni 2015 memekarkan diri menjadi Koperasi Jasa Bina Tani Sejahtera, dan pada 1 Januari 2015 mulai beraktivitas mengacu pada UU Koperasi Nomor 17 Tahun 2012.\n\nSetelah UU tersebut dibatalkan dan berlaku kembali UU Nomor 25 Tahun 1992, pada Kamis 5 Februari 2015 di Aula YAPTIP Pasaman Baru diadakan Rapat Anggota Khusus merevisi Anggaran Dasar. Atas arahan Dinas Koperindagkop & UKM Pasaman Barat, nama diubah menjadi Koperasi Serba Usaha Bina Tani Sejahtera.",
-        'visi' => 'Mewujudkan kesejahteraan anggota khususnya dan masyarakat pada umumnya.',
-        'misi' => 'Membuka usaha-usaha koperasi yang potensial, serta menciptakan pelayanan yang prima demi meningkatkan kesejahteraan anggota.',
-        'motto' => 'Profesionalisme pengurus dan partisipasi anggota yang tinggi, koperasi akan berkembang pesat.',
-        'nilai_koperasi' => 'Profesional, partisipatif, kekeluargaan, dan pelayanan prima.',
-        'kegiatan_usaha' => "Pengelolaan Kebun Anggota\nSaprodi\nSimpan Pinjam\nTransportasi & Alat berat\nPembibitan Kelapa Sawit",
-        'prestasi' => "Juara I Koperasi Berpotensi Berprestasi TH 2017 Tingkat Kabupaten Pasaman Barat\nJuara I Koperasi Berpotensi Berprestasi TH 2018 Tingkat Kabupaten Pasaman Barat",
-        'karyawan_ket' => "9 orang\n3 orang karyawan tetap\n6 orang karyawan kontrak",
-        'rapat_anggota' => 'Rapat Anggota Tahunan (RAT) adalah pemegang kekuasaan tertinggi koperasi. Pengawas mengawasi operasional dan keuangan; pengurus mengelola kegiatan sehari-hari.',
+        'nama_koperasi' => 'Koperasi Produsen Hijau Tani Lestari',
+        'jenis_koperasi' => 'Koperasi Produsen',
+        'tanggal_berdiri' => '2026-09-10',
+        'tgl_badan_hukum' => '',
+        'no_akta' => '',
+        'alamat' => 'Kota Padang, Sumatera Barat',
+        'sejarah' => "Koperasi Produsen Hijau Tani Lestari (nama contoh) didirikan oleh para petani dan pelaku usaha tani yang berkomitmen pada pertanian ramah lingkungan.\n\nKoperasi berfokus pada produksi pupuk organik dari bahan baku lokal (limbah pertanian, kotoran ternak, dan tandan kosong), perdagangan pupuk, serta niaga hasil pertanian tanaman yang mengandung minyak. Seluruh kegiatan diarahkan untuk menekan pemakaian pupuk kimia, memperbaiki kesuburan tanah, dan meningkatkan nilai tambah panen anggota.",
+        'visi' => 'Menjadi koperasi produsen ramah lingkungan yang menyejahterakan anggota dan menjaga kelestarian alam.',
+        'misi' => "1. Memproduksi pupuk organik berkualitas dari bahan baku lokal.\n2. Memasarkan pupuk dan hasil pertanian anggota secara adil dan transparan.\n3. Mengurangi ketergantungan pada pupuk kimia melalui pendampingan budidaya ramah lingkungan.\n4. Mengelola usaha koperasi secara profesional, akuntabel, dan berkelanjutan.",
+        'motto' => 'Dari alam, oleh anggota, untuk kesejahteraan bersama.',
+        'nilai_koperasi' => "Ramah lingkungan, gotong royong, jujur, profesional, dan berpihak pada anggota.",
+        'kegiatan_usaha' => "Produksi Pupuk Organik (KBLI 20124) — Usaha Utama\nPerdagangan Besar Pupuk (KBLI 46752) — Pendukung\nPerdagangan Eceran Pupuk (KBLI 47763) — Pendukung\nPerdagangan Besar Hasil Pertanian Tanaman Minyak, cth. TBS (KBLI 46202) — Pendukung",
+        'prestasi' => "—",
+        'karyawan_ket' => "—",
+        'rapat_anggota' => 'Rapat Anggota adalah pemegang kekuasaan tertinggi koperasi. Pengawas mengawasi operasional dan keuangan; pengurus mengelola kegiatan usaha sehari-hari.',
     ];
+}
+
+function kbli_usaha_default(): string {
+    return "20124 — Industri Pupuk Organik (Utama)\n46752 — Perdagangan Besar Pupuk (Pendukung)\n47763 — Perdagangan Eceran Pupuk (Pendukung)\n46202 — Perdagangan Besar Hasil Pertanian Tanaman Minyak (Pendukung)";
+}
+
+function hari_indo(?string $tanggal): string {
+    if (!$tanggal) {
+        return '';
+    }
+    $ts = strtotime($tanggal);
+    if (!$ts) {
+        return '';
+    }
+    $hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', "Jumat", 'Sabtu'];
+    return $hari[(int)date('w', $ts)];
+}
+
+function tgl_panjang(?string $tanggal): string {
+    if (!$tanggal) {
+        return '—';
+    }
+    $ts = strtotime($tanggal);
+    if (!$ts) {
+        return '—';
+    }
+    $bulan = [1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    return date('j', $ts) . ' ' . $bulan[(int)date('n', $ts)] . ' ' . date('Y', $ts);
+}
+
+function terbilang_id($n): string {
+    $n = (int)$n;
+    $a = ['', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan', 'sepuluh', 'sebelas'];
+    if ($n < 12) {
+        return $a[$n];
+    }
+    if ($n < 20) {
+        return terbilang_id($n - 10) . ' belas';
+    }
+    if ($n < 100) {
+        return trim(terbilang_id((int)($n / 10)) . ' puluh ' . terbilang_id($n % 10));
+    }
+    if ($n < 200) {
+        return 'seratus ' . terbilang_id($n - 100);
+    }
+    if ($n < 1000) {
+        return trim(terbilang_id((int)($n / 100)) . ' ratus ' . terbilang_id($n % 100));
+    }
+    if ($n < 2000) {
+        return 'seribu ' . terbilang_id($n - 1000);
+    }
+    if ($n < 1000000) {
+        return trim(terbilang_id((int)($n / 1000)) . ' ribu ' . terbilang_id($n % 1000));
+    }
+    if ($n < 1000000000) {
+        return trim(terbilang_id((int)($n / 1000000)) . ' juta ' . terbilang_id($n % 1000000));
+    }
+    return (string)$n;
+}
+
+function default_berita_acara(): array {
+    return [
+        'nomor' => '',
+        'tanggal' => date('Y-m-d'),
+        'waktu_mulai' => '09.00',
+        'waktu_selesai' => '12.00',
+        'tempat' => '',
+        'pimpinan' => '',
+        'notulis' => '',
+        'pendiri_txt' => '',
+        'ketua' => '',
+        'sekretaris' => '',
+        'bendahara' => '',
+        'pengawas_ketua' => '',
+        'pengawas_anggota' => '',
+        'modal_pokok' => '500000',
+        'modal_wajib' => '50000',
+        'usaha_txt' => "Produksi Pupuk Organik (KBLI 20124) sebagai usaha utama;\nPerdagangan Besar Pupuk (KBLI 46752);\nPerdagangan Eceran Pupuk (KBLI 47763);\nPerdagangan Besar Hasil Pertanian Tanaman yang Mengandung Minyak (KBLI 46202).",
+        'kuasa_txt' => 'Memberi kuasa kepada Pengurus terpilih untuk mengurus pengesahan Akta Pendirian / Anggaran Dasar, pengajuan Nomor Induk Koperasi (NIK), NIB, dan perizinan lain yang diperlukan.',
+    ];
+}
+
+function berita_acara(?array $s = null): array {
+    $s = $s ?? setting();
+    $d = json_decode((string)($s['ba_json'] ?? ''), true);
+    if (!is_array($d)) {
+        $d = [];
+    }
+    $out = default_berita_acara();
+    foreach ($out as $k => $v) {
+        if (isset($d[$k]) && trim((string)$d[$k]) !== '') {
+            $out[$k] = (string)$d[$k];
+        }
+    }
+    // Jika pengurus BA masih kosong, tawarkan isi dari struktur yang sudah ada.
+    $stuk = struktur_koperasi($s);
+    foreach (['ketua' => 'ketua', 'sekretaris' => 'sekretaris', 'bendahara' => 'bendahara', 'pengawas_ketua' => 'pengawas_ketua'] as $kb => $ks) {
+        if (trim((string)$out[$kb]) === '' && trim((string)($stuk[$ks] ?? '')) !== '') {
+            $out[$kb] = (string)$stuk[$ks];
+        }
+    }
+    if (trim((string)$out['pengawas_anggota']) === '' && trim((string)($stuk['pengawas_anggota_txt'] ?? '')) !== '') {
+        $out['pengawas_anggota'] = (string)$stuk['pengawas_anggota_txt'];
+    }
+    return $out;
+}
+
+function daftar_pendiri_ba(string $txt): array {
+    $out = [];
+    foreach (preg_split('/\r\n|\r|\n/', $txt) as $ln) {
+        $ln = trim($ln);
+        if ($ln === '') {
+            continue;
+        }
+        $p = array_map('trim', explode('|', $ln));
+        $out[] = [
+            'nama' => $p[0] ?? '',
+            'nik' => $p[1] ?? '',
+            'alamat' => $p[2] ?? '',
+        ];
+    }
+    return $out;
 }
 
 function profil_isi(array $s, string $kunci): string {
@@ -301,6 +429,9 @@ function ensure_pengaturan_schema(): void {
             'prestasi' => "TEXT NULL",
             'karyawan_ket' => "TEXT NULL",
             'tgl_badan_hukum' => "DATE NULL",
+            'kbli' => "TEXT NULL",
+            'sertifikasi' => "TEXT NULL",
+            'ba_json' => "LONGTEXT NULL",
         ];
         foreach ($legal as $col => $def) {
             if (!in_array($col, $names, true)) {
@@ -1537,6 +1668,19 @@ function ensure_akuntansi_schema(): void {
                 ['1212','Piutang saprodi','Aset','debit'],
             ] as $r) { $ins->execute($r); }
         }
+        // Akun tambahan untuk unit usaha pupuk organik (aman untuk DB lama).
+        try {
+            $punya = db()->query('SELECT kode FROM coa_akun')->fetchAll(PDO::FETCH_COLUMN);
+            $tambah = [
+                ['1312','Persediaan pupuk organik','Aset','debit'],
+                ['4114','Pendapatan pupuk organik','Pendapatan','kredit'],
+                ['5113','Biaya produksi pupuk','Biaya','debit'],
+            ];
+            $ins2 = db()->prepare('INSERT IGNORE INTO coa_akun (kode,nama,kategori,saldo_normal) VALUES (?,?,?,?)');
+            foreach ($tambah as $r) {
+                if (!in_array($r[0], $punya, true)) { $ins2->execute($r); }
+            }
+        } catch (Throwable $e) {}
     } catch (Throwable $e) {}
 }
 
@@ -2352,4 +2496,62 @@ function proses_setujui_penarikan(int $id, ?int $by = null): string {
         }
         return $e->getMessage();
     }
+}
+
+function ensure_pupuk_schema(): void {
+    static $done = false;
+    if ($done) {
+        return;
+    }
+    $done = true;
+    try {
+        db()->exec("CREATE TABLE IF NOT EXISTS pupuk_produk (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            kode VARCHAR(20) NOT NULL UNIQUE,
+            nama VARCHAR(120) NOT NULL,
+            jenis VARCHAR(60) NULL,
+            satuan VARCHAR(20) NOT NULL DEFAULT 'kg',
+            harga_jual DECIMAL(15,2) NOT NULL DEFAULT 0,
+            keterangan TEXT NULL,
+            aktif TINYINT(1) NOT NULL DEFAULT 1
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        db()->exec("CREATE TABLE IF NOT EXISTS pupuk_mutasi (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            tanggal DATE NOT NULL,
+            produk_id INT NOT NULL,
+            arah ENUM('masuk','keluar') NOT NULL,
+            jumlah DECIMAL(14,2) NOT NULL DEFAULT 0,
+            harga_satuan DECIMAL(15,2) NOT NULL DEFAULT 0,
+            total_nilai DECIMAL(15,2) NOT NULL DEFAULT 0,
+            pihak VARCHAR(120) NULL,
+            anggota_id INT NULL,
+            cara_bayar VARCHAR(20) NOT NULL DEFAULT 'tunai',
+            keterangan VARCHAR(255) NULL,
+            created_by INT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        if ((int)db()->query('SELECT COUNT(*) FROM pupuk_produk')->fetchColumn() === 0) {
+            $ins = db()->prepare('INSERT INTO pupuk_produk (kode,nama,jenis,satuan,harga_jual,keterangan) VALUES (?,?,?,?,?,?)');
+            $ins->execute(['PO-G001', 'Pupuk Organik Granul', 'granul', 'kg', 3500, 'Untuk sawit & pangan, kemasan 25/50 kg']);
+            $ins->execute(['PO-C001', 'Pupuk Organik Cair', 'cair', 'liter', 25000, 'Untuk semprot daun & kocor']);
+            $ins->execute(['PO-K001', 'Kompos Curah', 'kompos', 'kg', 1500, 'Pembenah tanah, curah']);
+        }
+    } catch (Throwable $e) {
+    }
+}
+
+function stok_pupuk(int $produkId): float {
+    ensure_pupuk_schema();
+    $st = db()->prepare("SELECT COALESCE(SUM(CASE WHEN arah='masuk' THEN jumlah ELSE -jumlah END),0) FROM pupuk_mutasi WHERE produk_id=?");
+    $st->execute([$produkId]);
+    return (float)$st->fetchColumn();
+}
+
+function daftar_pupuk_stok(): array {
+    ensure_pupuk_schema();
+    $rows = db()->query('SELECT * FROM pupuk_produk WHERE aktif=1 ORDER BY kode')->fetchAll();
+    foreach ($rows as &$r) {
+        $r['stok'] = stok_pupuk((int)$r['id']);
+    }
+    return $rows;
 }

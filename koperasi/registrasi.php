@@ -133,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <form class="reg-card" method="post" enctype="multipart/form-data">
     <?= csrf_field() ?>
     <div class="reg-head">
-      <div class="logo">BT</div>
+      <div class="logo"><?= e(strtoupper(implode('', array_map(static function ($w) { return substr($w, 0, 1); }, array_slice(preg_split('/\s+/', trim((string)($s['nama_koperasi'] ?? 'KP'))), 0, 2))))) ?></div>
       <div>
         <h1>Daftar anggota</h1>
         <p>Lengkapi data. Pilih jumlah kelompok, lalu isi kelompok mana dan luasnya.</p>

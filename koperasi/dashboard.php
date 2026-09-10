@@ -31,6 +31,15 @@ if ($staff) {
     ];
     $pinjaman = $pdo->query("SELECT p.*, a.nama FROM pinjaman p JOIN anggota a ON a.id=p.anggota_id ORDER BY p.id DESC LIMIT 6")->fetchAll();
     $simpanan = $pdo->query("SELECT s.*, a.nama, j.nama jenis FROM " . sql_union_simpanan('s') . " JOIN anggota a ON a.id=s.anggota_id JOIN jenis_simpanan j ON j.id=s.jenis_id ORDER BY s.tanggal DESC, s.id DESC LIMIT 6")->fetchAll();
+    $kpi['pupuk_stok'] = 0;
+    $kpi['pupuk_jual'] = 0;
+    try {
+        foreach (daftar_pupuk_stok() as $pr) {
+            $kpi['pupuk_stok'] += (float)$pr['stok'] * (float)$pr['harga_jual'];
+        }
+        $kpi['pupuk_jual'] = (float)$pdo->query("SELECT COALESCE(SUM(total_nilai),0) FROM pupuk_mutasi WHERE arah='keluar' AND DATE_FORMAT(tanggal,'%Y-%m')=DATE_FORMAT(CURDATE(),'%Y-%m')")->fetchColumn();
+    } catch (Throwable $e) {
+    }
 } else {
     $aid = (int)$u['anggota_id'];
     $stAgt = status_anggota($aid);
@@ -60,6 +69,8 @@ include __DIR__ . '/includes/app_header.php';
   <div class="kpi"><span>Total simpanan</span><b><?= rupiah($kpi['simpanan']) ?></b></div>
   <div class="kpi"><span>Sisa pinjaman</span><b><?= rupiah($kpi['pinjaman']) ?></b></div>
   <div class="kpi"><span>Pengajuan baru</span><b><?= (int)$kpi['pengajuan'] ?></b></div>
+  <div class="kpi"><span>Persediaan pupuk</span><b><?= rupiah($kpi['pupuk_stok']) ?></b></div>
+  <div class="kpi"><span>Jual pupuk bulan ini</span><b><?= rupiah($kpi['pupuk_jual']) ?></b></div>
 </div>
 <?php else: ?>
 <div class="kpis">
