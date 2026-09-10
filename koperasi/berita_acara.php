@@ -21,9 +21,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $staff) {
         'pendiri_txt' => trim((string)($_POST['pendiri_txt'] ?? '')),
         'ketua' => trim((string)($_POST['ketua'] ?? '')),
         'sekretaris' => trim((string)($_POST['sekretaris'] ?? '')),
+        'wakil_ketua' => trim((string)($_POST['wakil_ketua'] ?? '')),
+        'wakil_sekretaris' => trim((string)($_POST['wakil_sekretaris'] ?? '')),
         'bendahara' => trim((string)($_POST['bendahara'] ?? '')),
         'pengawas_ketua' => trim((string)($_POST['pengawas_ketua'] ?? '')),
         'pengawas_anggota' => trim((string)($_POST['pengawas_anggota'] ?? '')),
+        'masa_jabatan' => trim((string)($_POST['masa_jabatan'] ?? '')),
         'modal_pokok' => trim((string)($_POST['modal_pokok'] ?? '0')),
         'modal_wajib' => trim((string)($_POST['modal_wajib'] ?? '0')),
         'usaha_txt' => trim((string)($_POST['usaha_txt'] ?? '')),
@@ -36,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $staff) {
         if (!is_array($d)) {
             $d = [];
         }
-        foreach (['ketua', 'sekretaris', 'bendahara', 'pengawas_ketua', 'pengawas_anggota'] as $k) {
+        foreach (['ketua', 'wakil_ketua', 'sekretaris', 'wakil_sekretaris', 'bendahara', 'pengawas_ketua', 'pengawas_anggota', 'masa_jabatan'] as $k) {
             if ($data[$k] !== '') {
                 $d[$k] = $data[$k];
             }
@@ -136,9 +139,11 @@ rapat <strong>memutuskan</strong> hal-hal sebagai berikut:</p>
   <li>Menyetujui pendirian koperasi dengan nama <strong><?= e($namaKop) ?></strong>, jenis <strong><?= e($s['jenis_koperasi'] ?? 'Koperasi Produsen') ?></strong>,
     berkedudukan di <?= e($s['alamat'] ?? '........') ?>.</li>
   <li>Menyetujui Rancangan Anggaran Dasar (AD) dan Anggaran Rumah Tangga (ART) koperasi sebagaimana terlampir dan menjadi bagian tidak terpisahkan dari berita acara ini.</li>
-  <li>Mengangkat Pengurus dan Pengawas koperasi untuk masa jabatan pertama sebagai berikut:
+  <li>Mengangkat Pengurus dan Pengawas koperasi untuk masa jabatan <strong><?= e($ba['masa_jabatan'] !== '' ? $ba['masa_jabatan'] : '........') ?></strong> sebagai berikut:
     <br>Pengurus: Ketua — <strong><?= e($ba['ketua'] !== '' ? $ba['ketua'] : '........') ?></strong>;
+    Wk. Ketua — <strong><?= e($ba['wakil_ketua'] !== '' ? $ba['wakil_ketua'] : '........') ?></strong>;
     Sekretaris — <strong><?= e($ba['sekretaris'] !== '' ? $ba['sekretaris'] : '........') ?></strong>;
+    Wk. Sekretaris — <strong><?= e($ba['wakil_sekretaris'] !== '' ? $ba['wakil_sekretaris'] : '........') ?></strong>;
     Bendahara — <strong><?= e($ba['bendahara'] !== '' ? $ba['bendahara'] : '........') ?></strong>.
     <br>Pengawas: Ketua — <strong><?= e($ba['pengawas_ketua'] !== '' ? $ba['pengawas_ketua'] : '........') ?></strong><?php
     $pwA = [];
@@ -219,12 +224,17 @@ include __DIR__ . '/includes/app_header.php';
     <h3>Pengurus &amp; pengawas terpilih</h3>
     <div class="grid-2">
       <div><label>Ketua</label><input name="ketua" value="<?= e($ba['ketua']) ?>"></div>
+      <div><label>Wk. Ketua</label><input name="wakil_ketua" value="<?= e($ba['wakil_ketua']) ?>"></div>
+    </div>
+    <div class="grid-2">
       <div><label>Sekretaris</label><input name="sekretaris" value="<?= e($ba['sekretaris']) ?>"></div>
+      <div><label>Wk. Sekretaris</label><input name="wakil_sekretaris" value="<?= e($ba['wakil_sekretaris']) ?>"></div>
     </div>
     <div class="grid-2">
       <div><label>Bendahara</label><input name="bendahara" value="<?= e($ba['bendahara']) ?>"></div>
-      <div><label>Ketua pengawas</label><input name="pengawas_ketua" value="<?= e($ba['pengawas_ketua']) ?>"></div>
+      <div><label>Masa jabatan</label><input name="masa_jabatan" value="<?= e($ba['masa_jabatan']) ?>" placeholder="cth. 2026-2029"></div>
     </div>
+    <div><label>Ketua pengawas</label><input name="pengawas_ketua" value="<?= e($ba['pengawas_ketua']) ?>"></div>
     <label>Anggota pengawas (satu per baris)</label>
     <textarea name="pengawas_anggota"><?= e($ba['pengawas_anggota']) ?></textarea>
   </div>
@@ -251,7 +261,9 @@ include __DIR__ . '/includes/app_header.php';
   </div>
   <p style="margin-top:12px;"><strong>Pengurus terpilih</strong><br>
     Ketua: <?= e($ba['ketua'] !== '' ? $ba['ketua'] : '—') ?> ·
+    Wk. Ketua: <?= e($ba['wakil_ketua'] !== '' ? $ba['wakil_ketua'] : '—') ?> ·
     Sekretaris: <?= e($ba['sekretaris'] !== '' ? $ba['sekretaris'] : '—') ?> ·
+    Wk. Sekretaris: <?= e($ba['wakil_sekretaris'] !== '' ? $ba['wakil_sekretaris'] : '—') ?> ·
     Bendahara: <?= e($ba['bendahara'] !== '' ? $ba['bendahara'] : '—') ?></p>
   <p style="margin-top:12px;"><a class="btn btn-green btn-sm" href="berita_acara.php?cetak=1" target="_blank">Cetak / PDF</a></p>
 </div>

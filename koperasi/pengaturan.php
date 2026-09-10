@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['act'] ?? '') === 'hapus_da
         }
         $pdo->prepare('INSERT INTO pengaturan (id, nama_koperasi, alamat, telepon, email, tahun_berdiri, tanggal_berdiri, ketua, visi, misi, bagi_hasil_persen, simpanan_pokok, simpanan_wajib) VALUES (1,?,?,?,?,?,?,?,?,?,?,?,?)')
             ->execute([
-                'Koperasi Produsen Hijau Tani Lestari',
+                'Koperasi Produsen Ramah Lingkungan Pasaman Barat',
                 '',
                 '',
                 '',
@@ -56,8 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['act'] ?? '') === 'hapus_da
                 '',
                 '',
                 1,
-                500000,
-                50000,
+                150000,
+                10000,
             ]);
         $pdo->exec("INSERT INTO jenis_simpanan (kode, nama, keterangan, wajib) VALUES
             ('SPK', 'Simpanan Pokok', 'Dibayar sekali saat menjadi anggota', 1),
@@ -95,6 +95,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sekretaris = trim((string)($_POST['sekretaris'] ?? ''));
     $bendahara = trim((string)($_POST['bendahara'] ?? ''));
     $pwKetua = trim((string)($_POST['pengawas_ketua'] ?? ''));
+    $wakaKetua = trim((string)($_POST['wakil_ketua'] ?? ''));
+    $wakaSek = trim((string)($_POST['wakil_sekretaris'] ?? ''));
+    $manajer = trim((string)($_POST['manajer'] ?? ''));
+    $masaJab = trim((string)($_POST['masa_jabatan'] ?? ''));
     $pwAnggotaTxt = trim((string)($_POST['pengawas_anggota'] ?? ''));
     $ambilUnit = static function (string $pre): array {
         $out = [];
@@ -120,6 +124,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'bendahara' => $bendahara,
         'pengawas_ketua' => $pwKetua,
         'pengawas_anggota' => $pwAnggotaTxt,
+        'wakil_ketua' => $wakaKetua,
+        'wakil_sekretaris' => $wakaSek,
+        'manajer' => $manajer,
+        'masa_jabatan' => $masaJab,
         'ktu' => trim((string)($_POST['ktu'] ?? '')),
         'kasir' => trim((string)($_POST['kasir'] ?? '')),
         'unit_kiri' => $ambilUnit('ukiri'),
@@ -284,6 +292,14 @@ include __DIR__ . '/includes/app_header.php';
     <div class="grid-2">
       <div><label>Bendahara</label><input name="bendahara" value="<?= e($stuk['bendahara'] ?? '') ?>"></div>
       <div><label>Ketua pengawas</label><input name="pengawas_ketua" value="<?= e($stuk['pengawas_ketua'] ?? '') ?>"></div>
+    </div>
+    <div class="grid-2">
+      <div><label>Wk. Ketua</label><input name="wakil_ketua" value="<?= e($stuk['wakil_ketua'] ?? '') ?>"></div>
+      <div><label>Wk. Sekretaris</label><input name="wakil_sekretaris" value="<?= e($stuk['wakil_sekretaris'] ?? '') ?>"></div>
+    </div>
+    <div class="grid-2">
+      <div><label>Manajer</label><input name="manajer" value="<?= e($stuk['manajer'] ?? '') ?>"></div>
+      <div><label>Masa jabatan</label><input name="masa_jabatan" value="<?= e($stuk['masa_jabatan'] ?? '') ?>" placeholder="cth. 2026-2029"></div>
     </div>
     <label>Anggota pengawas (satu per baris)</label>
     <textarea name="pengawas_anggota"><?= e($stuk['pengawas_anggota_txt'] ?? implode("\n", $stuk['pengawas_anggota'] ?? [])) ?></textarea>

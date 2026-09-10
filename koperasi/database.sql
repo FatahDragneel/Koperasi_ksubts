@@ -1,4 +1,4 @@
--- Koperasi Produsen Hijau Tani Lestari (ramah lingkungan - contoh)
+-- Koperasi Produsen Ramah Lingkungan Pasaman Barat
 -- Impor di phpMyAdmin (tab Impor) atau: mysql -u root < database.sql
 -- PERINGATAN: DROP menghapus data lama. Untuk update tanpa hapus, buka setup.php.
 
@@ -9,7 +9,7 @@ USE koperasi_bina_tani;
 
 CREATE TABLE IF NOT EXISTS pengaturan (
   id INT PRIMARY KEY DEFAULT 1,
-  nama_koperasi VARCHAR(150) DEFAULT 'Koperasi Produsen Hijau Tani Lestari',
+  nama_koperasi VARCHAR(150) DEFAULT 'Koperasi Produsen Ramah Lingkungan Pasaman Barat',
   alamat TEXT,
   telepon VARCHAR(30),
   email VARCHAR(80),
@@ -384,12 +384,12 @@ CREATE TABLE IF NOT EXISTS antrean_truk (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO pengaturan (id, nama_koperasi, alamat, telepon, email, tahun_berdiri, tanggal_berdiri, ketua, visi, misi, bagi_hasil_persen, simpanan_pokok, simpanan_wajib) VALUES
-(1, 'Koperasi Produsen Hijau Tani Lestari',
- 'Kota Padang, Sumatera Barat',
- '', '', 2026, '2026-09-10', '',
- 'Menjadi koperasi produsen ramah lingkungan yang menyejahterakan anggota dan menjaga kelestarian alam.',
- '1. Memproduksi pupuk organik berkualitas dari bahan baku lokal.\n2. Memasarkan pupuk dan hasil pertanian anggota secara adil dan transparan.\n3. Mengurangi ketergantungan pada pupuk kimia melalui pendampingan budidaya ramah lingkungan.\n4. Mengelola usaha koperasi secara profesional, akuntabel, dan berkelanjutan.',
- 1.00, 500000, 50000);
+(1, 'Koperasi Produsen Ramah Lingkungan Pasaman Barat',
+ 'Simpang Empat, Kabupaten Pasaman Barat, Provinsi Sumatera Barat – Indonesia 26567',
+ '', 'taniramahlingkungan.official@gmail.com', 2026, '2026-09-09', 'Indra Gunawan',
+ 'Mewujudkan kesejahteraan anggota melalui koperasi produsen yang ramah lingkungan, mandiri, dan berkelanjutan.',
+ '1. Memperkuat kelembagaan dan pemberdayaan anggota.\n2. Mengembangkan usaha produksi pupuk organik serta perdagangan pupuk dan hasil pertanian.\n3. Meningkatkan kapasitas SDM melalui pelatihan dan pendampingan.\n4. Mengembangkan ekonomi kerakyatan yang adil dan berkelanjutan.',
+ 1.00, 150000, 10000);
 
 INSERT INTO jenis_simpanan (kode, nama, keterangan, wajib) VALUES
 ('SPK', 'Simpanan Pokok', 'Dibayar sekali saat menjadi anggota', 1),

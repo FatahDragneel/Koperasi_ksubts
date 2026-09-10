@@ -157,7 +157,7 @@ if (has_table($pdo, 'jenis_simpanan') && (int)$pdo->query('SELECT COUNT(*) FROM 
 }
 if (has_table($pdo, 'pengaturan') && (int)$pdo->query('SELECT COUNT(*) FROM pengaturan')->fetchColumn() === 0) {
     $add("INSERT INTO pengaturan (id,nama_koperasi,alamat,telepon,email,tahun_berdiri,tanggal_berdiri,ketua,bagi_hasil_persen,simpanan_pokok,simpanan_wajib,jenis_koperasi)
-      VALUES (1,'Koperasi Produsen Hijau Tani Lestari','Kota Padang, Sumatera Barat','','',2026,'2026-09-10','',1,500000,50000,'Koperasi Produsen')");
+      VALUES (1,'Koperasi Produsen Ramah Lingkungan Pasaman Barat','Simpang Empat, Kabupaten Pasaman Barat, Provinsi Sumatera Barat','','taniramahlingkungan.official@gmail.com',2026,'2026-09-09','Indra Gunawan',1,150000,10000,'Koperasi Produsen')");
 }
 if (has_table($pdo, 'coa_akun') && (int)$pdo->query('SELECT COUNT(*) FROM coa_akun')->fetchColumn() === 0) {
     $add("INSERT INTO coa_akun (kode,nama,kategori,saldo_normal) VALUES

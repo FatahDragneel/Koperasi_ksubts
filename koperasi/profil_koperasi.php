@@ -140,6 +140,7 @@ try {
     <div class="bts-title">
       STRUKTUR ORGANISASI<br>
       <?= e(strtoupper($s['nama_koperasi'] ?? 'Koperasi Produsen')) ?>
+      <?php if (!empty($stuk['masa_jabatan'])): ?><br>MASA JABATAN <?= e(strtoupper($stuk['masa_jabatan'])) ?><?php endif; ?>
     </div>
     <div class="bts-row"><div class="bts-box bts-abu"><div class="bts-hd">R A T</div></div></div>
     <div class="bts-v"></div>
@@ -153,11 +154,13 @@ try {
       <div class="bts-box">
         <div class="bts-hd bts-abu">Pengurus</div>
         <div class="bts-sub">Ketua</div><div class="bts-nm"><?= e($stuk['ketua'] ?: '—') ?></div>
+        <?php if (!empty($stuk['wakil_ketua'])): ?><div class="bts-sub">Wk. Ketua</div><div class="bts-nm"><?= e($stuk['wakil_ketua']) ?></div><?php endif; ?>
         <div class="bts-sub">Sekretaris</div><div class="bts-nm"><?= e($stuk['sekretaris'] ?: '—') ?></div>
+        <?php if (!empty($stuk['wakil_sekretaris'])): ?><div class="bts-sub">Wk. Sekretaris</div><div class="bts-nm"><?= e($stuk['wakil_sekretaris']) ?></div><?php endif; ?>
         <div class="bts-sub">Bendahara</div><div class="bts-nm"><?= e($stuk['bendahara'] ?: '—') ?></div>
       </div>
       <div class="bts-box">
-        <div class="bts-hd bts-abu">Pengawas</div>
+        <div class="bts-hd bts-abu">Badan Pengawas</div>
         <div class="bts-sub">Ketua</div><div class="bts-nm"><?= e($stuk['pengawas_ketua'] ?: '—') ?></div>
         <?php foreach ($stuk['pengawas_anggota'] as $n): ?>
           <div class="bts-sub">Anggota</div><div class="bts-nm"><?= e($n) ?></div>
@@ -165,11 +168,16 @@ try {
       </div>
     </div>
     <div class="bts-v"></div>
-    <div class="bts-row">
-      <div class="bts-box bts-ungu"><div class="bts-hd">KTU</div><div class="bts-nm"><?= e($stuk['ktu'] ?: '—') ?></div></div>
-      <div class="bts-box bts-ungu"><div class="bts-hd">Kasir</div><div class="bts-nm"><?= e($stuk['kasir'] ?: '—') ?></div></div>
-    </div>
+    <?php
+    $opsBox = [];
+    foreach ([['Manajer', $stuk['manajer'] ?? ''], ['KTU', $stuk['ktu'] ?? ''], ['Kasir', $stuk['kasir'] ?? '']] as $ob) {
+        if (trim((string)$ob[1]) !== '') { $opsBox[] = '<div class="bts-box bts-ungu"><div class="bts-hd">' . e($ob[0]) . '</div><div class="bts-nm">' . e($ob[1]) . '</div></div>'; }
+    }
+    ?>
+    <?php if ($opsBox): ?>
+    <div class="bts-row"><?= implode('', $opsBox) ?></div>
     <div class="bts-v"></div>
+    <?php endif; ?>
     <div class="bts-split">
       <div class="bts-col">
         <div class="bts-row"><?php foreach ($stuk['unit_kiri'] as $u) echo $kotak($u); ?></div>

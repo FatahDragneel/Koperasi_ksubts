@@ -89,16 +89,19 @@ function setting_refresh(): array {
 
 
 function default_struktur_bts(): array {
-    // Bawaan untuk Koperasi Produsen Ramah Lingkungan (contoh).
-    // Nama pengurus dikosongkan: isi lewat menu Pengaturan atau otomatis
-    // dari halaman Berita Acara (tombol "Terapkan ke Struktur").
+    // Koperasi Produsen Ramah Lingkungan Pasaman Barat — sesuai BA pendirian
+    // 001/PENDIRIAN/KOP/KPRL-PB/IX/2026 & struktur masa jabatan 2026-2029.
     return [
-        'pembina' => "Dinas Koperasi & UKM\nDinas Pertanian / Perkebunan",
-        'ketua' => '',
-        'sekretaris' => '',
-        'bendahara' => '',
-        'pengawas_ketua' => '',
-        'pengawas_anggota' => "",
+        'pembina' => "",
+        'ketua' => 'Indra Gunawan',
+        'wakil_ketua' => 'Ilham Pelemi',
+        'sekretaris' => 'Imam Ratili',
+        'wakil_sekretaris' => 'Tora Fanandres',
+        'bendahara' => 'Anton Suherman',
+        'pengawas_ketua' => 'Ali Zamar, SH',
+        'pengawas_anggota' => "Rusdi\nSyamlidar",
+        'manajer' => '',
+        'masa_jabatan' => '2026-2029',
         'ktu' => '',
         'kasir' => '',
         'unit_kiri' => [
@@ -206,8 +209,12 @@ function struktur_koperasi(?array $s = null): array {
         'pembina' => $lines($isi('pembina')),
         'pembina_txt' => $isi('pembina'),
         'ketua' => $ketua,
+        'wakil_ketua' => $isi('wakil_ketua'),
         'sekretaris' => $isi('sekretaris'),
+        'wakil_sekretaris' => $isi('wakil_sekretaris'),
         'bendahara' => $isi('bendahara'),
+        'manajer' => $isi('manajer'),
+        'masa_jabatan' => $isi('masa_jabatan'),
         'pengawas_ketua' => $pwKetua,
         'pengawas_anggota' => $pwAnggota,
         'pengawas_anggota_txt' => $pwAnggotaTxt,
@@ -219,7 +226,9 @@ function struktur_koperasi(?array $s = null): array {
         'ketua_umum' => $ketua,
         'pengurus' => array_values(array_filter([
             ['jabatan' => 'Ketua', 'nama' => $ketua],
+            ['jabatan' => 'Wk. Ketua', 'nama' => $isi('wakil_ketua')],
             ['jabatan' => 'Sekretaris', 'nama' => $isi('sekretaris')],
+            ['jabatan' => 'Wk. Sekretaris', 'nama' => $isi('wakil_sekretaris')],
             ['jabatan' => 'Bendahara', 'nama' => $isi('bendahara')],
         ], static function ($r) { return $r['nama'] !== ''; })),
         'pengawas' => array_merge(
@@ -230,21 +239,20 @@ function struktur_koperasi(?array $s = null): array {
 }
 
 function default_profil_koperasi(): array {
-    // Bawaan untuk Koperasi Produsen Ramah Lingkungan (contoh — sesuaikan
-    // lewat Pengaturan dan halaman Berita Acara Pendirian).
+    // Koperasi Produsen Ramah Lingkungan Pasaman Barat — sesuai dokumen pendirian.
     return [
-        'nama_koperasi' => 'Koperasi Produsen Hijau Tani Lestari',
+        'nama_koperasi' => 'Koperasi Produsen Ramah Lingkungan Pasaman Barat',
         'jenis_koperasi' => 'Koperasi Produsen',
-        'tanggal_berdiri' => '2026-09-10',
+        'tanggal_berdiri' => '2026-09-09',
         'tgl_badan_hukum' => '',
         'no_akta' => '',
-        'alamat' => 'Kota Padang, Sumatera Barat',
-        'sejarah' => "Koperasi Produsen Hijau Tani Lestari (nama contoh) didirikan oleh para petani dan pelaku usaha tani yang berkomitmen pada pertanian ramah lingkungan.\n\nKoperasi berfokus pada produksi pupuk organik dari bahan baku lokal (limbah pertanian, kotoran ternak, dan tandan kosong), perdagangan pupuk, serta niaga hasil pertanian tanaman yang mengandung minyak. Seluruh kegiatan diarahkan untuk menekan pemakaian pupuk kimia, memperbaiki kesuburan tanah, dan meningkatkan nilai tambah panen anggota.",
-        'visi' => 'Menjadi koperasi produsen ramah lingkungan yang menyejahterakan anggota dan menjaga kelestarian alam.',
-        'misi' => "1. Memproduksi pupuk organik berkualitas dari bahan baku lokal.\n2. Memasarkan pupuk dan hasil pertanian anggota secara adil dan transparan.\n3. Mengurangi ketergantungan pada pupuk kimia melalui pendampingan budidaya ramah lingkungan.\n4. Mengelola usaha koperasi secara profesional, akuntabel, dan berkelanjutan.",
+        'alamat' => 'Simpang Empat, Kabupaten Pasaman Barat, Provinsi Sumatera Barat – Indonesia 26567',
+        'sejarah' => "Koperasi Produsen Ramah Lingkungan Pasaman Barat didirikan melalui Rapat Pendirian pada Rabu, 9 September 2026 di Gedung UPTD Balai Pelatihan dan Penyuluhan Pertanian Sumatera Barat (Berita Acara Nomor 001/PENDIRIAN/KOP/KPRL-PB/IX/2026).\n\nKoperasi berkedudukan di Simpang Empat, Kabupaten Pasaman Barat, dengan wilayah keanggotaan utama Kecamatan Kinali, didirikan untuk jangka waktu tidak terbatas. Fokus usaha adalah produksi pupuk organik (KBLI 20124) serta perdagangan pupuk dan hasil pertanian tanaman yang mengandung minyak.",
+        'visi' => 'Mewujudkan kesejahteraan anggota melalui koperasi produsen yang ramah lingkungan, mandiri, dan berkelanjutan.',
+        'misi' => "1. Memperkuat kelembagaan dan pemberdayaan anggota.\n2. Mengembangkan usaha produksi pupuk organik serta perdagangan pupuk dan hasil pertanian.\n3. Meningkatkan kapasitas SDM melalui pelatihan dan pendampingan.\n4. Mengembangkan ekonomi kerakyatan yang adil dan berkelanjutan.",
         'motto' => 'Dari alam, oleh anggota, untuk kesejahteraan bersama.',
         'nilai_koperasi' => "Ramah lingkungan, gotong royong, jujur, profesional, dan berpihak pada anggota.",
-        'kegiatan_usaha' => "Produksi Pupuk Organik (KBLI 20124) — Usaha Utama\nPerdagangan Besar Pupuk (KBLI 46752) — Pendukung\nPerdagangan Eceran Pupuk (KBLI 47763) — Pendukung\nPerdagangan Besar Hasil Pertanian Tanaman Minyak, cth. TBS (KBLI 46202) — Pendukung",
+        'kegiatan_usaha' => "Produksi Pupuk Organik (KBLI 20124) — Usaha Utama\nPerdagangan Besar Pupuk (KBLI 46752) — Pendukung\nPerdagangan Eceran Pupuk (KBLI 47763) — Pendukung\nPerdagangan Besar Hasil Pertanian Tanaman yang Mengandung Minyak (KBLI 46202) — Pendukung",
         'prestasi' => "—",
         'karyawan_ket' => "—",
         'rapat_anggota' => 'Rapat Anggota adalah pemegang kekuasaan tertinggi koperasi. Pengawas mengawasi operasional dan keuangan; pengurus mengelola kegiatan usaha sehari-hari.',
@@ -252,7 +260,7 @@ function default_profil_koperasi(): array {
 }
 
 function kbli_usaha_default(): string {
-    return "20124 — Industri Pupuk Organik (Utama)\n46752 — Perdagangan Besar Pupuk (Pendukung)\n47763 — Perdagangan Eceran Pupuk (Pendukung)\n46202 — Perdagangan Besar Hasil Pertanian Tanaman Minyak (Pendukung)";
+    return "20124 — Industri Pupuk Organik (Utama)\n46752 — Perdagangan Besar Pupuk (Pendukung)\n47763 — Perdagangan Eceran Pupuk (Pendukung)\n46202 — Perdagangan Besar Hasil Pertanian Tanaman yang Mengandung Minyak (Pendukung)";
 }
 
 function hari_indo(?string $tanggal): string {
@@ -311,23 +319,26 @@ function terbilang_id($n): string {
 
 function default_berita_acara(): array {
     return [
-        'nomor' => '',
-        'tanggal' => date('Y-m-d'),
-        'waktu_mulai' => '09.00',
-        'waktu_selesai' => '12.00',
-        'tempat' => '',
+        'nomor' => '001/PENDIRIAN/KOP/KPRL-PB/IX/2026',
+        'tanggal' => '2026-09-09',
+        'waktu_mulai' => '',
+        'waktu_selesai' => '',
+        'tempat' => 'Gedung UPTD Balai Pelatihan dan Penyuluhan Pertanian - Sumatera Barat',
         'pimpinan' => '',
         'notulis' => '',
         'pendiri_txt' => '',
-        'ketua' => '',
-        'sekretaris' => '',
-        'bendahara' => '',
-        'pengawas_ketua' => '',
-        'pengawas_anggota' => '',
-        'modal_pokok' => '500000',
-        'modal_wajib' => '50000',
+        'ketua' => 'Indra Gunawan',
+        'wakil_ketua' => 'Ilham Pelemi',
+        'sekretaris' => 'Imam Ratili',
+        'wakil_sekretaris' => 'Tora Fanandres',
+        'bendahara' => 'Anton Suherman',
+        'pengawas_ketua' => 'Ali Zamar, SH',
+        'pengawas_anggota' => "Rusdi\nSyamlidar",
+        'masa_jabatan' => '2026-2029',
+        'modal_pokok' => '150000',
+        'modal_wajib' => '10000',
         'usaha_txt' => "Produksi Pupuk Organik (KBLI 20124) sebagai usaha utama;\nPerdagangan Besar Pupuk (KBLI 46752);\nPerdagangan Eceran Pupuk (KBLI 47763);\nPerdagangan Besar Hasil Pertanian Tanaman yang Mengandung Minyak (KBLI 46202).",
-        'kuasa_txt' => 'Memberi kuasa kepada Pengurus terpilih untuk mengurus pengesahan Akta Pendirian / Anggaran Dasar, pengajuan Nomor Induk Koperasi (NIK), NIB, dan perizinan lain yang diperlukan.',
+        'kuasa_txt' => 'Memberi kuasa kepada Pengurus terpilih untuk mengurus seluruh proses pendirian koperasi, menandatangani dokumen yang diperlukan, mengajukan permohonan pengesahan badan hukum kepada instansi yang berwenang, serta melakukan tindakan administratif lainnya hingga koperasi memperoleh status badan hukum.',
     ];
 }
 
@@ -345,7 +356,7 @@ function berita_acara(?array $s = null): array {
     }
     // Jika pengurus BA masih kosong, tawarkan isi dari struktur yang sudah ada.
     $stuk = struktur_koperasi($s);
-    foreach (['ketua' => 'ketua', 'sekretaris' => 'sekretaris', 'bendahara' => 'bendahara', 'pengawas_ketua' => 'pengawas_ketua'] as $kb => $ks) {
+    foreach (['ketua' => 'ketua', 'wakil_ketua' => 'wakil_ketua', 'sekretaris' => 'sekretaris', 'wakil_sekretaris' => 'wakil_sekretaris', 'bendahara' => 'bendahara', 'pengawas_ketua' => 'pengawas_ketua', 'masa_jabatan' => 'masa_jabatan'] as $kb => $ks) {
         if (trim((string)$out[$kb]) === '' && trim((string)($stuk[$ks] ?? '')) !== '') {
             $out[$kb] = (string)$stuk[$ks];
         }

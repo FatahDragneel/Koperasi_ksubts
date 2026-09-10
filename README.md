@@ -1,12 +1,29 @@
-# Koperasi Produsen Ramah Lingkungan
+# Koperasi Produsen Ramah Lingkungan Pasaman Barat
 
-Aplikasi web (PHP + MySQL) untuk mengelola **Koperasi Produsen** yang berfokus pada
-pertanian ramah lingkungan. Dikembangkan dari aplikasi KSU Bina Tani Sejahtera dan
-diubah menjadi koperasi produsen dengan usaha utama **produksi pupuk organik**.
+Aplikasi web (PHP + MySQL) untuk mengelola **Koperasi Produsen Ramah Lingkungan
+Pasaman Barat** — koperasi produsen yang berfokus pada pertanian ramah lingkungan
+dengan usaha utama **produksi pupuk organik**.
 
-> Nama bawaan — *Koperasi Produsen Hijau Tani Lestari* — adalah **contoh**.
-> Ganti dengan nama resmi koperasi Anda lewat menu **Pengaturan** (atau otomatis
-> dari halaman **Berita Acara**). Lihat "Memakai data koperasi sendiri" di bawah.
+- **Kedudukan**: Simpang Empat, Kabupaten Pasaman Barat, Provinsi Sumatera Barat – Indonesia 26567
+- **Email**: taniramahlingkungan.official@gmail.com
+- **Pendirian**: Rapat Pendirian Rabu, 9 September 2026 di Gedung UPTD Balai
+  Pelatihan dan Penyuluhan Pertanian Sumatera Barat —
+  BA Nomor 001/PENDIRIAN/KOP/KPRL-PB/IX/2026
+- **Wilayah keanggotaan**: utama Kecamatan Kinali; jangka waktu tidak terbatas
+- **Modal**: simpanan pokok Rp150.000, simpanan wajib Rp10.000/bulan
+
+## Susunan pengurus & pengawas (2026–2029)
+
+| Jabatan | Nama |
+|---------|------|
+| Ketua | Indra Gunawan |
+| Wk. Ketua | Ilham Pelemi |
+| Sekretaris | Imam Ratili |
+| Wk. Sekretaris | Tora Fanandres |
+| Bendahara | Anton Suherman |
+| Ketua Badan Pengawas | Ali Zamar, SH |
+| Anggota Pengawas | Rusdi |
+| Anggota Pengawas | Syamlidar |
 
 ## Bidang usaha (KBLI)
 
@@ -15,15 +32,18 @@ diubah menjadi koperasi produsen dengan usaha utama **produksi pupuk organik**.
 | 20124 | Produksi pupuk organik | Utama |
 | 46752 | Perdagangan besar pupuk | Pendukung |
 | 47763 | Perdagangan eceran pupuk | Pendukung |
-| 46202 | Perdagangan besar hasil pertanian tanaman minyak (cth. TBS) | Pendukung |
+| 46202 | Perdagangan besar hasil pertanian tanaman yang mengandung minyak | Pendukung |
 
 ## Fitur
 
 - **Situs publik**: beranda, profil, KBLI usaha, legalitas, pengumuman, kontak.
-- **Berita Acara Pendirian** (`berita_acara.php`): formulir rapat pendirian
-  (daftar ≥ 9 pendiri, pengurus/pengawas terpilih, modal, rencana usaha, kuasa),
+- **Berita Acara Pendirian** (`berita_acara.php`): data rapat pendirian
+  (pendiri, pengurus/pengawas terpilih, modal, rencana usaha, kuasa),
   cetak dokumen resmi (PDF), dan tombol **terapkan ke struktur & pengaturan**.
-- **Struktur organisasi**: bagan RAT → pembina, pengurus, pengawas, KTU/kasir,
+  > Daftar pendiri + pimpinan/notulis rapat + nama pembina/penasehat/manajer
+  > belum diisi — lengkapi di halaman Berita Acara / Pengaturan.
+- **Struktur organisasi**: bagan RAT → pembina/penasehat, pengurus
+  (termasuk wakil ketua & wakil sekretaris), badan pengawas, manajer,
   unit kantor & unit usaha — semua bisa diubah di **Pengaturan**.
 - **Unit usaha pupuk organik** (`pupuk.php`): master produk, catat hasil
   produksi + biaya, penjualan tunai/piutang ke anggota/umum, stok otomatis,
@@ -38,19 +58,19 @@ diubah menjadi koperasi produsen dengan usaha utama **produksi pupuk organik**.
 
 1. Salin folder `koperasi/` ke `C:\xampp\htdocs\koperasi`.
 2. Jalankan Apache + MySQL, buka `http://localhost/koperasi/setup.php`
-   (membuat database `koperasi_bina_tani` + semua tabel, tanpa menghapus data).
+   (membuat database + semua tabel, tanpa menghapus data).
    Untuk data contoh: impor `koperasi/database.sql` via phpMyAdmin.
 3. Login awal: `admin` / `admin123` — **segera ganti sandinya**.
 
 Instalasi hosting: ikuti `koperasi/PANDUAN-HOSTINGER.txt`.
 
-## Memakai data koperasi sendiri
+## Melengkapi data koperasi
 
-1. Login admin → buka **📜 Berita acara** → isi nomor, tanggal/tempat rapat,
-   daftar pendiri (`Nama|NIK|Alamat` per baris), pengurus & pengawas terpilih,
-   modal, lalu **Simpan & terapkan ke struktur**.
-2. Buka **Pengaturan** → lengkapi nama resmi, alamat, NIB, NIK koperasi, NPWP,
-   nomor akta/badan hukum, KBLI, sertifikasi, logo, dan unit-unit usaha.
+1. Login admin → buka **📜 Berita acara** → lengkapi daftar pendiri
+   (`Nama|NIK|Alamat` per baris, minimal 9 orang), pimpinan/notulis, waktu
+   rapat, lalu **Simpan & terapkan ke struktur**.
+2. Buka **Pengaturan** → lengkapi NIB, NIK koperasi, NPWP, nomor akta/badan
+   hukum, telepon, logo, pembina/penasehat, manajer, dan unit-unit usaha.
 3. Hasilnya tampil di **Profil koperasi**, bagan struktur, dan situs publik.
 
 Catatan: nama database MySQL (`koperasi_bina_tani`) hanya nama teknis internal
