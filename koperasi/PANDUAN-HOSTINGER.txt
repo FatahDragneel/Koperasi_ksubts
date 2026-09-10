@@ -9,10 +9,12 @@ Paket: Hostinger (hPanel) + domain. PHP 8.1 atau 8.2. MySQL.
    - Assign user ke database (ALL PRIVILEGES)
    - Catat: host biasanya "localhost", nama DB, user, sandi
 
-2) IMPORT TABEL
+2) IMPORT TABEL (hanya untuk database KOSONG / baru dibuat)
    - hPanel → phpMyAdmin → pilih database itu
    - Import file database.sql (dari folder koperasi)
-   - Jangan DROP database yang sudah ada data
+   - Database sudah terisi / sudah dibuka setup.php? JANGAN impor
+     (error #1062 Duplicate entry = data sudah ada, langsung pakai saja)
+   - Mau ulang dari nol? Hapus semua tabel dulu, baru impor ulang
 
 3) UBAH config.php SEBELUM UPLOAD (baris DB_*)
    define('DB_HOST', 'localhost');
