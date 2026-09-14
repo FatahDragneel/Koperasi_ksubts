@@ -396,6 +396,20 @@ CREATE TABLE IF NOT EXISTS anggota_kelompok (
   UNIQUE KEY uq_ag_kel (anggota_id, id_kelompok)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS anggota_gapoktan (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  anggota_id INT NOT NULL,
+  id_gapoktan INT NOT NULL,
+  UNIQUE KEY uq_ag_gap (anggota_id, id_gapoktan)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS anggota_lembaga (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  anggota_id INT NOT NULL,
+  id_koperasi INT NOT NULL,
+  UNIQUE KEY uq_ag_lem (anggota_id, id_koperasi)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS antrean_truk (
   id INT AUTO_INCREMENT PRIMARY KEY,
   tanggal DATE NOT NULL,

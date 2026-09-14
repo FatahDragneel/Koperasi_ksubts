@@ -78,7 +78,7 @@ $mapUrut = ['kode' => 'kode_kelompok', 'nama' => 'nama_kelompok', 'ketua' => 'na
 if ($kUrut === '' || !isset($mapUrut[$kUrut])) {
     $kUrut = 'kode';
 }
-$rows = $pdo->query("SELECT k.*, g.nama_gapoktan, (SELECT COUNT(*) FROM anggota_kelompok ak JOIN anggota a ON a.id=ak.anggota_id WHERE ak.id_kelompok=k.id AND a.status='aktif') jml FROM kelompok k LEFT JOIN gapoktan g ON g.id=k.id_gapoktan ORDER BY k.nomor ASC")->fetchAll();
+$rows = $pdo->query("SELECT k.*, (SELECT COUNT(*) FROM anggota_kelompok ak JOIN anggota a ON a.id=ak.anggota_id WHERE ak.id_kelompok=k.id AND a.status='aktif') jml FROM kelompok k ORDER BY k.nomor ASC")->fetchAll();
 $colUrut = $mapUrut[$kUrut];
 usort($rows, function ($a, $b) use ($colUrut, $dUrut) {
     $va = $a[$colUrut] ?? '';
@@ -113,7 +113,6 @@ include __DIR__ . '/includes/app_header.php';
         <?= th_urut('nama', 'Nama kelompok') ?>
         <?= th_urut('ketua', 'Ketua') ?>
         <?= th_urut('plasma', 'Plasma') ?>
-        <th>Gapoktan</th>
         
         <!-- Untuk yang tidak pakai fungsi, tetap gunakan <th> -->
         <th>Wilayah / hamparan</th>
@@ -131,7 +130,6 @@ include __DIR__ . '/includes/app_header.php';
         <td><?= e($r['nama_kelompok']) ?></td>
         <td><?= e($r['nama_ketua'] ?: '—') ?><br><small><?= e($r['no_hp_ketua'] ?: '') ?></small></td>
         <td><?= e($r['plasma'] ?? '') ?: '—' ?></td>
-        <td><?= e($r['nama_gapoktan'] ?? '') ?: '—' ?></td>
         <td><small><?= e(trim(($r['wilayah_dusun'] ?? '') . ' ' . ($r['blok_hamparan'] ?? ''))) ?: '—' ?></small></td>
 <td><?= e(number_format((float)$r['luas_tanah'], 2, ',', '.')) ?></td>
         <td><span class="badge b-aktif"><?= (int)$r['jml'] ?></span></td>
@@ -144,7 +142,7 @@ include __DIR__ . '/includes/app_header.php';
         </td>
       </tr>
     <?php endforeach; if (!$rows): ?>
-      <tr><td colspan="9">Belum ada kelompok. Klik “Tambah kelompok” untuk membentuk yang pertama.</td></tr>
+      <tr><td colspan="8">Belum ada kelompok. Klik “Tambah kelompok” untuk membentuk yang pertama.</td></tr>
     <?php endif; ?>
     </tbody>
   </table>

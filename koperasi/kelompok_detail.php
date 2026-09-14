@@ -42,10 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $jab = $_POST['jabatan_kelompok'] ?? 'Anggota';
         if ($aid < 1) {
             flash('err', 'Pilih anggota.');
-        } elseif (!tambah_anggota_ke_kelompok($aid, $id, $jab)) {
-            $huni = penghuni_kelompok($id, $aid);
-            flash('err', 'Kelompok ini sudah diisi ' . ($huni['nama'] ?? 'anggota lain') . '. 1 kelompok hanya untuk 1 anggota.');
         } else {
+            tambah_anggota_ke_kelompok($aid, $id, $jab);
             flash('ok', 'Anggota ditambahkan ke kelompok ini.');
         }
     } elseif ($act === 'keluar') {
@@ -58,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $anggotaKel = anggota_di_kelompok($nomor);
-$terisi = penghuni_kelompok($id);
 $idsKel = array_map(fn($a) => (int)$a['id'], $anggotaKel);
 $calon = $pdo->query("SELECT id, no_anggota, nama FROM anggota WHERE status IN ('aktif','pending') ORDER BY nama")->fetchAll();
 
@@ -94,10 +91,7 @@ include __DIR__ . '/includes/app_header.php';
     <input type="hidden" name="kelompok_id" value="<?= $id ?>">
     <input type="hidden" name="act" value="masuk">
     <h3>Masukkan anggota</h3>
-    <p style="font-size:13px;color:var(--muted);">1 kelompok hanya untuk 1 anggota. Pilih Ketua agar nama/HP tampil di daftar.</p>
-    <?php if ($terisi): ?>
-    <div class="alert alert-err">Kelompok ini sudah diisi <strong><?= e($terisi['nama'] ?? '') ?></strong>. Keluarkan dulu untuk mengganti.</div>
-    <?php else: ?>
+    <p style="font-size:13px;color:var(--muted);">Satu kelompok bisa diisi lebih dari satu anggota. Pilih Ketua agar nama/HP tampil di daftar.</p>
     <label>Anggota koperasi</label>
     <select name="anggota_id" required>
       <option value="">Pilih anggota</option>
@@ -115,7 +109,6 @@ include __DIR__ . '/includes/app_header.php';
       <?php endforeach; ?>
     </select>
     <button class="btn btn-green" style="margin-top:14px;">Tambah / perbarui</button>
-    <?php endif; ?>
   </form>
 </div>
 

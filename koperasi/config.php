@@ -113,6 +113,7 @@ function setting(): array {
         ensure_simpanan_sukarela_schema();
         ensure_gapoktan_schema();
         ensure_lembaga_koperasi_schema();
+        ensure_lembaga_anggota_schema();
         $s = db()->query('SELECT * FROM pengaturan WHERE id = 1')->fetch() ?: [];
     }
     return $s;
@@ -522,7 +523,7 @@ function ensure_kelompok_schema(): void {
                 db()->exec("ALTER TABLE kelompok ADD COLUMN `$col` $def");
             }
         }
-        // Kelompok dibentuk sendiri via menu Kelompok (tidak dibuat otomatis).
+        // Kelompok dibentuk sendiri via menu Lembaga (tidak dibuat otomatis).
         db()->exec("UPDATE kelompok SET kode_kelompok = CONCAT('KT-', LPAD(nomor, 2, '0')) WHERE kode_kelompok IS NULL OR kode_kelompok=''");
         db()->exec("UPDATE kelompok SET nama_kelompok = CONCAT('Kelompok Tani ', nomor) WHERE nama_kelompok IS NULL OR nama_kelompok=''");
         ensure_anggota_schema();
@@ -611,34 +612,79 @@ function ensure_lembaga_koperasi_schema(): void {
     }
 }
 
-function options_gapoktan(int $selected = 0): string {
-    ensure_gapoktan_schema();
-    $html = '';
+function ensure_lembaga_anggota_schema(): void {
+    static $done = false;
+    if ($done) { return; }
+    $done = true;
     try {
-        $rows = db()->query('SELECT id, kode_gapoktan, nama_gapoktan FROM gapoktan ORDER BY nama_gapoktan')->fetchAll();
+        db()->exec("CREATE TABLE IF NOT EXISTS anggota_gapoktan (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            anggota_id INT NOT NULL,
+            id_gapoktan INT NOT NULL,
+            UNIQUE KEY uq_ag_gap (anggota_id, id_gapoktan)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        db()->exec("CREATE TABLE IF NOT EXISTS anggota_lembaga (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            anggota_id INT NOT NULL,
+            id_koperasi INT NOT NULL,
+            UNIQUE KEY uq_ag_lem (anggota_id, id_koperasi)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     } catch (Throwable $e) {
-        $rows = [];
     }
-    foreach ($rows as $r) {
-        $html .= '<option value="' . (int)$r['id'] . '"' . ($selected === (int)$r['id'] ? ' selected' : '') . '>'
-            . e(($r['kode_gapoktan'] ?: 'GAP') . ' — ' . ($r['nama_gapoktan'] ?: 'Gapoktan')) . '</option>';
-    }
-    return $html;
 }
 
-function options_lembaga_koperasi(int $selected = 0): string {
-    ensure_lembaga_koperasi_schema();
-    $html = '';
+function anggota_di_gapoktan(int $idGapoktan): array {
+    ensure_lembaga_anggota_schema();
     try {
-        $rows = db()->query('SELECT id, kode_koperasi, nama_koperasi FROM lembaga_koperasi ORDER BY nama_koperasi')->fetchAll();
+        $st = db()->prepare('SELECT a.* FROM anggota a JOIN anggota_gapoktan ag ON ag.anggota_id=a.id AND ag.id_gapoktan=? ORDER BY a.nama');
+        $st->execute([$idGapoktan]);
+        return $st->fetchAll();
     } catch (Throwable $e) {
-        $rows = [];
+        return [];
     }
-    foreach ($rows as $r) {
-        $html .= '<option value="' . (int)$r['id'] . '"' . ($selected === (int)$r['id'] ? ' selected' : '') . '>'
-            . e(($r['kode_koperasi'] ?: 'KOP') . ' — ' . ($r['nama_koperasi'] ?: 'Koperasi')) . '</option>';
+}
+
+function tambah_anggota_ke_gapoktan(int $anggotaId, int $idGapoktan): void {
+    ensure_lembaga_anggota_schema();
+    try {
+        db()->prepare('INSERT INTO anggota_gapoktan (anggota_id,id_gapoktan) VALUES (?,?) ON DUPLICATE KEY UPDATE anggota_id=VALUES(anggota_id)')->execute([$anggotaId, $idGapoktan]);
+    } catch (Throwable $e) {
     }
-    return $html;
+}
+
+function keluar_anggota_dari_gapoktan(int $anggotaId, int $idGapoktan): void {
+    ensure_lembaga_anggota_schema();
+    try {
+        db()->prepare('DELETE FROM anggota_gapoktan WHERE anggota_id=? AND id_gapoktan=?')->execute([$anggotaId, $idGapoktan]);
+    } catch (Throwable $e) {
+    }
+}
+
+function anggota_di_lembaga(int $idKoperasi): array {
+    ensure_lembaga_anggota_schema();
+    try {
+        $st = db()->prepare('SELECT a.* FROM anggota a JOIN anggota_lembaga al ON al.anggota_id=a.id AND al.id_koperasi=? ORDER BY a.nama');
+        $st->execute([$idKoperasi]);
+        return $st->fetchAll();
+    } catch (Throwable $e) {
+        return [];
+    }
+}
+
+function tambah_anggota_ke_lembaga(int $anggotaId, int $idKoperasi): void {
+    ensure_lembaga_anggota_schema();
+    try {
+        db()->prepare('INSERT INTO anggota_lembaga (anggota_id,id_koperasi) VALUES (?,?) ON DUPLICATE KEY UPDATE anggota_id=VALUES(anggota_id)')->execute([$anggotaId, $idKoperasi]);
+    } catch (Throwable $e) {
+    }
+}
+
+function keluar_anggota_dari_lembaga(int $anggotaId, int $idKoperasi): void {
+    ensure_lembaga_anggota_schema();
+    try {
+        db()->prepare('DELETE FROM anggota_lembaga WHERE anggota_id=? AND id_koperasi=?')->execute([$anggotaId, $idKoperasi]);
+    } catch (Throwable $e) {
+    }
 }
 
 function kelompok_anggota(int $anggotaId): array {
@@ -648,21 +694,6 @@ function kelompok_anggota(int $anggotaId): array {
         WHERE ak.anggota_id=? ORDER BY k.nomor');
     $st->execute([$anggotaId]);
     return $st->fetchAll();
-}
-
-function penghuni_kelompok(int $idKelompok, int $kecualiAid = 0): ?array {
-    ensure_anggota_kelompok_schema();
-    $st = db()->prepare('SELECT ak.anggota_id, a.nama FROM anggota_kelompok ak LEFT JOIN anggota a ON a.id=ak.anggota_id WHERE ak.id_kelompok=? AND ak.anggota_id<>? ORDER BY ak.anggota_id LIMIT 1');
-    $st->execute([$idKelompok, $kecualiAid]);
-    $r = $st->fetch();
-    return $r ?: null;
-}
-
-function ids_kelompok_terisi(int $kecualiAid = 0): array {
-    ensure_anggota_kelompok_schema();
-    $st = db()->prepare('SELECT DISTINCT id_kelompok FROM anggota_kelompok WHERE anggota_id<>?');
-    $st->execute([$kecualiAid]);
-    return array_map('intval', $st->fetchAll(PDO::FETCH_COLUMN));
 }
 
 function info_kelompok(int $idKelompok): ?array {
@@ -684,10 +715,7 @@ function tambah_anggota_ke_kelompok(int $anggotaId, int $idKelompok, string $jab
     if (!$nomor) {
         return false;
     }
-    // Aturan: 1 kelompok hanya untuk 1 anggota.
-    if (penghuni_kelompok($idKelompok, $anggotaId)) {
-        return false;
-    }
+    // Satu kelompok boleh diisi lebih dari satu anggota.
     if ($jabatan === 'Ketua') {
         db()->prepare("UPDATE anggota_kelompok SET jabatan='Anggota' WHERE id_kelompok=? AND jabatan='Ketua'")->execute([$idKelompok]);
     }
@@ -1717,7 +1745,7 @@ function html_slot_kelompok(int $max = 5, array $kecualiIds = [], string $labelJ
         $adaKel = 1;
     }
     if ($adaKel < 1 && !$bolehNol) {
-        return '<div class="alert alert-err">Belum ada kelompok tani. Minta pengurus membentuk kelompok dulu di menu Kelompok.</div>';
+        return '<div class="alert alert-err">Belum ada kelompok tani. Minta pengurus membentuk kelompok dulu di menu Lembaga.</div>';
     }
     $opts = '<option value="">Pilih kelompok</option>' . options_kelompok_id([], $kecualiIds);
     $html = '<label>' . e($labelJml) . '</label>';
@@ -2469,15 +2497,6 @@ function proses_setujui_pengalihan(int $id, ?int $by = null): string {
         $pdo->prepare('UPDATE anggota SET username=?, password=? WHERE id=?')->execute([$uname, $hash, $baruId]);
         $kelBaru = $dbaru['kelompok'] ?? [];
         $kelLama = kelompok_anggota($lamaId);
-        if ($kelBaru) {
-            foreach ($kelBaru as $gk) {
-                $kid = (int)($gk['id'] ?? 0);
-                if ($kid > 0 && ($hh = penghuni_kelompok($kid, $lamaId))) {
-                    $ik = info_kelompok($kid);
-                    return 'Kelompok ' . ($ik['kode_kelompok'] ?? $kid) . ' sudah diisi ' . ($hh['nama'] ?? 'anggota lain') . '. 1 kelompok hanya untuk 1 anggota.';
-                }
-            }
-        }
         foreach ($kelLama as $gk) {
             keluar_anggota_dari_kelompok($lamaId, (int)$gk['id_kelompok']);
         }

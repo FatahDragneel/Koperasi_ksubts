@@ -2,6 +2,7 @@
 require __DIR__ . '/config.php';
 require_staff();
 ensure_lembaga_koperasi_schema();
+ensure_lembaga_anggota_schema();
 $title = 'Koperasi';
 $pdo = db();
 
@@ -30,10 +31,10 @@ exit;
 
 if (($_GET['act'] ?? '') === 'hapus') {
     $id = (int)($_GET['id'] ?? 0);
-    $q = $pdo->prepare('SELECT COUNT(*) FROM gapoktan WHERE id_koperasi=?');
+    $q = $pdo->prepare('SELECT COUNT(*) FROM anggota_lembaga WHERE id_koperasi=?');
     $q->execute([$id]);
     if ((int)$q->fetchColumn() > 0) {
-        flash('err', 'Koperasi tidak bisa dihapus karena masih memiliki gapoktan.');
+        flash('err', 'Koperasi tidak bisa dihapus karena masih memiliki anggota.');
     } else {
         $pdo->prepare('DELETE FROM lembaga_koperasi WHERE id=?')->execute([$id]);
         flash('ok', 'Koperasi berhasil dihapus.');
@@ -42,7 +43,7 @@ if (($_GET['act'] ?? '') === 'hapus') {
 exit;
 }
 
-$rows = $pdo->query('SELECT l.*, (SELECT COUNT(*) FROM gapoktan g WHERE g.id_koperasi=l.id) jml FROM lembaga_koperasi l ORDER BY l.nama_koperasi')->fetchAll();
+$rows = $pdo->query('SELECT l.*, (SELECT COUNT(*) FROM anggota_lembaga al WHERE al.id_koperasi=l.id) jml FROM lembaga_koperasi l ORDER BY l.nama_koperasi')->fetchAll();
 $nextId = (int)$pdo->query('SELECT COALESCE(MAX(id),0)+1 FROM lembaga_koperasi')->fetchColumn();
 $autoKode = 'KOP-' . str_pad((string)$nextId, 3, '0', STR_PAD_LEFT);
 include __DIR__ . '/includes/app_header.php';
@@ -54,7 +55,7 @@ include __DIR__ . '/includes/app_header.php';
 </div>
 <div class="table-wrap">
   <table>
-    <thead><tr><th>Kode</th><th>Nama koperasi</th><th>Ketua</th><th>No. HP</th><th>Gapoktan</th><th>Aksi</th></tr></thead>
+    <thead><tr><th>Kode</th><th>Nama koperasi</th><th>Ketua</th><th>No. HP</th><th>Anggota</th><th>Aksi</th></tr></thead>
     <tbody>
     <?php if (!$rows): ?>
       <tr><td colspan="6">Belum ada koperasi. Klik “Tambah koperasi” untuk membentuk yang pertama.</td></tr>
@@ -65,7 +66,7 @@ include __DIR__ . '/includes/app_header.php';
         <td><?= e($r['nama_koperasi'] ?? '') ?></td>
         <td><?= e($r['nama_ketua'] ?? '') ?: '—' ?></td>
         <td><?= e($r['no_hp_ketua'] ?? '') ?: '—' ?></td>
-        <td><?= (int)$r['jml'] ?> gapoktan</td>
+        <td><?= (int)$r['jml'] ?> anggota</td>
         <td style="white-space:nowrap;">
           <button class="btn btn-ghost btn-sm" onclick='editKop(<?= json_encode(['id' => $r['id'], 'kode' => $r['kode_koperasi'], 'nama' => $r['nama_koperasi'], 'ketua' => $r['nama_ketua'], 'hp' => $r['no_hp_ketua'], 'alamat' => $r['alamat'], 'ket' => $r['keterangan']]) ?>)'>Ubah</button>
           <a class="btn btn-red btn-sm" href="lembaga_koperasi.php?act=hapus&id=<?= (int)$r['id'] ?>&_csrf=<?= e(csrf_token()) ?>" onclick="return confirm('Hapus koperasi <?= e($r['nama_koperasi'] ?? '') ?>?')">Hapus</a>

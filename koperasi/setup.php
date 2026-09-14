@@ -144,7 +144,7 @@ if (has_table($pdo, 'timbangan_tbs')) {
     $add("ALTER TABLE timbangan_tbs MODIFY anggota_id INT NULL");
 }
 
-// Kelompok tani dibentuk sendiri via menu Kelompok (tidak dibuat otomatis).
+// Kelompok tani dibentuk sendiri via menu Lembaga (tidak dibuat otomatis).
 if (has_table($pdo, 'jenis_simpanan') && (int)$pdo->query('SELECT COUNT(*) FROM jenis_simpanan')->fetchColumn() === 0) {
     $add("INSERT INTO jenis_simpanan (kode,nama,keterangan,wajib) VALUES
       ('SPK','Simpanan Pokok','Dibayar sekali saat menjadi anggota',1),

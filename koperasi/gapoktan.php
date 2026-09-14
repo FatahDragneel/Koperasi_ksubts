@@ -2,7 +2,7 @@
 require __DIR__ . '/config.php';
 require_staff();
 ensure_gapoktan_schema();
-ensure_lembaga_koperasi_schema();
+ensure_lembaga_anggota_schema();
 $title = 'Gapoktan';
 $pdo = db();
 
@@ -11,17 +11,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($act === 'simpan') {
         $id = (int)($_POST['id'] ?? 0);
         if ($id > 0) {
-            $pdo->prepare('UPDATE gapoktan SET kode_gapoktan=?, nama_gapoktan=?, nama_ketua=?, no_hp_ketua=?, alamat=?, keterangan=?, id_koperasi=? WHERE id=?')->execute([
+            $pdo->prepare('UPDATE gapoktan SET kode_gapoktan=?, nama_gapoktan=?, nama_ketua=?, no_hp_ketua=?, alamat=?, keterangan=? WHERE id=?')->execute([
                 trim($_POST['kode'] ?? ''), trim($_POST['nama'] ?? ''), trim($_POST['ketua'] ?? ''),
-                trim($_POST['hp'] ?? ''), trim($_POST['alamat'] ?? ''), trim($_POST['ket'] ?? ''),
-                (int)($_POST['id_koperasi'] ?? 0) ?: null, $id,
+                trim($_POST['hp'] ?? ''), trim($_POST['alamat'] ?? ''), trim($_POST['ket'] ?? ''), $id,
             ]);
             flash('ok', 'Gapoktan berhasil diperbarui.');
         } else {
-            $pdo->prepare('INSERT INTO gapoktan (kode_gapoktan, nama_gapoktan, nama_ketua, no_hp_ketua, alamat, keterangan, id_koperasi) VALUES (?,?,?,?,?,?,?)')->execute([
+            $pdo->prepare('INSERT INTO gapoktan (kode_gapoktan, nama_gapoktan, nama_ketua, no_hp_ketua, alamat, keterangan) VALUES (?,?,?,?,?,?)')->execute([
                 trim($_POST['kode'] ?? ''), trim($_POST['nama'] ?? ''), trim($_POST['ketua'] ?? ''),
                 trim($_POST['hp'] ?? ''), trim($_POST['alamat'] ?? ''), trim($_POST['ket'] ?? ''),
-                (int)($_POST['id_koperasi'] ?? 0) ?: null,
             ]);
             flash('ok', 'Gapoktan baru berhasil ditambahkan.');
         }
@@ -32,10 +30,10 @@ exit;
 
 if (($_GET['act'] ?? '') === 'hapus') {
     $id = (int)($_GET['id'] ?? 0);
-    $q = $pdo->prepare('SELECT COUNT(*) FROM kelompok WHERE id_gapoktan=?');
+    $q = $pdo->prepare('SELECT COUNT(*) FROM anggota_gapoktan WHERE id_gapoktan=?');
     $q->execute([$id]);
     if ((int)$q->fetchColumn() > 0) {
-        flash('err', 'Gapoktan tidak bisa dihapus karena masih memiliki kelompok tani.');
+        flash('err', 'Gapoktan tidak bisa dihapus karena masih memiliki anggota.');
     } else {
         $pdo->prepare('DELETE FROM gapoktan WHERE id=?')->execute([$id]);
         flash('ok', 'Gapoktan berhasil dihapus.');
@@ -44,7 +42,7 @@ if (($_GET['act'] ?? '') === 'hapus') {
 exit;
 }
 
-$rows = $pdo->query("SELECT g.*, lk.nama_koperasi, (SELECT COUNT(*) FROM kelompok k WHERE k.id_gapoktan=g.id) jml FROM gapoktan g LEFT JOIN lembaga_koperasi lk ON lk.id=g.id_koperasi ORDER BY g.nama_gapoktan")->fetchAll();
+$rows = $pdo->query("SELECT g.*, (SELECT COUNT(*) FROM anggota_gapoktan ag WHERE ag.id_gapoktan=g.id) jml FROM gapoktan g ORDER BY g.nama_gapoktan")->fetchAll();
 $nextId = (int)$pdo->query('SELECT COALESCE(MAX(id),0)+1 FROM gapoktan')->fetchColumn();
 $autoKode = 'GAP-' . str_pad((string)$nextId, 3, '0', STR_PAD_LEFT);
 include __DIR__ . '/includes/app_header.php';
@@ -56,20 +54,19 @@ include __DIR__ . '/includes/app_header.php';
 </div>
 <div class="table-wrap">
   <table>
-    <thead><tr><th>Kode</th><th>Nama gapoktan</th><th>Ketua</th><th>Koperasi</th><th>Kelompok</th><th>Aksi</th></tr></thead>
+    <thead><tr><th>Kode</th><th>Nama gapoktan</th><th>Ketua</th><th>Anggota</th><th>Aksi</th></tr></thead>
     <tbody>
     <?php if (!$rows): ?>
-      <tr><td colspan="6">Belum ada gapoktan. Klik “Tambah gapoktan” untuk membentuk yang pertama.</td></tr>
+      <tr><td colspan="5">Belum ada gapoktan. Klik “Tambah gapoktan” untuk membentuk yang pertama.</td></tr>
     <?php endif; ?>
     <?php foreach ($rows as $r): ?>
       <tr>
         <td><?= e($r['kode_gapoktan'] ?? '') ?></td>
         <td><?= e($r['nama_gapoktan'] ?? '') ?></td>
         <td><?= e($r['nama_ketua'] ?? '') ?: '—' ?></td>
-        <td><?= e($r['nama_koperasi'] ?? '') ?: '—' ?></td>
-        <td><?= (int)$r['jml'] ?> kelompok</td>
+        <td><?= (int)$r['jml'] ?> anggota</td>
         <td style="white-space:nowrap;">
-          <button class="btn btn-ghost btn-sm" onclick='editGap(<?= json_encode(['id' => $r['id'], 'kode' => $r['kode_gapoktan'], 'nama' => $r['nama_gapoktan'], 'ketua' => $r['nama_ketua'], 'hp' => $r['no_hp_ketua'], 'alamat' => $r['alamat'], 'ket' => $r['keterangan'], 'id_koperasi' => $r['id_koperasi']]) ?>)'>Ubah</button>
+          <button class="btn btn-ghost btn-sm" onclick='editGap(<?= json_encode(['id' => $r['id'], 'kode' => $r['kode_gapoktan'], 'nama' => $r['nama_gapoktan'], 'ketua' => $r['nama_ketua'], 'hp' => $r['no_hp_ketua'], 'alamat' => $r['alamat'], 'ket' => $r['keterangan']]) ?>)'>Ubah</button>
           <a class="btn btn-red btn-sm" href="gapoktan.php?act=hapus&id=<?= (int)$r['id'] ?>&_csrf=<?= e(csrf_token()) ?>" onclick="return confirm('Hapus gapoktan <?= e($r['nama_gapoktan'] ?? '') ?>?')">Hapus</a>
           <a class="btn btn-green btn-sm" href="gapoktan_detail.php?id=<?= (int)$r['id'] ?>">Detail</a>
         </td>
@@ -91,7 +88,6 @@ include __DIR__ . '/includes/app_header.php';
       <label>Nama ketua<input name="ketua"></label>
       <label>No. HP ketua<input name="hp"></label>
       <label>Alamat<textarea name="alamat" rows="2"></textarea></label>
-      <label>Koperasi induk<select name="id_koperasi"><option value="0">— belum masuk koperasi —</option><?= options_lembaga_koperasi() ?></select></label>
       <label>Keterangan<textarea name="ket" rows="2"></textarea></label>
       <div class="modal-actions"><button type="button" class="btn btn-ghost" onclick="document.getElementById('mTambah').style.display='none'">Batal</button><button class="btn btn-green" type="submit">Simpan</button></div>
     </form>
@@ -109,7 +105,6 @@ include __DIR__ . '/includes/app_header.php';
       <label>Nama ketua<input name="ketua" id="u_ketua"></label>
       <label>No. HP ketua<input name="hp" id="u_hp"></label>
       <label>Alamat<textarea name="alamat" id="u_alamat" rows="2"></textarea></label>
-      <label>Koperasi induk<select name="id_koperasi" id="u_kop"><option value="0">— belum masuk koperasi —</option><?= options_lembaga_koperasi() ?></select></label>
       <label>Keterangan<textarea name="ket" id="u_ket" rows="2"></textarea></label>
       <div class="modal-actions"><button type="button" class="btn btn-ghost" onclick="document.getElementById('mUbah').style.display='none'">Batal</button><button class="btn btn-green" type="submit">Perbarui</button></div>
     </form>
@@ -124,7 +119,6 @@ function editGap(g) {
   document.getElementById('u_hp').value = g.hp || '';
   document.getElementById('u_alamat').value = g.alamat || '';
   document.getElementById('u_ket').value = g.ket || '';
-  document.getElementById('u_kop').value = g.id_koperasi || 0;
   document.getElementById('mUbah').style.display = 'flex';
 }
 </script>
