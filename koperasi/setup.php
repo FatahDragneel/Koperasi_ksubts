@@ -12,7 +12,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', '0');
 
 $host = '127.0.0.1';
-$name = 'kelompok_bina_tani2';
+$name = 'koperasi_bina_tani2';
 $tries = [['root', ''], ['root', 'root'], ['koperasi', 'koperasi123']];
 
 $pdo = null;
@@ -124,6 +124,7 @@ $cols = [
         'tanggal_terbentuk' => "DATE NULL",
         'fee_per_kg' => "DECIMAL(12,2) NOT NULL DEFAULT 0",
         'plasma' => "VARCHAR(120) NULL",
+        'id_gapoktan' => "INT NULL",
     ],
 ];
 foreach ($cols as $table => $list) {
@@ -148,7 +149,7 @@ if (has_table($pdo, 'jenis_simpanan') && (int)$pdo->query('SELECT COUNT(*) FROM 
     $add("INSERT INTO jenis_simpanan (kode,nama,keterangan,wajib) VALUES
       ('SPK','Simpanan Pokok','Dibayar sekali saat menjadi anggota',1),
       ('SWJ','Simpanan Wajib','Dibayar setiap bulan oleh anggota aktif',1),
-      ('SSK','Simpanan Sukarela','Simpanan bebas sesuai kemampuan anggota',0),
+      ('SSK','Simpanan Saham','Simpanan bebas sesuai kemampuan anggota',0),
       ('SHR','Simpanan Hari Raya','Tabungan khusus menjelang hari raya',0)");
 }
 if (has_table($pdo, 'pengaturan') && (int)$pdo->query('SELECT COUNT(*) FROM pengaturan')->fetchColumn() === 0) {
@@ -161,7 +162,7 @@ if (has_table($pdo, 'coa_akun') && (int)$pdo->query('SELECT COUNT(*) FROM coa_ak
       ('1211','Piutang pinjaman anggota','Aset','debit'),('1212','Piutang saprodi','Aset','debit'),
       ('1311','Persediaan / TBS','Aset','debit'),('1312','Persediaan pupuk organik','Aset','debit'),
       ('2111','Simpanan pokok','Kewajiban','kredit'),('2112','Simpanan wajib','Kewajiban','kredit'),
-      ('2113','Simpanan sukarela','Kewajiban','kredit'),('2211','Utang kas kelompok','Kewajiban','kredit'),
+      ('2113','Simpanan saham','Kewajiban','kredit'),('2211','Utang kas kelompok','Kewajiban','kredit'),
       ('3111','Modal / ekuitas','Ekuitas','kredit'),
       ('4111','Pendapatan bagi hasil pinjaman','Pendapatan','kredit'),
       ('4112','Pendapatan lain','Pendapatan','kredit'),('4113','Pendapatan margin TBS','Pendapatan','kredit'),

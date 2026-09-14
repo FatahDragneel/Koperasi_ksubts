@@ -28,7 +28,7 @@ header('X-XSS-Protection: 1; mode=block');
 header('Cache-Control: no-store');
 
 define('DB_HOST', '127.0.0.1');
-define('DB_NAME', 'kelompok_bina_tani2');
+define('DB_NAME', 'koperasi_bina_tani2');
 // XAMPP default: root tanpa sandi. Ubah jika MySQL Anda beda.
 define('DB_USER', 'root');
 define('DB_PASS', '');
@@ -111,6 +111,8 @@ function setting(): array {
         ensure_pengalihan_schema();
         ensure_pupuk_schema();
         ensure_simpanan_sukarela_schema();
+        ensure_gapoktan_schema();
+        ensure_lembaga_koperasi_schema();
         $s = db()->query('SELECT * FROM pengaturan WHERE id = 1')->fetch() ?: [];
     }
     return $s;
@@ -560,6 +562,83 @@ function ensure_anggota_kelompok_schema(): void {
         }
     } catch (Throwable $e) {
     }
+}
+
+function ensure_gapoktan_schema(): void {
+    static $done = false;
+    if ($done) { return; }
+    $done = true;
+    try {
+        db()->exec("CREATE TABLE IF NOT EXISTS gapoktan (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            kode_gapoktan VARCHAR(20) NULL,
+            nama_gapoktan VARCHAR(120) NULL,
+            nama_ketua VARCHAR(100) NULL,
+            no_hp_ketua VARCHAR(30) NULL,
+            alamat VARCHAR(255) NULL,
+            keterangan VARCHAR(255) NULL,
+            id_koperasi INT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        $gcols = array_column(db()->query('SHOW COLUMNS FROM gapoktan')->fetchAll(), 'Field');
+        foreach (['kode_gapoktan' => 'VARCHAR(20) NULL', 'nama_gapoktan' => 'VARCHAR(120) NULL', 'nama_ketua' => 'VARCHAR(100) NULL', 'no_hp_ketua' => 'VARCHAR(30) NULL', 'alamat' => 'VARCHAR(255) NULL', 'keterangan' => 'VARCHAR(255) NULL', 'id_koperasi' => 'INT NULL'] as $col => $def) {
+            if (!in_array($col, $gcols, true)) {
+                db()->exec("ALTER TABLE gapoktan ADD COLUMN `$col` $def");
+            }
+        }
+        $kcols = array_column(db()->query('SHOW COLUMNS FROM kelompok')->fetchAll(), 'Field');
+        if (!in_array('id_gapoktan', $kcols, true)) {
+            db()->exec('ALTER TABLE kelompok ADD COLUMN id_gapoktan INT NULL');
+        }
+    } catch (Throwable $e) {
+    }
+}
+
+function ensure_lembaga_koperasi_schema(): void {
+    static $done = false;
+    if ($done) { return; }
+    $done = true;
+    try {
+        db()->exec("CREATE TABLE IF NOT EXISTS lembaga_koperasi (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            kode_koperasi VARCHAR(20) NULL,
+            nama_koperasi VARCHAR(150) NULL,
+            nama_ketua VARCHAR(100) NULL,
+            no_hp_ketua VARCHAR(30) NULL,
+            alamat VARCHAR(255) NULL,
+            keterangan VARCHAR(255) NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    } catch (Throwable $e) {
+    }
+}
+
+function options_gapoktan(int $selected = 0): string {
+    ensure_gapoktan_schema();
+    $html = '';
+    try {
+        $rows = db()->query('SELECT id, kode_gapoktan, nama_gapoktan FROM gapoktan ORDER BY nama_gapoktan')->fetchAll();
+    } catch (Throwable $e) {
+        $rows = [];
+    }
+    foreach ($rows as $r) {
+        $html .= '<option value="' . (int)$r['id'] . '"' . ($selected === (int)$r['id'] ? ' selected' : '') . '>'
+            . e(($r['kode_gapoktan'] ?: 'GAP') . ' — ' . ($r['nama_gapoktan'] ?: 'Gapoktan')) . '</option>';
+    }
+    return $html;
+}
+
+function options_lembaga_koperasi(int $selected = 0): string {
+    ensure_lembaga_koperasi_schema();
+    $html = '';
+    try {
+        $rows = db()->query('SELECT id, kode_koperasi, nama_koperasi FROM lembaga_koperasi ORDER BY nama_koperasi')->fetchAll();
+    } catch (Throwable $e) {
+        $rows = [];
+    }
+    foreach ($rows as $r) {
+        $html .= '<option value="' . (int)$r['id'] . '"' . ($selected === (int)$r['id'] ? ' selected' : '') . '>'
+            . e(($r['kode_koperasi'] ?: 'KOP') . ' — ' . ($r['nama_koperasi'] ?: 'Koperasi')) . '</option>';
+    }
+    return $html;
 }
 
 function kelompok_anggota(int $anggotaId): array {
@@ -1415,6 +1494,15 @@ function ensure_simpanan_sukarela_schema(): void {
         }
     } catch (Throwable $e) {
     }
+    # Penamaan ulang tampilan: Sukarela -> Saham (kode SSK & COA 2113 tetap).
+    try {
+        db()->exec("UPDATE jenis_simpanan SET nama='Simpanan Saham' WHERE kode='SSK' AND nama<>'Simpanan Saham'");
+    } catch (Throwable $e) {
+    }
+    try {
+        db()->exec("UPDATE coa_akun SET nama='Simpanan saham' WHERE kode='2113' AND nama<>'Simpanan saham'");
+    } catch (Throwable $e) {
+    }
 }
 
 function tabel_simpanan_jenis(?int $jenisId): string {
@@ -1720,7 +1808,7 @@ function ensure_akuntansi_schema(): void {
                 ['1311','Persediaan / TBS','Aset','debit'],
                 ['2111','Simpanan pokok','Kewajiban','kredit'],
                 ['2112','Simpanan wajib','Kewajiban','kredit'],
-                ['2113','Simpanan sukarela','Kewajiban','kredit'],
+                ['2113','Simpanan saham','Kewajiban','kredit'],
                 ['2211','Utang kas kelompok','Kewajiban','kredit'],
                 ['3111','Modal / ekuitas','Ekuitas','kredit'],
                 ['4111','Pendapatan bagi hasil pinjaman','Pendapatan','kredit'],
@@ -2434,14 +2522,14 @@ function proses_setujui_pengalihan(int $id, ?int $by = null): string {
         $jidS = jenis_simpanan_id('SSK');
         if ($jidS && $suk > 0) {
             if ($p['sukarela_opsi'] === 'tunai') {
-                insert_simpanan_row($lamaId, $jidS, $tgl, -$suk, $ket . ' sukarela diambil tunai', $by);
-                posting_jurnal($tgl, 'Pengambilan sukarela pengalihan '.$p['no_pengalihan'], [
+                insert_simpanan_row($lamaId, $jidS, $tgl, -$suk, $ket . ' saham diambil tunai', $by);
+                posting_jurnal($tgl, 'Pengambilan saham pengalihan '.$p['no_pengalihan'], [
                     ['kode' => '2113', 'posisi' => 'debit', 'nominal' => $suk],
                     ['kode' => '1111', 'posisi' => 'kredit', 'nominal' => $suk],
                 ], 'pengalihan_sukarela', $id, $by);
             } else {
-                insert_simpanan_row($lamaId, $jidS, $tgl, -$suk, $ket . ' sukarela alih', $by);
-                insert_simpanan_row($baruId, $jidS, $tgl, $suk, $ket . ' sukarela masuk', $by);
+                insert_simpanan_row($lamaId, $jidS, $tgl, -$suk, $ket . ' saham alih', $by);
+                insert_simpanan_row($baruId, $jidS, $tgl, $suk, $ket . ' saham masuk', $by);
                 $baris[] = ['kode' => '2113', 'posisi' => 'debit', 'nominal' => $suk];
                 $baris[] = ['kode' => '2113', 'posisi' => 'kredit', 'nominal' => $suk];
             }

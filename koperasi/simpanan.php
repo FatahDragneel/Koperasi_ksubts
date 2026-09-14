@@ -30,7 +30,7 @@ foreach ($jenis as $j) {
     if ($kode === 'SWJ' || str_contains($nm, 'wajib')) {
         $idWajib = (int)$j['id'];
     }
-    if ($kode === 'SSK' || str_contains($nm, 'sukarela')) {
+    if ($kode === 'SSK' || str_contains($nm, 'sukarela') || str_contains($nm, 'saham')) {
         $idSukarela = (int)$j['id'];
     }
 }
@@ -78,12 +78,12 @@ if ($staff && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $jid = (int)($idSukarela ?: $_POST['jenis_id']);
     $nom = (float)str_replace('.', '', $_POST['jumlah'] ?? '0');
     $tgls = $_POST['tanggal'] ?: date('Y-m-d');
-    $sid = insert_simpanan_row((int)$_POST['anggota_id'], $jid, $tgls, $nom, trim($_POST['keterangan'] ?? 'Simpanan sukarela'), $u['id']);
-    posting_jurnal($tgls, 'Simpanan sukarela', [
+    $sid = insert_simpanan_row((int)$_POST['anggota_id'], $jid, $tgls, $nom, trim($_POST['keterangan'] ?? 'Simpanan saham'), $u['id']);
+    posting_jurnal($tgls, 'Simpanan saham', [
         ['kode' => '1111', 'posisi' => 'debit', 'nominal' => $nom],
         ['kode' => kode_simpanan_coa($jid), 'posisi' => 'kredit', 'nominal' => $nom],
     ], 'simpanan_sukarela', $sid, $u['id']);
-    flash('ok', 'Simpanan sukarela tercatat & dijurnal.');
+    flash('ok', 'Simpanan saham tercatat & dijurnal.');
     header('Location: simpanan.php');
     exit;
 }
@@ -209,7 +209,7 @@ include __DIR__ . '/includes/app_header.php';
   <a class="btn btn-ghost" href="cetak.php?<?= e($qsCetak) ?>" target="_blank"><?= $adaFilter ? 'Cetak hasil pencarian' : 'Cetak daftar' ?></a>
   <?php if ($staff): ?>
   <button class="btn btn-green" type="button" onclick="openModal('mWajib')">+ Simpanan wajib (semua anggota)</button>
-  <button class="btn btn-gold" type="button" onclick="openModal('mSukarela')">+ Simpanan sukarela</button>
+  <button class="btn btn-gold" type="button" onclick="openModal('mSukarela')">+ Simpanan saham</button>
   <?php endif; ?>
 </div>
 <?php if ($adaFilter): ?>
@@ -255,7 +255,7 @@ include __DIR__ . '/includes/app_header.php';
   <form class="modal" method="post">
     <?= csrf_field() ?>
     <input type="hidden" name="act" value="sukarela">
-    <h3>Simpanan sukarela</h3>
+    <h3>Simpanan saham</h3>
     <label>Anggota</label>
     <select name="anggota_id" required>
       <?php foreach ($anggota as $a): ?>
@@ -266,7 +266,7 @@ include __DIR__ . '/includes/app_header.php';
       <div><label>Tanggal</label><input type="date" name="tanggal" value="<?= date('Y-m-d') ?>" required></div>
       <div><label>Jumlah (Rp)</label><input name="jumlah" required></div>
     </div>
-    <label>Keterangan</label><input name="keterangan" value="Simpanan sukarela">
+    <label>Keterangan</label><input name="keterangan" value="Simpanan saham">
     <div class="row" style="margin-top:16px;justify-content:flex-end;">
       <button type="button" class="btn btn-ghost" onclick="closeModal('mSukarela')">Batal</button>
       <button class="btn btn-green">Simpan</button>

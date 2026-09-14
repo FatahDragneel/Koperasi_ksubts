@@ -7,8 +7,8 @@
 -- ERROR #1062 Duplicate entry? Artinya DB sudah terisi (habis setup.php atau
 -- impor 2x). Solusi: JANGAN impor ulang (data sudah ada), ATAU kosongkan dulu:
 -- phpMyAdmin -> klik database -> centang semua tabel -> Hapus/Drop -> impor ulang.
-CREATE DATABASE IF NOT EXISTS kelompok_bina_tani2 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE kelompok_bina_tani2;
+CREATE DATABASE IF NOT EXISTS koperasi_bina_tani2 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE koperasi_bina_tani2;
 
 CREATE TABLE IF NOT EXISTS pengaturan (
   id INT PRIMARY KEY DEFAULT 1,
@@ -41,7 +41,29 @@ CREATE TABLE IF NOT EXISTS kelompok (
   lokasi VARCHAR(255) NULL,
   desa VARCHAR(80) NULL,
   kecamatan VARCHAR(80) NULL,
-  fee_per_kg DECIMAL(12,2) NOT NULL DEFAULT 0
+  fee_per_kg DECIMAL(12,2) NOT NULL DEFAULT 0,
+  id_gapoktan INT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS gapoktan (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  kode_gapoktan VARCHAR(20) NULL,
+  nama_gapoktan VARCHAR(120) NULL,
+  nama_ketua VARCHAR(100) NULL,
+  no_hp_ketua VARCHAR(30) NULL,
+  alamat VARCHAR(255) NULL,
+  keterangan VARCHAR(255) NULL,
+  id_koperasi INT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS lembaga_koperasi (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  kode_koperasi VARCHAR(20) NULL,
+  nama_koperasi VARCHAR(150) NULL,
+  nama_ketua VARCHAR(100) NULL,
+  no_hp_ketua VARCHAR(30) NULL,
+  alamat VARCHAR(255) NULL,
+  keterangan VARCHAR(255) NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS anggota (
@@ -398,7 +420,7 @@ INSERT INTO pengaturan (id, nama_koperasi, alamat, telepon, email, tahun_berdiri
 INSERT INTO jenis_simpanan (kode, nama, keterangan, wajib) VALUES
 ('SPK', 'Simpanan Pokok', 'Dibayar sekali saat menjadi anggota', 1),
 ('SWJ', 'Simpanan Wajib', 'Dibayar setiap bulan oleh anggota aktif', 1),
-('SSK', 'Simpanan Sukarela', 'Simpanan bebas sesuai kemampuan anggota', 0),
+('SSK', 'Simpanan Saham', 'Simpanan bebas sesuai kemampuan anggota', 0),
 ('SHR', 'Simpanan Hari Raya', 'Tabungan khusus menjelang hari raya', 0);
 
 -- Contoh kelompok (ubah/tambah/hapus via menu Kelompok; plasma bebas per kelompok).
@@ -423,7 +445,7 @@ INSERT INTO coa_akun (kode, nama, kategori, saldo_normal) VALUES
 ('1312','Persediaan pupuk organik','Aset','debit'),
 ('2111','Simpanan pokok','Kewajiban','kredit'),
 ('2112','Simpanan wajib','Kewajiban','kredit'),
-('2113','Simpanan sukarela','Kewajiban','kredit'),
+('2113','Simpanan saham','Kewajiban','kredit'),
 ('2211','Utang kas kelompok','Kewajiban','kredit'),
 ('3111','Modal / ekuitas','Ekuitas','kredit'),
 ('4111','Pendapatan bagi hasil pinjaman','Pendapatan','kredit'),

@@ -190,7 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['act'] ?? '') === 'hapus_da
         $pdo->exec("INSERT INTO jenis_simpanan (kode, nama, keterangan, wajib) VALUES
             ('SPK', 'Simpanan Pokok', 'Dibayar sekali saat menjadi anggota', 1),
             ('SWJ', 'Simpanan Wajib', 'Dibayar setiap bulan oleh anggota aktif', 1),
-            ('SSK', 'Simpanan Sukarela', 'Simpanan bebas sesuai kemampuan anggota', 0),
+            ('SSK', 'Simpanan Saham', 'Simpanan bebas sesuai kemampuan anggota', 0),
             ('SHR', 'Simpanan Hari Raya', 'Tabungan khusus menjelang hari raya', 0)");
         ensure_kelompok_schema();
         ensure_akuntansi_schema();

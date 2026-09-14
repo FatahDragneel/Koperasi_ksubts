@@ -144,7 +144,7 @@ include __DIR__ . '/includes/app_header.php';
   <div class="kpis">
     <div class="kpi"><span>Pokok</span><b><?= rupiah($ringkas['pokok']) ?></b></div>
     <div class="kpi"><span>Wajib</span><b><?= rupiah($ringkas['wajib']) ?></b></div>
-    <div class="kpi"><span>Sukarela</span><b><?= rupiah($ringkas['sukarela']) ?></b></div>
+    <div class="kpi"><span>Saham</span><b><?= rupiah($ringkas['sukarela']) ?></b></div>
     <div class="kpi"><span>Total</span><b><?= rupiah($ringkas['pokok']+$ringkas['wajib']+$ringkas['sukarela']) ?></b></div>
   </div>
   <div class="row" style="margin-bottom:16px;justify-content:flex-end;">
@@ -163,7 +163,7 @@ include __DIR__ . '/includes/app_header.php';
     <thead>
       <tr>
         <?= th_urut('no','No') ?><?= th_urut('tanggal','Tanggal') ?><?php if ($staff): ?><?= th_urut('nama','Anggota') ?><?php endif; ?>
-        <?= th_urut('pokok','Pokok') ?><?= th_urut('wajib','Wajib') ?><?= th_urut('sukarela','Sukarela') ?><?= th_urut('total','Total') ?><?= th_urut('status','Status') ?><th></th>
+        <?= th_urut('pokok','Pokok') ?><?= th_urut('wajib','Wajib') ?><?= th_urut('sukarela','Saham') ?><?= th_urut('total','Total') ?><?= th_urut('status','Status') ?><th></th>
       </tr>
     </thead>
     <tbody>

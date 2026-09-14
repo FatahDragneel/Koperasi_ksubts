@@ -65,7 +65,7 @@ function nav_active($file) {
         <?php if (FITUR_PENGALIHAN): ?>
         <a class="<?= nav_active('pengalihan.php') ?>" href="pengalihan.php">⇄ Pengalihan hak</a>
         <?php endif; ?>
-        <a class="<?= nav_active('kelompok.php') ?>" href="kelompok.php">▣ Kelompok</a>
+        <a class="<?= in_array(basename($_SERVER['PHP_SELF'] ?? ''), ['lembaga.php','kelompok.php','kelompok_detail.php','gapoktan.php','gapoktan_detail.php','lembaga_koperasi.php','lembaga_koperasi_detail.php'], true) ? 'active' : '' ?>" href="lembaga.php">▣ Lembaga</a>
         <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php">🌱 Pupuk organik</a>
         <a class="<?= nav_active('verifikasi.php') ?>" href="verifikasi.php">☑ Verifikasi anggota</a>
         <?php if (FITUR_PINJAMAN): ?>

@@ -46,7 +46,7 @@ include __DIR__ . '/includes/public_header.php';
       <ul class="list-check">
         <li><span class="dot">1</span> Pupuk organik produksi sendiri dengan harga khusus anggota.</li>
         <li><span class="dot">2</span> Hasil panen (termasuk TBS) ditampung dan diniagakan bersama.</li>
-        <li><span class="dot">3</span> Simpanan pokok, wajib, dan sukarela yang dicatat transparan.</li>
+        <li><span class="dot">3</span> Simpanan pokok, wajib, dan saham yang dicatat transparan.</li>
         <li><span class="dot">4</span> Sarana produksi (pupuk, bibit) dengan harga khusus anggota.</li>
         <li><span class="dot">5</span> Pendampingan budidaya ramah lingkungan &amp; ISPO.</li>
       </ul>
@@ -109,7 +109,7 @@ include __DIR__ . '/includes/public_header.php';
       <div class="card">
         <div class="icon">⛁</div>
         <h3>Simpanan Anggota</h3>
-        <p>Simpanan pokok, wajib, dan sukarela yang dicatat transparan untuk usaha tani anggota.</p>
+        <p>Simpanan pokok, wajib, dan saham yang dicatat transparan untuk usaha tani anggota.</p>
       </div>
       <div class="card">
         <div class="icon">✦</div>

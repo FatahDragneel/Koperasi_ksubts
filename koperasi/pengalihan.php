@@ -226,7 +226,7 @@ include __DIR__ . '/includes/app_header.php';
         <?= th_urut('lama','Anggota lama') ?>
         <?= th_urut('baru','Calon / ID baru') ?>
         <?= th_urut('pokok','Pokok + wajib') ?>
-        <?= th_urut('sukarela','Sukarela') ?>
+        <?= th_urut('sukarela','Saham') ?>
         <th>Berkas</th>
         <?= th_urut('status','Status') ?>
         <th></th>
@@ -334,7 +334,7 @@ include __DIR__ . '/includes/app_header.php';
       <option value="alihkan">Ya — pindahkan ke ID baru (anggota lama nonaktif)</option>
       <option value="baru">Tidak — ID baru setor pokok &amp; wajib baru (anggota lama pasif)</option>
     </select>
-    <label>Simpanan sukarela</label>
+    <label>Simpanan saham</label>
     <select name="sukarela_opsi">
       <option value="alihkan">Alihkan ke ID baru</option>
       <option value="tunai">Ambil tunai oleh anggota lama</option>
@@ -362,7 +362,7 @@ include __DIR__ . '/includes/app_header.php';
 <script>
 function tampilLama(d) {
   var html = '<strong>' + d.nama + '</strong> · ' + d.no_anggota + ' · ' + d.status +
-    '<br>Pokok ' + d.pokok_rp + ' · Wajib ' + d.wajib_rp + ' · Sukarela ' + d.sukarela_rp +
+    '<br>Pokok ' + d.pokok_rp + ' · Wajib ' + d.wajib_rp + ' · Saham ' + d.sukarela_rp +
     '<br>Lahan: ' + (d.lahan.length ? d.lahan.join('; ') : '—') +
     '<br>Kelompok: ' + (d.kelompok.length ? d.kelompok.join(', ') : '—');
   if (d.utang > 0) html += '<br><span style="color:#c0392b">Masih ada sisa pinjaman ' + d.utang_rp + '</span>';
