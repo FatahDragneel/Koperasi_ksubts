@@ -1,6 +1,6 @@
 <?php
 require __DIR__ . '/config.php';
-require_staff();
+require_login();
 ensure_gapoktan_schema();
 ensure_lembaga_anggota_schema();
 
@@ -24,6 +24,9 @@ function tr_anggota_gapoktan(array $a, int $id): string {
 }
 
 $pdo = db();
+$u = auth();
+$staff = in_array($u['role'] ?? '', ['admin', 'pengurus']);
+$aid = (int)($u['anggota_id'] ?? 0);
 $id = (int)($_GET['id'] ?? $_POST['gapoktan_id'] ?? 0);
 $st = $pdo->prepare('SELECT * FROM gapoktan WHERE id=?');
 $st->execute([$id]);
@@ -37,6 +40,21 @@ $title = 'Detail Gapoktan';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $act = $_POST['act'] ?? '';
+    if (!$staff) {
+        if ($aid < 1) {
+            flash('err', 'Akun Anda belum terhubung ke data anggota.');
+        } elseif ($act === 'gabung') {
+            tambah_anggota_ke_gapoktan($aid, $id);
+            flash('ok', 'Anda tergabung ke gapoktan.');
+        } elseif ($act === 'keluar') {
+            keluar_anggota_dari_gapoktan($aid, $id);
+            flash('ok', 'Anda keluar dari gapoktan.');
+        } else {
+            flash('err', 'Akses ditolak.');
+        }
+        header('Location: gapoktan_detail.php?id=' . $id);
+        exit;
+    }
     if ($act === 'profil') {
         $pdo->prepare('UPDATE gapoktan SET kode_gapoktan=?, nama_gapoktan=?, nama_ketua=?, no_hp_ketua=?, alamat=?, keterangan=? WHERE id=?')->execute([
             trim($_POST['kode'] ?? ''), trim($_POST['nama'] ?? ''), trim($_POST['ketua'] ?? ''),
@@ -44,33 +62,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         flash('ok', 'Profil gapoktan disimpan.');
     } elseif ($act === 'masuk') {
-        $aid = (int)($_POST['anggota_id'] ?? 0);
-        if ($aid < 1) {
+        $aid2 = (int)($_POST['anggota_id'] ?? 0);
+        if ($aid2 < 1) {
             if (is_ajax()) { echo json_encode(['ok' => false, 'msg' => 'Pilih anggota.']); exit; }
             flash('err', 'Pilih anggota.');
         } else {
-            tambah_anggota_ke_gapoktan($aid, $id);
+            tambah_anggota_ke_gapoktan($aid2, $id);
             if (is_ajax()) {
                 $na = $pdo->prepare('SELECT * FROM anggota WHERE id=?');
-                $na->execute([$aid]);
-                $na = $na->fetch() ?: ['id' => $aid];
-                echo json_encode(['ok' => true, 'msg' => 'Anggota ditambahkan ke gapoktan ini.', 'id' => $aid, 'html' => tr_anggota_gapoktan($na, $id)]);
+                $na->execute([$aid2]);
+                $na = $na->fetch() ?: ['id' => $aid2];
+                echo json_encode(['ok' => true, 'msg' => 'Anggota ditambahkan ke gapoktan ini.', 'id' => $aid2, 'html' => tr_anggota_gapoktan($na, $id)]);
                 exit;
             }
             flash('ok', 'Anggota ditambahkan ke gapoktan ini.');
         }
     } elseif ($act === 'keluar') {
-        $aid = (int)($_POST['anggota_id'] ?? 0);
+        $aid2 = (int)($_POST['anggota_id'] ?? 0);
         if (is_ajax()) {
             $na = $pdo->prepare('SELECT no_anggota, nama FROM anggota WHERE id=?');
-            $na->execute([$aid]);
+            $na->execute([$aid2]);
             $na = $na->fetch() ?: [];
-            keluar_anggota_dari_gapoktan($aid, $id);
-            echo json_encode(['ok' => true, 'msg' => 'Anggota dikeluarkan dari gapoktan ini.', 'id' => $aid,
-                'opt' => ['value' => $aid, 'text' => (($na['no_anggota'] ?? '') ?: '-') . ' — ' . (($na['nama'] ?? '') ?: 'Anggota')]]);
+            keluar_anggota_dari_gapoktan($aid2, $id);
+            echo json_encode(['ok' => true, 'msg' => 'Anggota dikeluarkan dari gapoktan ini.', 'id' => $aid2,
+                'opt' => ['value' => $aid2, 'text' => (($na['no_anggota'] ?? '') ?: '-') . ' — ' . (($na['nama'] ?? '') ?: 'Anggota')]]);
             exit;
         }
-        keluar_anggota_dari_gapoktan($aid, $id);
+        keluar_anggota_dari_gapoktan($aid2, $id);
         flash('ok', 'Anggota dikeluarkan dari gapoktan ini.');
     }
     header('Location: gapoktan_detail.php?id=' . $id);
@@ -80,13 +98,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $st = $pdo->prepare('SELECT * FROM gapoktan WHERE id=?');
 $st->execute([$id]);
 $g = $st->fetch();
-$anggotaGap = anggota_di_gapoktan($id);
-$calon = $pdo->prepare("SELECT id, no_anggota, nama FROM anggota WHERE status IN ('aktif','pending') AND id NOT IN (SELECT anggota_id FROM anggota_gapoktan WHERE id_gapoktan=?) ORDER BY nama");
-$calon->execute([$id]);
-$calon = $calon->fetchAll();
+if ($staff) {
+    $anggotaGap = anggota_di_gapoktan($id);
+    $calon = $pdo->prepare("SELECT id, no_anggota, nama FROM anggota WHERE status IN ('aktif','pending') AND id NOT IN (SELECT anggota_id FROM anggota_gapoktan WHERE id_gapoktan=?) ORDER BY nama");
+    $calon->execute([$id]);
+    $calon = $calon->fetchAll();
+} else {
+    $ikut = $aid > 0 && in_array($id, array_map('intval', array_column(gapoktan_anggota($aid), 'id')), true);
+}
 include __DIR__ . '/includes/app_header.php';
 ?>
 <p style="margin:0 0 10px;"><a href="gapoktan.php"><i class="fa-solid fa-arrow-left"></i> Kembali ke Gapoktan</a></p>
+<?php if ($staff): ?>
 <div class="cards" style="grid-template-columns:1fr 1fr;">
   <div class="card">
     <h3>Profil Gapoktan</h3>
@@ -131,4 +154,26 @@ include __DIR__ . '/includes/app_header.php';
     </div>
   </div>
 </div>
+<?php else: ?>
+<div class="card" style="max-width:640px;">
+  <h3><?= e(($g['kode_gapoktan'] ?: 'GAP') . ' · ' . ($g['nama_gapoktan'] ?: 'Gapoktan')) ?></h3>
+  <p style="font-size:14px;margin-top:10px;">Ketua: <strong><?= e($g['nama_ketua'] ?: 'Belum dipilih') ?></strong><?= !empty($g['alamat']) ? '<br>Alamat: ' . e($g['alamat']) : '' ?><?= !empty($g['keterangan']) ? '<br>Keterangan: ' . e($g['keterangan']) : '' ?></p>
+  <p style="margin-top:10px;">Status: <?= $ikut ? '<span class="badge b-aktif">Tergabung</span>' : '<span class="badge b-pending">Belum tergabung</span>' ?></p>
+  <?php if ($ikut): ?>
+  <form method="post" onsubmit="return confirm('Keluar dari gapoktan ini?')">
+    <?= csrf_field() ?>
+    <input type="hidden" name="act" value="keluar">
+    <input type="hidden" name="gapoktan_id" value="<?= (int)$id ?>">
+    <button class="btn btn-ghost"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar dari gapoktan</button>
+  </form>
+  <?php else: ?>
+  <form method="post">
+    <?= csrf_field() ?>
+    <input type="hidden" name="act" value="gabung">
+    <input type="hidden" name="gapoktan_id" value="<?= (int)$id ?>">
+    <button class="btn btn-green"><i class="fa-solid fa-plus"></i> Gabung gapoktan ini</button>
+  </form>
+  <?php endif; ?>
+</div>
+<?php endif; ?>
 <?php include __DIR__ . '/includes/app_footer.php'; ?>

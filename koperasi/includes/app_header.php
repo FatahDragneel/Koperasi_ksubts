@@ -34,6 +34,10 @@ $__inisial = strtoupper(substr($__kata[0] ?? 'K', 0, 1) . substr(end($__kata) ?:
 function nav_active($file) {
     return basename($_SERVER['PHP_SELF']) === $file ? 'active' : '';
 }
+function nav_active_lembaga() {
+    static $f = ['lembaga.php','kelompok.php','kelompok_detail.php','gapoktan.php','gapoktan_detail.php','lembaga_koperasi.php','lembaga_koperasi_detail.php'];
+    return in_array(basename($_SERVER['PHP_SELF'] ?? ''), $f, true) ? 'active' : '';
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -69,7 +73,7 @@ function nav_active($file) {
         <?php if (FITUR_PENGALIHAN): ?>
         <a class="<?= nav_active('pengalihan.php') ?>" href="pengalihan.php"><i class="fa-solid fa-right-left"></i> Pengalihan hak</a>
         <?php endif; ?>
-        <a class="<?= in_array(basename($_SERVER['PHP_SELF'] ?? ''), ['lembaga.php','kelompok.php','kelompok_detail.php','gapoktan.php','gapoktan_detail.php','lembaga_koperasi.php','lembaga_koperasi_detail.php'], true) ? 'active' : '' ?>" href="lembaga.php"><i class="fa-solid fa-sitemap"></i> Lembaga</a>
+        <a class="<?= nav_active_lembaga() ?>" href="lembaga.php"><i class="fa-solid fa-sitemap"></i> Lembaga</a>
         <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php"><i class="fa-solid fa-seedling"></i> Pupuk organik</a>
         <a class="<?= nav_active('verifikasi.php') ?>" href="verifikasi.php"><i class="fa-solid fa-user-check"></i> Verifikasi anggota</a>
         <?php if (FITUR_PINJAMAN): ?>
@@ -92,6 +96,7 @@ function nav_active($file) {
         <a class="<?= nav_active('pinjaman_bayar.php') ?>" href="pinjaman_bayar.php"><i class="fa-solid fa-credit-card"></i> Bayar angsuran</a>
         <?php endif; ?>
         <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php"><i class="fa-solid fa-seedling"></i> Pupuk organik</a>
+        <a class="<?= nav_active_lembaga() ?>" href="lembaga.php"><i class="fa-solid fa-sitemap"></i> Lembaga</a>
         <a class="<?= nav_active('profil_koperasi.php') ?>" href="profil_koperasi.php#ba"><i class="fa-solid fa-scroll"></i> Berita acara</a>
         <a class="<?= nav_active('profil.php') ?>" href="profil.php"><i class="fa-solid fa-circle-user"></i> Data &amp; usaha saya</a>
       <?php endif; ?>

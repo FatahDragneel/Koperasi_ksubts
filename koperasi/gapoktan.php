@@ -1,13 +1,31 @@
 <?php
 require __DIR__ . '/config.php';
-require_staff();
+require_login();
 ensure_gapoktan_schema();
 ensure_lembaga_anggota_schema();
+$u = auth();
+$staff = in_array($u['role'] ?? '', ['admin', 'pengurus']);
+$aid = (int)($u['anggota_id'] ?? 0);
 $title = 'Gapoktan';
 $pdo = db();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $act = $_POST['act'] ?? '';
+    if (!$staff) {
+        $gid = (int)($_POST['id'] ?? 0);
+        if ($gid < 1 || $aid < 1) {
+            flash('err', 'Permintaan tidak valid.');
+        } elseif ($act === 'gabung') {
+            tambah_anggota_ke_gapoktan($aid, $gid);
+            flash('ok', 'Anda tergabung ke gapoktan.');
+        } elseif ($act === 'keluar') {
+            keluar_anggota_dari_gapoktan($aid, $gid);
+            flash('ok', 'Anda keluar dari gapoktan.');
+        } else {
+            flash('err', 'Akses ditolak.');
+        }
+        header('Location: gapoktan.php'); exit;
+    }
     if ($act === 'simpan') {
         $id = (int)($_POST['id'] ?? 0);
         if ($id > 0) {
@@ -29,6 +47,7 @@ exit;
 }
 
 if (($_GET['act'] ?? '') === 'hapus') {
+    if (!$staff) { flash('err', 'Akses ditolak.'); header('Location: gapoktan.php'); exit; }
     $id = (int)($_GET['id'] ?? 0);
     $q = $pdo->prepare('SELECT COUNT(*) FROM anggota_gapoktan WHERE id_gapoktan=?');
     $q->execute([$id]);
@@ -45,29 +64,49 @@ exit;
 $rows = $pdo->query("SELECT g.*, (SELECT COUNT(*) FROM anggota_gapoktan ag WHERE ag.id_gapoktan=g.id) jml FROM gapoktan g ORDER BY g.nama_gapoktan")->fetchAll();
 $nextId = (int)$pdo->query('SELECT COALESCE(MAX(id),0)+1 FROM gapoktan')->fetchColumn();
 $autoKode = 'GAP-' . str_pad((string)$nextId, 3, '0', STR_PAD_LEFT);
+$milikSaya = $aid > 0 ? array_map('intval', array_column(gapoktan_anggota($aid), 'id')) : [];
 include __DIR__ . '/includes/app_header.php';
 ?>
 <p style="margin:0 0 10px;"><a href="lembaga.php"><i class="fa-solid fa-arrow-left"></i> Kembali ke Lembaga</a></p>
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
   <h2 style="margin:0;">Gapoktan</h2>
-  <button class="btn btn-green" onclick="document.getElementById('mTambah').style.display='flex'"><i class="fa-solid fa-plus"></i> Tambah gapoktan</button>
+  <?php if ($staff): ?>
+  <button class="btn btn-green" onclick="document.getElementById('mTambah').style.display='flex'"><i class="fa-solid fa-plus"></i> Tambah gapoktan</button><?php endif; ?>
 </div>
 <div class="table-wrap">
   <table>
-    <thead><tr><th>Kode</th><th>Nama gapoktan</th><th>Ketua</th><th>Anggota</th><th>Aksi</th></tr></thead>
+    <?php if ($staff): ?><thead><tr><th>Kode</th><th>Nama gapoktan</th><th>Ketua</th><th>Anggota</th><th>Aksi</th></tr></thead><?php else: ?><thead><tr><th>Kode</th><th>Nama gapoktan</th><th>Ketua</th><th>Status saya</th><th>Aksi</th></tr></thead><?php endif; ?>
     <tbody>
     <?php if (!$rows): ?>
-      <tr><td colspan="5">Belum ada gapoktan. Klik “Tambah gapoktan” untuk membentuk yang pertama.</td></tr>
+      <tr><td colspan="5"><?= $staff ? 'Belum ada gapoktan. Klik “Tambah gapoktan” untuk membentuk yang pertama.' : 'Belum ada gapoktan.' ?></td></tr>
     <?php endif; ?>
     <?php foreach ($rows as $r): ?>
       <tr>
         <td><?= e($r['kode_gapoktan'] ?? '') ?></td>
         <td><?= e($r['nama_gapoktan'] ?? '') ?></td>
         <td><?= e($r['nama_ketua'] ?? '') ?: '—' ?></td>
-        <td><?= (int)$r['jml'] ?> anggota</td>
+        <?php if ($staff): ?><td><?= (int)$r['jml'] ?> anggota</td><?php else: ?><td><?= in_array((int)$r['id'], $milikSaya, true) ? '<span class="badge b-aktif">Tergabung</span>' : '<span class="badge b-pending">Belum</span>' ?></td><?php endif; ?>
         <td style="white-space:nowrap;">
+          <?php if ($staff): ?>
           <button class="btn btn-ghost btn-sm" onclick='editGap(<?= json_encode(['id' => $r['id'], 'kode' => $r['kode_gapoktan'], 'nama' => $r['nama_gapoktan'], 'ketua' => $r['nama_ketua'], 'hp' => $r['no_hp_ketua'], 'alamat' => $r['alamat'], 'ket' => $r['keterangan']]) ?>)'><i class="fa-solid fa-pen"></i> Ubah</button>
           <a class="btn btn-red btn-sm" href="gapoktan.php?act=hapus&id=<?= (int)$r['id'] ?>&_csrf=<?= e(csrf_token()) ?>" onclick="return confirm('Hapus gapoktan <?= e($r['nama_gapoktan'] ?? '') ?>?')"><i class="fa-solid fa-trash"></i> Hapus</a>
+          <?php else: ?>
+          <?php if (in_array((int)$r['id'], $milikSaya, true)): ?>
+          <form method="post" style="display:inline;" onsubmit="return confirm('Keluar dari gapoktan ini?')">
+            <?= csrf_field() ?>
+            <input type="hidden" name="act" value="keluar">
+            <input type="hidden" name="id" value="<?= (int)$r['id'] ?>">
+            <button class="btn btn-ghost btn-sm" type="submit"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar</button>
+          </form>
+          <?php else: ?>
+          <form method="post" style="display:inline;">
+            <?= csrf_field() ?>
+            <input type="hidden" name="act" value="gabung">
+            <input type="hidden" name="id" value="<?= (int)$r['id'] ?>">
+            <button class="btn btn-green btn-sm" type="submit"><i class="fa-solid fa-plus"></i> Gabung</button>
+          </form>
+          <?php endif; ?>
+          <?php endif; ?>
           <a class="btn btn-green btn-sm" href="gapoktan_detail.php?id=<?= (int)$r['id'] ?>"><i class="fa-solid fa-eye"></i> Detail</a>
         </td>
       </tr>
@@ -76,6 +115,7 @@ include __DIR__ . '/includes/app_header.php';
   </table>
 </div>
 
+<?php if ($staff): ?>
 <div class="modal-bg" id="mTambah" style="justify-content: center; align-items: center;">
   <div class="modal">
     <h3>Tambah Gapoktan</h3>
@@ -110,6 +150,7 @@ include __DIR__ . '/includes/app_header.php';
     </form>
   </div>
 </div>
+<?php endif; ?>
 <script>
 function editGap(g) {
   document.getElementById('u_id').value = g.id;

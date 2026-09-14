@@ -687,6 +687,39 @@ function keluar_anggota_dari_lembaga(int $anggotaId, int $idKoperasi): void {
     }
 }
 
+function gapoktan_anggota(int $aid): array {
+    ensure_lembaga_anggota_schema();
+    try {
+        $st = db()->prepare('SELECT g.* FROM gapoktan g JOIN anggota_gapoktan ag ON ag.id_gapoktan=g.id AND ag.anggota_id=? ORDER BY g.nama_gapoktan');
+        $st->execute([$aid]);
+        return $st->fetchAll();
+    } catch (Throwable $e) {
+        return [];
+    }
+}
+
+function lembaga_anggota(int $aid): array {
+    ensure_lembaga_anggota_schema();
+    try {
+        $st = db()->prepare('SELECT l.* FROM lembaga_koperasi l JOIN anggota_lembaga al ON al.id_koperasi=l.id AND al.anggota_id=? ORDER BY l.nama_koperasi');
+        $st->execute([$aid]);
+        return $st->fetchAll();
+    } catch (Throwable $e) {
+        return [];
+    }
+}
+
+function jabatan_saya_kelompok(int $aid, int $idKel): string {
+    ensure_anggota_kelompok_schema();
+    try {
+        $st = db()->prepare('SELECT jabatan FROM anggota_kelompok WHERE anggota_id=? AND id_kelompok=?');
+        $st->execute([$aid, $idKel]);
+        return (string)($st->fetchColumn() ?: '');
+    } catch (Throwable $e) {
+        return '';
+    }
+}
+
 function kelompok_anggota(int $anggotaId): array {
     ensure_anggota_kelompok_schema();
     $st = db()->prepare('SELECT ak.*, k.nomor, k.kode_kelompok, k.nama_kelompok, k.nama_ketua, k.no_hp_ketua, k.wilayah_dusun, k.lokasi

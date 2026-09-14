@@ -1,8 +1,11 @@
 <?php
 require __DIR__ . '/config.php';
-require_staff();
+require_login();
 ensure_kelompok_schema();
 $pdo = db();
+$u = auth();
+$staff = in_array($u['role'] ?? '', ['admin', 'pengurus']);
+$aid = (int)($u['anggota_id'] ?? 0);
 $id = (int)($_GET['id'] ?? $_POST['kelompok_id'] ?? 0);
 $st = $pdo->prepare('SELECT * FROM kelompok WHERE id=?');
 $st->execute([$id]);
@@ -51,6 +54,21 @@ function tr_anggota_kelompok(array $a, int $id, array $jabatanList): string {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $act = $_POST['act'] ?? '';
+    if (!$staff) {
+        if ($aid < 1) {
+            flash('err', 'Akun Anda belum terhubung ke data anggota.');
+        } elseif ($act === 'gabung') {
+            tambah_anggota_ke_kelompok($aid, $id, 'Anggota');
+            flash('ok', 'Anda tergabung ke kelompok.');
+        } elseif ($act === 'keluar') {
+            keluar_anggota_dari_kelompok($aid, $id);
+            flash('ok', 'Anda keluar dari kelompok.');
+        } else {
+            flash('err', 'Akses ditolak.');
+        }
+        header('Location: kelompok_detail.php?id=' . $id);
+        exit;
+    }
     if ($act === 'profil') {
         $pdo->prepare('UPDATE kelompok SET luas_tanah=?, lokasi=?, desa=?, kecamatan=? WHERE id=?')->execute([
             $_POST['luas_tanah'] !== '' ? (float)$_POST['luas_tanah'] : 0,
@@ -108,6 +126,7 @@ $title = ($k['kode_kelompok'] ?: ('KT-' . $nomor)) . ' · ' . ($k['nama_kelompok
 include __DIR__ . '/includes/app_header.php';
 ?>
 <p style="margin-bottom:12px;"><a class="btn btn-ghost btn-sm" href="kelompok.php"><i class="fa-solid fa-arrow-left"></i> Daftar kelompok</a></p>
+<?php if ($staff): ?>
 
 <div class="cards" style="grid-template-columns:1fr 1fr;">
   <form class="card" method="post">
@@ -173,4 +192,30 @@ include __DIR__ . '/includes/app_header.php';
     </table>
   </div>
 </div>
+<?php else: ?>
+<?php
+  $ikutKel = $aid > 0 && in_array($id, array_map('intval', array_column(kelompok_anggota($aid), 'id_kelompok')), true);
+  $jabSaya = $ikutKel ? jabatan_saya_kelompok($aid, $id) : '';
+?>
+<div class="card" style="max-width:640px;">
+  <h3><?= e(($k['kode_kelompok'] ?: 'KT') . ' · ' . ($k['nama_kelompok'] ?: 'Kelompok')) ?></h3>
+  <p style="font-size:14px;margin-top:10px;">Ketua: <strong><?= e($k['nama_ketua'] ?: 'Belum dipilih') ?></strong><?= !empty($k['plasma']) ? '<br>Plasma: ' . e($k['plasma']) : '' ?><?= !empty($k['lokasi']) ? '<br>Lokasi: ' . e($k['lokasi']) : '' ?><?= !empty($k['desa']) ? '<br>Desa: ' . e($k['desa']) : '' ?><?= !empty($k['kecamatan']) ? '<br>Kecamatan: ' . e($k['kecamatan']) : '' ?></p>
+  <p style="margin-top:10px;">Status: <?= $ikutKel ? '<span class="badge b-aktif">Tergabung' . ($jabSaya !== '' ? ' · ' . e($jabSaya) : '') . '</span>' : '<span class="badge b-pending">Belum tergabung</span>' ?></p>
+  <?php if ($ikutKel): ?>
+  <form method="post" onsubmit="return confirm('Keluar dari kelompok ini?')">
+    <?= csrf_field() ?>
+    <input type="hidden" name="act" value="keluar">
+    <input type="hidden" name="kelompok_id" value="<?= $id ?>">
+    <button class="btn btn-ghost"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar dari kelompok</button>
+  </form>
+  <?php else: ?>
+  <form method="post">
+    <?= csrf_field() ?>
+    <input type="hidden" name="act" value="gabung">
+    <input type="hidden" name="kelompok_id" value="<?= $id ?>">
+    <button class="btn btn-green"><i class="fa-solid fa-plus"></i> Gabung kelompok ini</button>
+  </form>
+  <?php endif; ?>
+</div>
+<?php endif; ?>
 <?php include __DIR__ . '/includes/app_footer.php'; ?>
