@@ -108,7 +108,7 @@ if ($staff) {
 }
 include __DIR__ . '/includes/app_header.php';
 ?>
-<p style="margin:0 0 10px;"><a href="gapoktan.php"><i class="fa-solid fa-arrow-left"></i> Kembali ke Gapoktan</a></p>
+<p style="margin-bottom:14px;"><a class="btn btn-ghost btn-sm" href="gapoktan.php"><i class="fa-solid fa-arrow-left"></i> Kembali ke Gapoktan</a></p>
 <?php if ($staff): ?>
 <div class="cards" style="grid-template-columns:1fr 1fr;">
   <div class="card">
