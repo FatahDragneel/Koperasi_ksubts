@@ -66,19 +66,25 @@ function nav_active($file) {
         <a class="<?= nav_active('kelompok.php') ?>" href="kelompok.php">▣ Kelompok</a>
         <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php">🌱 Pupuk organik</a>
         <a class="<?= nav_active('verifikasi.php') ?>" href="verifikasi.php">☑ Verifikasi anggota</a>
+        <?php if (FITUR_PINJAMAN): ?>
         <a class="<?= nav_active('verifikasi_bayar.php') ?>" href="verifikasi_bayar.php">☑ Verifikasi bayar</a>
+        <?php endif; ?>
         <a class="<?= nav_active('simpanan.php') ?>" href="simpanan.php">⛁ Simpanan</a>
         <a class="<?= nav_active('penarikan.php') ?>" href="penarikan.php">↩ Penarikan simpanan</a>
+        <?php if (FITUR_PINJAMAN): ?>
         <a class="<?= nav_active('pinjaman.php') ?>" href="pinjaman.php">⇄ Pinjaman</a>
         <a class="<?= nav_active('angsuran.php') ?>" href="angsuran.php">↻ Angsuran</a>
+        <?php endif; ?>
         <a class="<?= nav_active('pengumuman.php') ?>" href="pengumuman.php">✉ Pengumuman</a>
         <a class="<?= nav_active('laporan.php') ?>" href="laporan.php">▣ Laporan</a>
         <a class="<?= nav_active('pengaturan.php') ?>" href="pengaturan.php">⚙ Pengaturan</a>
       <?php else: ?>
         <a class="<?= nav_active('simpanan.php') ?>" href="simpanan.php">⛁ Simpanan Saya</a>
         <a class="<?= nav_active('penarikan.php') ?>" href="penarikan.php">↩ Penarikan simpanan</a>
+        <?php if (FITUR_PINJAMAN): ?>
         <a class="<?= nav_active('pinjaman.php') ?>" href="pinjaman.php">⇄ Pinjaman Saya</a>
         <a class="<?= nav_active('pinjaman_bayar.php') ?>" href="pinjaman_bayar.php">↻ Bayar angsuran</a>
+        <?php endif; ?>
         <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php">🌱 Pupuk organik</a>
         <a class="<?= nav_active('profil_koperasi.php') ?>" href="profil_koperasi.php#ba">📜 Berita acara</a>
         <a class="<?= nav_active('profil.php') ?>" href="profil.php">◉ Data &amp; usaha saya</a>

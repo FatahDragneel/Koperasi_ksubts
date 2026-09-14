@@ -34,6 +34,23 @@ define('DB_USER', 'root');
 define('DB_PASS', '');
 define('AUTH_KEY', 'BinaTani-9f3cA7e2D1b8-KqWm4pR6sX0uYvHz-nJ5tL8cG2');
 
+# ============================================================
+# FITUR PINJAMAN DISEMBUNYIKAN (koperasi produsen, bukan simpan pinjam).
+# Semua menu, halaman, dan widgit pinjaman tidak tampil.
+# Data pinjaman lama tetap aman di database.
+# Untuk menampilkan lagi: ubah false menjadi true di bawah ini.
+# ============================================================
+define('FITUR_PINJAMAN', false);
+
+# Penjaga halaman pinjaman: alihkan ke dashboard bila disembunyikan.
+function perlu_fitur_pinjaman(): void {
+    if (!FITUR_PINJAMAN) {
+        flash('err', 'Fitur pinjaman sedang disembunyikan.');
+        header('Location: dashboard.php');
+        exit;
+    }
+}
+
 function db(): PDO {
     static $pdo = null;
     if ($pdo !== null) {

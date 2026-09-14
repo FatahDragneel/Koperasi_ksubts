@@ -200,7 +200,7 @@ include __DIR__ . '/includes/app_header.php';
     <?php endif; ?>
     <p style="margin-top:10px;"><strong>STDB</strong> <?= ($a['stdb'] ?? '') === 'sudah' ? 'Sudah' : 'Belum' ?><?= !empty($a['no_stdb']) ? ' · '.e($a['no_stdb']) : '' ?></p>
     <p style="margin-top:10px;"><strong>Username login</strong> <?= e($akun ?: '—') ?><br>
-       <strong>Total simpanan</strong> <?= rupiah($totSimpan) ?> · <strong>Sisa pinjaman</strong> <?= rupiah($sisaPinjam) ?></p>
+       <strong>Total simpanan</strong> <?= rupiah($totSimpan) ?><?php if (FITUR_PINJAMAN): ?> · <strong>Sisa pinjaman</strong> <?= rupiah($sisaPinjam) ?><?php endif; ?></p>
   </div>
 </div>
 

@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . '/config.php';
 require_login();
+perlu_fitur_pinjaman();
 ensure_pinjaman_schema();
 $pdo = db();
 $u = auth();

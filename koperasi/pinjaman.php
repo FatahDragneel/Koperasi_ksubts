@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . '/config.php';
 require_login();
+perlu_fitur_pinjaman();
 if (!function_exists('status_anggota')) {
     function status_anggota(?int $id): string {
         if (!$id) {

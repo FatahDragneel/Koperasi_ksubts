@@ -137,7 +137,7 @@ if ($staff) {
 include __DIR__ . '/includes/app_header.php';
 ?>
 <p style="color:var(--muted);font-size:14px;margin-bottom:14px;">
-  Anggota <strong>pasif</strong> boleh masuk portal, tidak boleh ajukan pinjaman, dan boleh menarik seluruh simpanan.
+  Anggota <strong>pasif</strong> boleh masuk portal dan boleh menarik seluruh simpanan.
   Setelah pengurus menyetujui, saldo ditarik tunai dan status menjadi <strong>nonaktif</strong>.
 </p>
 <?php if (!$staff && $stAgt === 'pasif' && !empty($ringkas)): ?>

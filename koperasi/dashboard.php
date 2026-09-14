@@ -67,8 +67,10 @@ include __DIR__ . '/includes/app_header.php';
     <small style="display:block;margin-top:6px;font-weight:500;color:var(--muted);">Aktif <?= (int)$kpi['anggota_aktif'] ?> · Pasif <?= (int)$kpi['anggota_pasif'] ?></small>
   </div>
   <div class="kpi"><span>Total simpanan</span><b><?= rupiah($kpi['simpanan']) ?></b></div>
+  <?php if (FITUR_PINJAMAN): ?>
   <div class="kpi"><span>Sisa pinjaman</span><b><?= rupiah($kpi['pinjaman']) ?></b></div>
   <div class="kpi"><span>Pengajuan baru</span><b><?= (int)$kpi['pengajuan'] ?></b></div>
+  <?php endif; ?>
   <div class="kpi"><span>Persediaan pupuk</span><b><?= rupiah($kpi['pupuk_stok']) ?></b></div>
   <div class="kpi"><span>Jual pupuk bulan ini</span><b><?= rupiah($kpi['pupuk_jual']) ?></b></div>
 </div>
@@ -78,12 +80,15 @@ include __DIR__ . '/includes/app_header.php';
     <small style="display:block;margin-top:6px;font-weight:500;color:var(--muted);">Aktif <?= $jmlAktif ?> · Pasif <?= $jmlPasif ?></small>
   </div>
   <div class="kpi"><span>Total simpanan saya</span><b><?= rupiah($totSimpan) ?></b></div>
+  <?php if (FITUR_PINJAMAN): ?>
   <div class="kpi"><span>Sisa pinjaman</span><b><?= rupiah($sisaPinjam) ?></b></div>
+  <?php endif; ?>
   <div class="kpi"><span>Status saya</span><b><?= e($stAgt !== '' ? $stAgt : 'aktif') ?></b></div>
 </div>
 <?php endif; ?>
 
 <div class="cards" style="grid-template-columns:1fr 1fr;">
+  <?php if (FITUR_PINJAMAN): ?>
   <div class="card">
     <h3 style="margin-bottom:12px;">Pinjaman terbaru</h3>
     <div class="table-wrap">
@@ -104,6 +109,7 @@ include __DIR__ . '/includes/app_header.php';
       </table>
     </div>
   </div>
+  <?php endif; ?>
   <div class="card">
     <h3 style="margin-bottom:12px;">Setoran simpanan</h3>
     <div class="table-wrap">

@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . '/config.php';
 require_staff();
+perlu_fitur_pinjaman();
 $title = 'Angsuran pinjaman';
 $pdo = db();
 

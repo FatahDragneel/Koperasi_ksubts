@@ -111,7 +111,9 @@ include __DIR__ . '/includes/app_header.php';
     <label>Potongan grading (%)</label>
     <input name="persen_potongan" type="number" step="0.1" min="0" max="50" value="0">
     <label class="check"><input type="checkbox" name="potong_saprodi" value="1" style="width:auto;"><span>Potong piutang saprodi anggota kelompok ini</span></label>
+    <?php if (FITUR_PINJAMAN): ?>
     <label class="check"><input type="checkbox" name="potong_angsuran" value="1" style="width:auto;"><span>Potong angsuran anggota kelompok ini</span></label>
+    <?php endif; ?>
     <label>Keterangan</label>
     <input name="keterangan" placeholder="Mis. truk 1 hamparan A">
     <p style="font-size:12px;color:var(--muted);margin-top:8px;">Satu nota untuk satu kelompok. Harga mengikuti kategori umur yang dipilih. Isi harga TBS dulu jika belum ada.</p>

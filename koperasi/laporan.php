@@ -46,10 +46,12 @@ include __DIR__ . '/includes/app_header.php';
 ?>
 <div class="kpis">
   <div class="kpi"><span>Akumulasi simpanan</span><b><?= rupiah($totS) ?></b></div>
+  <?php if (FITUR_PINJAMAN): ?>
   <div class="kpi"><span>Pokok tersalur (bukan ditolak)</span><b><?= rupiah($totP) ?></b></div>
   <div class="kpi"><span>Outstanding</span><b><?= rupiah($totSisa) ?></b></div>
   <div class="kpi"><span>Angsuran <?= e($labelBulan) ?></span><b><?= rupiah($totAngsBulan) ?></b></div>
   <div class="kpi"><span>Total bagi hasil</span><b><?= rupiah($totBagi) ?></b></div>
+  <?php endif; ?>
 </div>
 <div class="cards" style="grid-template-columns:1fr 1.2fr;">
   <div class="card">
@@ -65,6 +67,7 @@ include __DIR__ . '/includes/app_header.php';
       </table>
     </div>
   </div>
+  <?php if (FITUR_PINJAMAN): ?>
   <div class="card">
     <h3>Posisi pinjaman</h3>
     <p style="font-size:12px;color:var(--muted);margin:8px 0;">Outstanding dan bagi hasil tidak menghitung pinjaman yang ditolak.</p>
@@ -88,6 +91,9 @@ include __DIR__ . '/includes/app_header.php';
       </table>
     </div>
   </div>
+  <?php endif; ?>
 </div>
+<?php if (FITUR_PINJAMAN): ?>
 <p style="margin-top:16px;font-size:13px;color:var(--muted);">Bagi hasil = total tagihan − pokok. Outstanding = sisa pinjaman yang tidak ditolak.</p>
+<?php endif; ?>
 <?php include __DIR__ . '/includes/app_footer.php'; ?>

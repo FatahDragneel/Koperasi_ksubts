@@ -48,8 +48,8 @@ dengan usaha utama **produksi pupuk organik**.
 - **Unit usaha pupuk organik** (`pupuk.php`): master produk, catat hasil
   produksi + biaya, penjualan tunai/piutang ke anggota/umum, stok otomatis,
   dan jurnal akuntansi otomatis (persediaan 1312, pendapatan 4114).
-- **Simpan pinjam**: simpanan pokok/wajib/sukarela, pinjaman + angsuran,
-  penarikan, pengalihan hak, SHU.
+- **Simpanan**: simpanan pokok/wajib/sukarela, penarikan, pengalihan hak, SHU.
+  (Fitur pinjaman + angsuran disembunyikan — saklar `FITUR_PINJAMAN` di `config.php`.)
 - **Niaga TBS & kelompok tani**: lahan, timbangan, harga, surat jalan PKS,
   invoice, antrean truk, saprodi.
 - **Akuntansi**: COA, jurnal umum/otomatis, buku besar, laporan, kas.

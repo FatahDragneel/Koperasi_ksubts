@@ -208,7 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['act'] ?? '') === 'hapus_da
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sOld = setting();
-    $bh = (float)str_replace(',', '.', $_POST['bagi_hasil_persen'] ?? '1');
+    $bh = FITUR_PINJAMAN ? (float)str_replace(',', '.', $_POST['bagi_hasil_persen'] ?? '1') : (float)($sOld['bagi_hasil_persen'] ?? 1);
     $pokok = (float)$_POST['simpanan_pokok'];
     $wajib = (float)$_POST['simpanan_wajib'];
     $tglBerdiri = trim($_POST['tanggal_berdiri'] ?? '');
@@ -359,8 +359,10 @@ include __DIR__ . '/includes/app_header.php';
     <label>Tanggal berdiri koperasi</label>
     <input type="date" name="tanggal_berdiri" value="<?= e(substr((string)$tglBerdiri, 0, 10)) ?>" required>
     <p style="font-size:12px;color:var(--muted);margin:6px 0 12px;">Setoran wajib otomatis tiap bulan dihitung mulai bulan pendirian koperasi di atas (September 2026).</p>
+    <?php if (FITUR_PINJAMAN): ?>
     <label>Bagi hasil (% per bulan)</label>
     <input name="bagi_hasil_persen" type="number" step="0.01" min="0" max="100" value="<?= e($s['bagi_hasil_persen'] ?? 1) ?>" required>
+    <?php endif; ?>
     <label>Simpanan pokok (Rp, sekali)</label>
     <input name="simpanan_pokok" type="number" min="0" step="1000" value="<?= (int)($s['simpanan_pokok'] ?? 500000) ?>" required>
     <label>Simpanan wajib (Rp / bulan)</label>

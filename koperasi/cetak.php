@@ -154,6 +154,7 @@ if ($jenis === 'anggota') {
       </table>
     <?php endif;
 } elseif ($jenis === 'pinjaman') {
+    if (!FITUR_PINJAMAN) { exit('Fitur pinjaman sedang disembunyikan.'); }
     $sql = "SELECT p.*, a.nama, a.no_anggota FROM pinjaman p JOIN anggota a ON a.id=p.anggota_id";
     $params = [];
     if (!$staff) { $sql .= ' WHERE p.anggota_id=?'; $params[] = $u['anggota_id']; }
