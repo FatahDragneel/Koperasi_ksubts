@@ -1,9 +1,13 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require __DIR__ . '/config.php';
 require_staff();
 ensure_kelompok_schema();
 $title = 'Kelompok tani';
 $pdo = db();
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = (int)($_POST['id'] ?? 0);
@@ -74,7 +78,7 @@ if (isset($_GET['hapus'])) {
 
 $map = ['kode' => 'kode_kelompok', 'nama' => 'nama_kelompok', 'ketua' => 'nama_ketua', 'plasma' => 'plasma', 'luas' => 'luas_tanah', 'anggota' => 'jml'];
 $sort = sort_params($map, 'kode');
-$rows = $pdo->query("SELECT k.*, (SELECT COUNT(*) FROM anggota_kelompok ak JOIN anggota a ON a.id=ak.anggota_id WHERE ak.id_kelompok=k.id AND a.status='aktif') jml FROM kelompok k ORDER BY k.nomor " . ($sort['dir'] === 'DESC' ? 'DESC' : 'ASC'))->fetchAll();
+$rows = $pdo->query("SELECT k.*, (SELECT COUNT(*) FROM anggota_kelompok ak JOIN anggota a ON a.id=ak.anggota_id WHERE ak.id_kelompok=k.id AND a.status='aktif') jml FROM kelompok k ORDER BY k.nomor " . (($sort['dir'] ?? 'ASC') === 'DESC' ? 'DESC' : 'ASC'))->fetchAll();
 if ($sort['key'] !== 'kode') {
     $col = $map[$sort['key']];
     usort($rows, function ($a, $b) use ($col, $sort) {
@@ -82,6 +86,7 @@ if ($sort['key'] !== 'kode') {
         $vb = $b[$col] ?? '';
         $cmp = (is_numeric($va) && is_numeric($vb)) ? ((float)$va <=> (float)$vb) : strcasecmp((string)$va, (string)$vb);
         return $sort['dir'] === 'DESC' ? -$cmp : $cmp;
+        return ($sort['dir'] ?? 'ASC') === 'DESC' ? -$cmp : $cmp;
     });
 }
 $jml = count($rows);
@@ -97,6 +102,16 @@ foreach ($rows as $r) {
 }
 include __DIR__ . '/includes/app_header.php';
 ?>
+<script>
+function openModal(id) {
+    var modal = document.getElementById(id);
+    if (modal) { modal.style.display = 'flex'; }
+}
+function closeModal(id) {
+    var modal = document.getElementById(id);
+    if (modal) { modal.style.display = 'none'; }
+}
+</script>
 <div class="row" style="margin-bottom:14px;align-items:center;">
   <p style="color:var(--muted);margin:0;"><?= (int)$jml ?> kelompok. Ketua dan HP terisi otomatis setelah jabatan Ketua dipilih di Detail.</p>
   <span style="flex:1;"></span>
@@ -104,15 +119,20 @@ include __DIR__ . '/includes/app_header.php';
 </div>
 <div class="table-wrap">
   <table>
-    <thead>
+  <thead>
       <tr>
-        <th><?= th_urut('kode', $sort, 'Kode') ?></th>
-        <th><?= th_urut('nama', $sort, 'Nama kelompok') ?></th>
-        <th><?= th_urut('ketua', $sort, 'Ketua') ?></th>
-        <th><?= th_urut('plasma', $sort, 'Plasma') ?></th>
+        <!-- Hapus <th> dan </th> yang mengapit fungsi th_urut -->
+        <?= th_urut('kode', 'Kode') ?>
+        <?= th_urut('nama', 'Nama kelompok') ?>
+        <?= th_urut('ketua', 'Ketua') ?>
+        <?= th_urut('plasma', 'Plasma') ?>
+        
+        <!-- Untuk yang tidak pakai fungsi, tetap gunakan <th> -->
         <th>Wilayah / hamparan</th>
-        <th><?= th_urut('luas', $sort, 'Luas (ha)') ?></th>
-        <th><?= th_urut('anggota', $sort, 'Anggota') ?></th>
+        
+        <?= th_urut('luas', 'Luas (ha)') ?>
+        <?= th_urut('anggota', 'Anggota') ?>
+        
         <th>Aksi</th>
       </tr>
     </thead>
@@ -124,7 +144,7 @@ include __DIR__ . '/includes/app_header.php';
         <td><?= e($r['nama_ketua'] ?: '—') ?><br><small><?= e($r['no_hp_ketua'] ?: '') ?></small></td>
         <td><?= e($r['plasma'] ?? '') ?: '—' ?></td>
         <td><small><?= e(trim(($r['wilayah_dusun'] ?? '') . ' ' . ($r['blok_hamparan'] ?? ''))) ?: '—' ?></small></td>
-        <td><?= e(rp($r['luas_tanah'])) ?></td>
+<td><?= e(number_format((float)$r['luas_tanah'], 2, ',', '.')) ?></td>
         <td><span class="badge b-aktif"><?= (int)$r['jml'] ?></span></td>
         <td>
           <div class="row" style="gap:6px;">
@@ -208,6 +228,20 @@ include __DIR__ . '/includes/app_header.php';
   </form>
 </div>
 <script>
+function openModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) {
+    modal.style.display = 'flex'; // atau 'block', sesuaikan dengan CSS Anda
+  }
+}
+
+// Fungsi untuk menutup modal
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
 function editKel(r) {
   document.getElementById('kelId').value = r.id || '';
   document.getElementById('kelKode').value = r.kode || '';
