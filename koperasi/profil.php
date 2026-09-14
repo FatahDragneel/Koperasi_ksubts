@@ -36,6 +36,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($act === 'keluar_kel' && !$staff && !empty($u['anggota_id'])) {
         keluar_anggota_dari_kelompok((int)$u['anggota_id'], (int)($_POST['id_kelompok'] ?? 0));
         flash('ok', 'Anda keluar dari kelompok.');
+    } elseif ($act === 'gabung_gap' && !$staff && !empty($u['anggota_id'])) {
+        $aid = (int)$u['anggota_id'];
+        $gid = (int)($_POST['id_gapoktan'] ?? 0);
+        $st = $pdo->prepare('SELECT COUNT(*) FROM gapoktan WHERE id=?');
+        $st->execute([$gid]);
+        if ($gid < 1 || !$st->fetchColumn()) {
+            flash('err', 'Gapoktan tidak ditemukan.');
+        } else {
+            tambah_anggota_ke_gapoktan($aid, $gid);
+            flash('ok', 'Anda tergabung ke gapoktan.');
+        }
+    } elseif ($act === 'keluar_gap' && !$staff && !empty($u['anggota_id'])) {
+        keluar_anggota_dari_gapoktan((int)$u['anggota_id'], (int)($_POST['id_gapoktan'] ?? 0));
+        flash('ok', 'Anda keluar dari gapoktan.');
+    } elseif ($act === 'gabung_lem' && !$staff && !empty($u['anggota_id'])) {
+        $aid = (int)$u['anggota_id'];
+        $lid = (int)($_POST['id_koperasi'] ?? 0);
+        $st = $pdo->prepare('SELECT COUNT(*) FROM lembaga_koperasi WHERE id=?');
+        $st->execute([$lid]);
+        if ($lid < 1 || !$st->fetchColumn()) {
+            flash('err', 'Koperasi tidak ditemukan.');
+        } else {
+            tambah_anggota_ke_lembaga($aid, $lid);
+            flash('ok', 'Anda tergabung ke koperasi.');
+        }
+    } elseif ($act === 'keluar_lem' && !$staff && !empty($u['anggota_id'])) {
+        keluar_anggota_dari_lembaga((int)$u['anggota_id'], (int)($_POST['id_koperasi'] ?? 0));
+        flash('ok', 'Anda keluar dari koperasi.');
     } elseif ($act === 'data' && !$staff && !empty($u['anggota_id'])) {
         $nama = trim((string)($_POST['nama'] ?? ''));
         $jk = ($_POST['jenis_kelamin'] ?? 'L') === 'P' ? 'P' : 'L';
@@ -94,6 +122,18 @@ if (!$staff && !empty($u['anggota_id'])) {
     if ($anggota) {
         $kelompokSaya = kelompok_anggota($aid);
         $kel = $kelompokSaya[0] ?? null;
+        $gapSaya = gapoktan_anggota($aid);
+        $lemSaya = lembaga_anggota($aid);
+        $idsGapSaya = array_map('intval', array_column($gapSaya, 'id'));
+        $idsLemSaya = array_map('intval', array_column($lemSaya, 'id'));
+        $gapTersedia = array_values(array_filter(
+            $pdo->query('SELECT id, kode_gapoktan, nama_gapoktan FROM gapoktan ORDER BY nama_gapoktan')->fetchAll(),
+            fn($g) => !in_array((int)$g['id'], $idsGapSaya, true)
+        ));
+        $lemTersedia = array_values(array_filter(
+            $pdo->query('SELECT id, kode_koperasi, nama_koperasi FROM lembaga_koperasi ORDER BY nama_koperasi')->fetchAll(),
+            fn($l) => !in_array((int)$l['id'], $idsLemSaya, true)
+        ));
         try {
             $ls = $pdo->prepare('SELECT l.*, k.kode_kelompok, k.nama_kelompok FROM lahan_sawit l LEFT JOIN kelompok k ON k.id=l.id_kelompok WHERE l.anggota_id=? ORDER BY k.nomor, l.id');
             $ls->execute([$aid]);
@@ -162,73 +202,6 @@ if ($staff):
     <p><strong>Username</strong> <?= e($anggota['username'] ?: '—') ?></p>
   </div>
   <div class="card">
-    <h3>Kelompok saya</h3>
-    <?php if (!empty($kelompokSaya)): ?>
-      <div class="table-wrap" style="margin-top:10px;">
-        <table>
-          <thead><tr><th>Kode</th><th>Nama</th><th>Jabatan saya</th><th>Ketua</th><th></th></tr></thead>
-          <tbody>
-          <?php foreach ($kelompokSaya as $gk): ?>
-            <tr>
-              <td><strong><?= e($gk['kode_kelompok']) ?></strong></td>
-              <td><?= e($gk['nama_kelompok']) ?></td>
-              <td><?= e($gk['jabatan'] ?: 'Anggota') ?></td>
-              <td><?= e($gk['nama_ketua'] ?: '—') ?><?= !empty($gk['no_hp_ketua']) ? '<br><small>'.e($gk['no_hp_ketua']).'</small>' : '' ?></td>
-              <td>
-                <form method="post" onsubmit="return confirm('Keluar dari <?= e($gk['kode_kelompok']) ?>?');">
-                  <?= csrf_field() ?>
-                  <input type="hidden" name="act" value="keluar_kel">
-                  <input type="hidden" name="id_kelompok" value="<?= (int)$gk['id_kelompok'] ?>">
-                  <button class="btn btn-danger btn-sm">Keluar</button>
-                </form>
-              </td>
-            </tr>
-          <?php endforeach; ?>
-          </tbody>
-        </table>
-      </div>
-    <?php else: ?>
-      <p style="margin-top:12px;color:var(--muted);">Anda belum terhubung ke kelompok tani.</p>
-    <?php endif; ?>
-    <?php $opsiGabung = options_kelompok_id([], array_map('intval', array_column($kelompokSaya, 'id_kelompok'))); ?>
-    <?php if ($opsiGabung !== ''): ?>
-    <form method="post" style="margin-top:12px;border-top:1px solid #ece6d6;padding-top:12px;">
-      <?= csrf_field() ?>
-      <input type="hidden" name="act" value="gabung">
-      <h4 style="font-size:13px;margin-bottom:8px;">Gabung kelompok</h4>
-      <label>Kelompok</label>
-      <select name="id_kelompok" required><option value="">Pilih kelompok</option><?= $opsiGabung ?></select>
-      <label>Luas lahan saya di kelompok ini (ha)</label>
-      <input name="luas_hektar" type="number" step="0.01" min="0" value="0">
-      <button class="btn btn-green btn-sm" style="margin-top:10px;">Gabung</button>
-    </form>
-    <?php endif; ?>
-  </div>
-</div>
-
-<div class="cards" style="grid-template-columns:1fr 1fr;margin-top:16px;">
-  <div class="card">
-    <h3>Lahan sawit saya</h3>
-    <div class="table-wrap" style="margin-top:10px;">
-      <table>
-        <thead><tr><th>Kelompok</th><th>Lokasi</th><th>Luas</th><th>Tahun tanam</th><th>Pokok</th></tr></thead>
-        <tbody>
-        <?php foreach ($lahan as $l): ?>
-          <tr>
-            <td><?= e($l['kode_kelompok'] ?: '—') ?></td>
-            <td><?= e($l['lokasi_desa'] ?: '—') ?></td>
-            <td><?= e($l['luas_hektar']) ?> ha</td>
-            <td><?= e($l['tahun_tanam'] ?: '—') ?></td>
-            <td><?= e($l['jumlah_pokok'] ?: '—') ?></td>
-          </tr>
-        <?php endforeach; if (!$lahan): ?>
-          <tr><td colspan="5">Belum ada data lahan. Gabung kelompok di atas sambil mengisi luas kebun.</td></tr>
-        <?php endif; ?>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="card">
     <h3>SHU saya <?= $tahun ?></h3>
     <?php if ($shu): ?>
       <div class="grid-2" style="margin-top:12px;">
@@ -239,6 +212,109 @@ if ($staff):
     <?php else: ?>
       <p style="margin-top:12px;color:var(--muted);">SHU <?= $tahun ?> belum dialokasikan pengurus.</p>
     <?php endif; ?>
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px;">
+  <h3>Lembaga saya</h3>
+  <div class="cards" style="grid-template-columns:1fr 1fr 1fr;margin-top:12px;">
+    <div>
+      <h4 style="font-size:13px;margin-bottom:8px;"><i class="fa-solid fa-building-columns lembaga-ic"></i>Koperasi saya</h4>
+      <?php if (!$lemSaya): ?>
+        <p style="font-size:13px;color:var(--muted);">Belum tergabung.</p>
+      <?php endif; ?>
+      <?php foreach ($lemSaya as $l): ?>
+        <form method="post" style="display:flex;gap:6px;align-items:center;margin:4px 0;" onsubmit="return confirm('Keluar dari <?= e($l['kode_koperasi']) ?>?');">
+          <?= csrf_field() ?>
+          <input type="hidden" name="act" value="keluar_lem">
+          <input type="hidden" name="id_koperasi" value="<?= (int)$l['id'] ?>">
+          <span style="flex:1;font-size:13px;"><?= e(($l['kode_koperasi'] ?: 'KOP') . ' — ' . ($l['nama_koperasi'] ?: 'Koperasi')) ?></span>
+          <button class="btn btn-ghost btn-sm">Keluar</button>
+        </form>
+      <?php endforeach; ?>
+      <?php if ($lemTersedia): ?>
+      <form method="post" style="margin-top:10px;border-top:1px solid #ece6d6;padding-top:10px;">
+        <?= csrf_field() ?>
+        <input type="hidden" name="act" value="gabung_lem">
+        <label style="font-size:12px;">Gabung koperasi</label>
+        <select name="id_koperasi" required><option value="">Pilih koperasi</option><?php foreach ($lemTersedia as $l): ?><option value="<?= (int)$l['id'] ?>"><?= e(($l['kode_koperasi'] ?: 'KOP') . ' — ' . ($l['nama_koperasi'] ?: 'Koperasi')) ?></option><?php endforeach; ?></select>
+        <button class="btn btn-green btn-sm" style="margin-top:8px;">Gabung</button>
+      </form>
+      <?php endif; ?>
+    </div>
+    <div>
+      <h4 style="font-size:13px;margin-bottom:8px;"><i class="fa-solid fa-people-group lembaga-ic"></i>Gapoktan saya</h4>
+      <?php if (!$gapSaya): ?>
+        <p style="font-size:13px;color:var(--muted);">Belum tergabung.</p>
+      <?php endif; ?>
+      <?php foreach ($gapSaya as $g): ?>
+        <form method="post" style="display:flex;gap:6px;align-items:center;margin:4px 0;" onsubmit="return confirm('Keluar dari <?= e($g['kode_gapoktan']) ?>?');">
+          <?= csrf_field() ?>
+          <input type="hidden" name="act" value="keluar_gap">
+          <input type="hidden" name="id_gapoktan" value="<?= (int)$g['id'] ?>">
+          <span style="flex:1;font-size:13px;"><?= e(($g['kode_gapoktan'] ?: 'GAP') . ' — ' . ($g['nama_gapoktan'] ?: 'Gapoktan')) ?></span>
+          <button class="btn btn-ghost btn-sm">Keluar</button>
+        </form>
+      <?php endforeach; ?>
+      <?php if ($gapTersedia): ?>
+      <form method="post" style="margin-top:10px;border-top:1px solid #ece6d6;padding-top:10px;">
+        <?= csrf_field() ?>
+        <input type="hidden" name="act" value="gabung_gap">
+        <label style="font-size:12px;">Gabung gapoktan</label>
+        <select name="id_gapoktan" required><option value="">Pilih gapoktan</option><?php foreach ($gapTersedia as $g): ?><option value="<?= (int)$g['id'] ?>"><?= e(($g['kode_gapoktan'] ?: 'GAP') . ' — ' . ($g['nama_gapoktan'] ?: 'Gapoktan')) ?></option><?php endforeach; ?></select>
+        <button class="btn btn-green btn-sm" style="margin-top:8px;">Gabung</button>
+      </form>
+      <?php endif; ?>
+    </div>
+    <div>
+      <h4 style="font-size:13px;margin-bottom:8px;"><i class="fa-solid fa-users lembaga-ic"></i>Kelompok saya</h4>
+      <?php if (empty($kelompokSaya)): ?>
+        <p style="font-size:13px;color:var(--muted);">Belum tergabung.</p>
+      <?php endif; ?>
+      <?php foreach ($kelompokSaya as $gk): ?>
+        <form method="post" style="display:flex;gap:6px;align-items:center;margin:4px 0;" onsubmit="return confirm('Keluar dari <?= e($gk['kode_kelompok']) ?>?');">
+          <?= csrf_field() ?>
+          <input type="hidden" name="act" value="keluar_kel">
+          <input type="hidden" name="id_kelompok" value="<?= (int)$gk['id_kelompok'] ?>">
+          <span style="flex:1;font-size:13px;"><?= e(($gk['kode_kelompok'] ?: 'KT') . ' — ' . ($gk['nama_kelompok'] ?: 'Kelompok')) ?><br><small style="color:var(--muted);">Jabatan: <?= e($gk['jabatan'] ?: 'Anggota') ?> · Ketua: <?= e($gk['nama_ketua'] ?: '—') ?></small></span>
+          <button class="btn btn-ghost btn-sm">Keluar</button>
+        </form>
+      <?php endforeach; ?>
+      <?php $opsiGabung = options_kelompok_id([], array_map('intval', array_column($kelompokSaya, 'id_kelompok'))); ?>
+      <?php if ($opsiGabung !== ''): ?>
+      <form method="post" style="margin-top:10px;border-top:1px solid #ece6d6;padding-top:10px;">
+        <?= csrf_field() ?>
+        <input type="hidden" name="act" value="gabung">
+        <label style="font-size:12px;">Gabung kelompok</label>
+        <select name="id_kelompok" required><option value="">Pilih kelompok</option><?= $opsiGabung ?></select>
+        <label style="font-size:12px;">Luas lahan saya di kelompok ini (ha)</label>
+        <input name="luas_hektar" type="number" step="0.01" min="0" value="0">
+        <button class="btn btn-green btn-sm" style="margin-top:8px;">Gabung</button>
+      </form>
+      <?php endif; ?>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px;">
+  <h3>Lahan sawit saya</h3>
+  <div class="table-wrap" style="margin-top:10px;">
+    <table>
+      <thead><tr><th>Kelompok</th><th>Lokasi</th><th>Luas</th><th>Tahun tanam</th><th>Pokok</th></tr></thead>
+      <tbody>
+      <?php foreach ($lahan as $l): ?>
+        <tr>
+          <td><?= e($l['kode_kelompok'] ?: '—') ?></td>
+          <td><?= e($l['lokasi_desa'] ?: '—') ?></td>
+          <td><?= e($l['luas_hektar']) ?> ha</td>
+          <td><?= e($l['tahun_tanam'] ?: '—') ?></td>
+          <td><?= e($l['jumlah_pokok'] ?: '—') ?></td>
+        </tr>
+      <?php endforeach; if (!$lahan): ?>
+        <tr><td colspan="5">Belum ada data lahan. Gabung kelompok di atas sambil mengisi luas kebun.</td></tr>
+      <?php endif; ?>
+      </tbody>
+    </table>
   </div>
 </div>
 
