@@ -12,6 +12,15 @@ dengan usaha utama **produksi pupuk organik**.
 - **Wilayah keanggotaan**: utama Kecamatan Kinali; jangka waktu tidak terbatas
 - **Modal**: simpanan pokok Rp150.000, simpanan wajib Rp10.000/bulan
 
+## Teknologi
+
+- **HTML5 + CSS3 + JavaScript** — struktur, gaya, interaksi
+- **Bootstrap 5** (CDN) — grid & komponen responsif
+- **AJAX (Fetch API)** — tambah/keluar anggota & ubah jabatan tanpa reload
+- **PHP + PDO prepared statement** — semua query aman dari SQL injection
+- **Session PHP** — autentikasi admin/pengurus/anggota + token CSRF
+- **Font Awesome 6** (CDN) — ikon seluruh aplikasi
+
 ## Susunan pengurus & pengawas (2026–2029)
 
 | Jabatan | Nama |

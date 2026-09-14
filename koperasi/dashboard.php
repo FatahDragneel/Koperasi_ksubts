@@ -63,27 +63,27 @@ include __DIR__ . '/includes/app_header.php';
 ?>
 <?php if ($staff): ?>
 <div class="kpis">
-  <div class="kpi"><span>Jumlah anggota</span><b><?= (int)$kpi['anggota'] ?></b>
+  <div class="kpi"><span><i class="fa-solid fa-users kpi-ic"></i>Jumlah anggota</span><b><?= (int)$kpi['anggota'] ?></b>
     <small style="display:block;margin-top:6px;font-weight:500;color:var(--muted);">Aktif <?= (int)$kpi['anggota_aktif'] ?> · Pasif <?= (int)$kpi['anggota_pasif'] ?></small>
   </div>
-  <div class="kpi"><span>Total simpanan</span><b><?= rupiah($kpi['simpanan']) ?></b></div>
+  <div class="kpi"><span><i class="fa-solid fa-piggy-bank kpi-ic"></i>Total simpanan</span><b><?= rupiah($kpi['simpanan']) ?></b></div>
   <?php if (FITUR_PINJAMAN): ?>
-  <div class="kpi"><span>Sisa pinjaman</span><b><?= rupiah($kpi['pinjaman']) ?></b></div>
-  <div class="kpi"><span>Pengajuan baru</span><b><?= (int)$kpi['pengajuan'] ?></b></div>
+  <div class="kpi"><span><i class="fa-solid fa-file-invoice-dollar kpi-ic"></i>Sisa pinjaman</span><b><?= rupiah($kpi['pinjaman']) ?></b></div>
+  <div class="kpi"><span><i class="fa-solid fa-inbox kpi-ic"></i>Pengajuan baru</span><b><?= (int)$kpi['pengajuan'] ?></b></div>
   <?php endif; ?>
-  <div class="kpi"><span>Persediaan pupuk</span><b><?= rupiah($kpi['pupuk_stok']) ?></b></div>
-  <div class="kpi"><span>Jual pupuk bulan ini</span><b><?= rupiah($kpi['pupuk_jual']) ?></b></div>
+  <div class="kpi"><span><i class="fa-solid fa-boxes-stacked kpi-ic"></i>Persediaan pupuk</span><b><?= rupiah($kpi['pupuk_stok']) ?></b></div>
+  <div class="kpi"><span><i class="fa-solid fa-sack-dollar kpi-ic"></i>Jual pupuk bulan ini</span><b><?= rupiah($kpi['pupuk_jual']) ?></b></div>
 </div>
 <?php else: ?>
 <div class="kpis">
-  <div class="kpi"><span>Jumlah anggota sekarang</span><b><?= $jmlAnggota ?></b>
+  <div class="kpi"><span><i class="fa-solid fa-users kpi-ic"></i>Jumlah anggota sekarang</span><b><?= $jmlAnggota ?></b>
     <small style="display:block;margin-top:6px;font-weight:500;color:var(--muted);">Aktif <?= $jmlAktif ?> · Pasif <?= $jmlPasif ?></small>
   </div>
-  <div class="kpi"><span>Total simpanan saya</span><b><?= rupiah($totSimpan) ?></b></div>
+  <div class="kpi"><span><i class="fa-solid fa-piggy-bank kpi-ic"></i>Total simpanan saya</span><b><?= rupiah($totSimpan) ?></b></div>
   <?php if (FITUR_PINJAMAN): ?>
-  <div class="kpi"><span>Sisa pinjaman</span><b><?= rupiah($sisaPinjam) ?></b></div>
+  <div class="kpi"><span><i class="fa-solid fa-file-invoice-dollar kpi-ic"></i>Sisa pinjaman</span><b><?= rupiah($sisaPinjam) ?></b></div>
   <?php endif; ?>
-  <div class="kpi"><span>Status saya</span><b><?= e($stAgt !== '' ? $stAgt : 'aktif') ?></b></div>
+  <div class="kpi"><span><i class="fa-solid fa-clipboard-check kpi-ic"></i>Status saya</span><b><?= e($stAgt !== '' ? $stAgt : 'aktif') ?></b></div>
 </div>
 <?php endif; ?>
 

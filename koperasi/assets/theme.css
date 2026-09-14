@@ -1,0 +1,164 @@
+/* ============================================================
+   TEMA MODERN — Koperasi Produsen
+   Dimuat SETELAH Bootstrap 5 + style.css :
+   1) menjaga komponen lama tetap tampil sama di samping Bootstrap
+   2) sentuhan modern (gradasi, bayangan, animasi, fokus)
+   ============================================================ */
+
+/* ---- 1. Harmonisasi dengan Bootstrap 5 ---- */
+.card { display: block; }
+.row { margin-left: 0; margin-right: 0; }
+.modal-bg .modal {
+  position: relative; display: block; top: auto; left: auto;
+  height: auto; z-index: auto; margin: auto;
+}
+
+/* ---- 2. Tombol modern ---- */
+.btn-red { background: linear-gradient(180deg, #d9534a, #b93229); color: #fff; }
+.btn {
+  box-shadow: 0 6px 16px rgba(15, 66, 36, .16);
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+  text-decoration: none !important;
+}
+.btn:hover { transform: translateY(-1px); filter: brightness(1.06); box-shadow: 0 10px 22px rgba(15, 66, 36, .22); }
+.btn:active { transform: translateY(0) scale(.98); }
+.btn:disabled { opacity: .65; cursor: wait; transform: none; }
+.btn-green { background: linear-gradient(180deg, #238549, #1b6b3a); }
+.btn-ghost { background: #e9f1eb; border: 1px solid #d4e2d8; }
+.btn i { font-size: .95em; }
+a.btn, a.btn:hover { color: inherit; }
+a.btn-green, a.btn-green:hover, a.btn-red, a.btn-red:hover,
+a.btn-danger, a.btn-danger:hover, a.btn-gold, a.btn-gold:hover { color: #fff; }
+a.btn-gold, a.btn-gold:hover { color: var(--green-d); }
+.btn:focus-visible, a:focus-visible, button:focus-visible,
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid rgba(232, 197, 71, .65);
+  outline-offset: 2px;
+}
+
+/* ---- 3. Sidebar modern ---- */
+.sidebar {
+  background: linear-gradient(180deg, #0c3a20 0%, #10492a 55%, #0d3f24 100%);
+  border-right: 1px solid rgba(232, 197, 71, .22);
+}
+.side-nav a {
+  border: 1px solid transparent;
+  transition: background .15s ease, transform .15s ease, color .15s ease;
+}
+.side-nav a i { width: 22px; text-align: center; opacity: .9; }
+.side-nav a:hover { transform: translateX(3px); }
+.side-nav a.active {
+  background: linear-gradient(90deg, rgba(232,197,71,.28), rgba(232,197,71,.1));
+  border-color: rgba(232,197,71,.35);
+  color: #ffe9a8;
+  box-shadow: inset 3px 0 0 var(--gold-l);
+}
+
+/* ---- 4. Topbar sebagai kartu ---- */
+.topbar {
+  background: rgba(255, 255, 255, .85);
+  backdrop-filter: blur(10px);
+  border: 1px solid #ece6d6;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px 18px;
+}
+.topbar h2 { font-size: 22px; }
+.nav-toggle { transition: transform .15s ease, filter .15s ease; }
+.nav-toggle:hover { filter: brightness(1.07); }
+
+/* ---- 5. Kartu & KPI ---- */
+.card, .kpi, .form-box, .reg-card {
+  border-top: 3px solid rgba(45, 154, 86, .55);
+}
+.kpi { transition: transform .15s ease, box-shadow .15s ease; position: relative; overflow: hidden; }
+.kpi:hover { transform: translateY(-3px); }
+.kpi::after {
+  content: ""; position: absolute; right: -30px; top: -30px; width: 110px; height: 110px;
+  border-radius: 50%; background: radial-gradient(circle, rgba(45,154,86,.14), transparent 70%);
+}
+.kpi .kpi-ic {
+  display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 11px;
+  background: linear-gradient(160deg, #e8f5e9, #c8e6c9); color: var(--green-d);
+  margin-right: 8px; vertical-align: -9px; font-size: 15px;
+}
+.kpi b.bump { animation: bump .4s ease; display: inline-block; }
+@keyframes bump { 0% { transform: scale(.6); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+
+/* ---- 6. Tabel ---- */
+.table-wrap { border: 1px solid #ece6d6; }
+.table-wrap thead th {
+  position: sticky; top: 0; z-index: 2;
+  background: linear-gradient(180deg, #eef7f0, #e2efe5);
+  border-bottom: 2px solid #cfdfd3;
+}
+.table-wrap tbody tr { transition: background .12s ease; }
+.table-wrap tbody tr:hover { background: #f4faf5; }
+.table-wrap tbody tr:last-child td { border-bottom: 0; }
+th.sorted-asc a.th-sort::after { content: " ▲"; font-size: 10px; }
+th.sorted-desc a.th-sort::after { content: " ▼"; font-size: 10px; }
+th.sorted-asc, th.sorted-desc { background: linear-gradient(180deg, #e4f1e7, #d8e8dc) !important; }
+
+/* ---- 7. Formulir ---- */
+input, select, textarea {
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--green-l);
+  box-shadow: 0 0 0 4px rgba(45, 154, 86, .15);
+  outline: none;
+  background: #fff;
+}
+
+/* ---- 8. Alert ---- */
+.alert {
+  border: 1px solid transparent;
+  border-left-width: 5px;
+  display: flex; gap: 10px; align-items: flex-start;
+  box-shadow: 0 8px 20px rgba(15, 66, 36, .1);
+}
+.alert i { margin-top: 2px; }
+.alert-ok { border-color: #bfe3c9; border-left-color: var(--green-l); }
+.alert-err { border-color: #f3c1bb; border-left-color: #c0392b; }
+
+/* ---- 9. Modal animasi ---- */
+.modal-bg.show .modal { animation: pop .22s ease; }
+@keyframes pop {
+  from { transform: translateY(14px) scale(.97); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+.modal { box-shadow: 0 30px 80px rgba(10, 40, 22, .35); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+
+/* ---- 10. Toast (pesan AJAX) ---- */
+#toastBox {
+  position: fixed; right: 18px; bottom: 18px; z-index: 200;
+  display: flex; flex-direction: column; gap: 10px; max-width: min(360px, 90vw);
+}
+.toast-msg {
+  display: flex; gap: 10px; align-items: center;
+  background: #10281a; color: #fff; font-size: 14px; font-weight: 600;
+  padding: 13px 16px; border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .3);
+  transform: translateY(12px); opacity: 0;
+  transition: transform .3s ease, opacity .3s ease;
+}
+.toast-msg.tampil { transform: translateY(0); opacity: 1; }
+.toast-msg.ok i { color: #7ce3a3; font-size: 18px; }
+.toast-msg.err i { color: #ff9d94; font-size: 18px; }
+
+/* ---- 11. Navigasi publik ---- */
+.nav-links a { display: inline-flex; align-items: center; gap: 7px; }
+.nav-links a i { font-size: 13px; opacity: .85; }
+
+/* ---- 12. Utilitas ikon ---- */
+.fa-solid, .fa-regular, .fa-brands { vertical-align: baseline; }
+.lembaga-ic {
+  display: inline-grid; place-items: center; width: 26px; height: 26px;
+  border-radius: 8px; background: #e8f5e9; color: var(--green-d);
+  font-size: 13px; margin-right: 6px; vertical-align: -5px;
+}
+
+@media print {
+  #toastBox, .modal-bg { display: none !important; }
+}

@@ -24,49 +24,49 @@ include __DIR__ . '/includes/app_header.php';
 </div>
 <div class="cards" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:16px;">
   <div class="card">
-    <h3>Koperasi</h3>
+    <h3><i class="fa-solid fa-building-columns"></i> Koperasi</h3>
     <p style="font-size:13px;color:var(--muted);margin:8px 0 12px;">Daftar koperasi dalam jaringan lembaga.</p>
-    <a class="btn btn-green btn-sm" href="lembaga_koperasi.php">Kelola koperasi</a>
+    <a class="btn btn-green btn-sm" href="lembaga_koperasi.php"><i class="fa-solid fa-table-list"></i> Kelola koperasi</a>
   </div>
   <div class="card">
-    <h3>Gapoktan</h3>
+    <h3><i class="fa-solid fa-people-group"></i> Gapoktan</h3>
     <p style="font-size:13px;color:var(--muted);margin:8px 0 12px;">Gabungan kelompok tani dan anggotanya.</p>
-    <a class="btn btn-green btn-sm" href="gapoktan.php">Kelola gapoktan</a>
+    <a class="btn btn-green btn-sm" href="gapoktan.php"><i class="fa-solid fa-table-list"></i> Kelola gapoktan</a>
   </div>
   <div class="card">
-    <h3>Kelompok tani</h3>
+    <h3><i class="fa-solid fa-users"></i> Kelompok tani</h3>
     <p style="font-size:13px;color:var(--muted);margin:8px 0 12px;">Kelompok tani — satu kelompok bisa diisi lebih dari satu anggota.</p>
-    <a class="btn btn-green btn-sm" href="kelompok.php">Kelola kelompok</a>
+    <a class="btn btn-green btn-sm" href="kelompok.php"><i class="fa-solid fa-table-list"></i> Kelola kelompok</a>
   </div>
 </div>
 <div class="cards" style="grid-template-columns:1fr 1fr 1fr;">
   <div class="card">
-    <h3>Koperasi (<?= (int)$nKop ?>)</h3>
+    <h3><i class="fa-solid fa-building-columns lembaga-ic"></i>Koperasi (<?= (int)$nKop ?>)</h3>
     <div style="margin-top:10px;font-size:14px;line-height:2;">
     <?php if (!$kops): ?><p style="color:var(--muted);">Belum ada koperasi.</p><?php endif; ?>
     <?php foreach ($kops as $kp): ?>
-      <p style="margin:2px 0;">🏛 <?= e($kp['nama_koperasi'] ?: 'Koperasi') ?> (<?= (int)$kp['jml'] ?> anggota)
-        <a class="btn btn-ghost btn-sm" href="lembaga_koperasi_detail.php?id=<?= (int)$kp['id'] ?>">Detail</a></p>
+      <p style="margin:2px 0;"><i class="fa-solid fa-building-columns lembaga-ic"></i><?= e($kp['nama_koperasi'] ?: 'Koperasi') ?> (<?= (int)$kp['jml'] ?> anggota)
+        <a class="btn btn-ghost btn-sm" href="lembaga_koperasi_detail.php?id=<?= (int)$kp['id'] ?>"><i class="fa-solid fa-eye"></i> Detail</a></p>
     <?php endforeach; ?>
     </div>
   </div>
   <div class="card">
-    <h3>Gapoktan (<?= (int)$nGap ?>)</h3>
+    <h3><i class="fa-solid fa-people-group lembaga-ic"></i>Gapoktan (<?= (int)$nGap ?>)</h3>
     <div style="margin-top:10px;font-size:14px;line-height:2;">
     <?php if (!$gaps): ?><p style="color:var(--muted);">Belum ada gapoktan.</p><?php endif; ?>
     <?php foreach ($gaps as $g): ?>
-      <p style="margin:2px 0;">▣ <?= e($g['nama_gapoktan'] ?: 'Gapoktan') ?> (<?= (int)$g['jml'] ?> anggota)
-        <a class="btn btn-ghost btn-sm" href="gapoktan_detail.php?id=<?= (int)$g['id'] ?>">Detail</a></p>
+      <p style="margin:2px 0;"><i class="fa-solid fa-people-group lembaga-ic"></i><?= e($g['nama_gapoktan'] ?: 'Gapoktan') ?> (<?= (int)$g['jml'] ?> anggota)
+        <a class="btn btn-ghost btn-sm" href="gapoktan_detail.php?id=<?= (int)$g['id'] ?>"><i class="fa-solid fa-eye"></i> Detail</a></p>
     <?php endforeach; ?>
     </div>
   </div>
   <div class="card">
-    <h3>Kelompok tani (<?= (int)$nKel ?>)</h3>
+    <h3><i class="fa-solid fa-users lembaga-ic"></i>Kelompok tani (<?= (int)$nKel ?>)</h3>
     <div style="margin-top:10px;font-size:14px;line-height:2;">
     <?php if (!$kels): ?><p style="color:var(--muted);">Belum ada kelompok.</p><?php endif; ?>
     <?php foreach ($kels as $k): ?>
-      <p style="margin:2px 0;">▫ <?= e(($k['kode_kelompok'] ?: 'KT') . ' — ' . ($k['nama_kelompok'] ?: 'Kelompok')) ?> (<?= (int)$k['jml'] ?> anggota)
-        <a class="btn btn-ghost btn-sm" href="kelompok_detail.php?id=<?= (int)$k['id'] ?>">Detail</a></p>
+      <p style="margin:2px 0;"><i class="fa-solid fa-users lembaga-ic"></i><?= e(($k['kode_kelompok'] ?: 'KT') . ' — ' . ($k['nama_kelompok'] ?: 'Kelompok')) ?> (<?= (int)$k['jml'] ?> anggota)
+        <a class="btn btn-ghost btn-sm" href="kelompok_detail.php?id=<?= (int)$k['id'] ?>"><i class="fa-solid fa-eye"></i> Detail</a></p>
     <?php endforeach; ?>
     </div>
   </div>

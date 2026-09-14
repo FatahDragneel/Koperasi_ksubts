@@ -48,10 +48,10 @@ $nextId = (int)$pdo->query('SELECT COALESCE(MAX(id),0)+1 FROM lembaga_koperasi')
 $autoKode = 'KOP-' . str_pad((string)$nextId, 3, '0', STR_PAD_LEFT);
 include __DIR__ . '/includes/app_header.php';
 ?>
-<p style="margin:0 0 10px;"><a href="lembaga.php">← Kembali ke Lembaga</a></p>
+<p style="margin:0 0 10px;"><a href="lembaga.php"><i class="fa-solid fa-arrow-left"></i> Kembali ke Lembaga</a></p>
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
   <h2 style="margin:0;">Koperasi</h2>
-  <button class="btn btn-green" onclick="document.getElementById('mTambah').style.display='flex'">+ Tambah koperasi</button>
+  <button class="btn btn-green" onclick="document.getElementById('mTambah').style.display='flex'"><i class="fa-solid fa-plus"></i> Tambah koperasi</button>
 </div>
 <div class="table-wrap">
   <table>
@@ -68,9 +68,9 @@ include __DIR__ . '/includes/app_header.php';
         <td><?= e($r['no_hp_ketua'] ?? '') ?: '—' ?></td>
         <td><?= (int)$r['jml'] ?> anggota</td>
         <td style="white-space:nowrap;">
-          <button class="btn btn-ghost btn-sm" onclick='editKop(<?= json_encode(['id' => $r['id'], 'kode' => $r['kode_koperasi'], 'nama' => $r['nama_koperasi'], 'ketua' => $r['nama_ketua'], 'hp' => $r['no_hp_ketua'], 'alamat' => $r['alamat'], 'ket' => $r['keterangan']]) ?>)'>Ubah</button>
-          <a class="btn btn-red btn-sm" href="lembaga_koperasi.php?act=hapus&id=<?= (int)$r['id'] ?>&_csrf=<?= e(csrf_token()) ?>" onclick="return confirm('Hapus koperasi <?= e($r['nama_koperasi'] ?? '') ?>?')">Hapus</a>
-          <a class="btn btn-green btn-sm" href="lembaga_koperasi_detail.php?id=<?= (int)$r['id'] ?>">Detail</a>
+          <button class="btn btn-ghost btn-sm" onclick='editKop(<?= json_encode(['id' => $r['id'], 'kode' => $r['kode_koperasi'], 'nama' => $r['nama_koperasi'], 'ketua' => $r['nama_ketua'], 'hp' => $r['no_hp_ketua'], 'alamat' => $r['alamat'], 'ket' => $r['keterangan']]) ?>)'><i class="fa-solid fa-pen"></i> Ubah</button>
+          <a class="btn btn-red btn-sm" href="lembaga_koperasi.php?act=hapus&id=<?= (int)$r['id'] ?>&_csrf=<?= e(csrf_token()) ?>" onclick="return confirm('Hapus koperasi <?= e($r['nama_koperasi'] ?? '') ?>?')"><i class="fa-solid fa-trash"></i> Hapus</a>
+          <a class="btn btn-green btn-sm" href="lembaga_koperasi_detail.php?id=<?= (int)$r['id'] ?>"><i class="fa-solid fa-eye"></i> Detail</a>
         </td>
       </tr>
     <?php endforeach; ?>
@@ -91,7 +91,7 @@ include __DIR__ . '/includes/app_header.php';
       <label>No. HP ketua<input name="hp"></label>
       <label>Alamat<textarea name="alamat" rows="2"></textarea></label>
       <label>Keterangan<textarea name="ket" rows="2"></textarea></label>
-      <div class="modal-actions"><button type="button" class="btn btn-ghost" onclick="document.getElementById('mTambah').style.display='none'">Batal</button><button class="btn btn-green" type="submit">Simpan</button></div>
+      <div class="modal-actions"><button type="button" class="btn btn-ghost" onclick="document.getElementById('mTambah').style.display='none'"><i class="fa-solid fa-xmark"></i> Batal</button><button class="btn btn-green" type="submit"><i class="fa-solid fa-floppy-disk"></i> Simpan</button></div>
     </form>
   </div>
 </div>
@@ -108,7 +108,7 @@ include __DIR__ . '/includes/app_header.php';
       <label>No. HP ketua<input name="hp" id="u_hp"></label>
       <label>Alamat<textarea name="alamat" id="u_alamat" rows="2"></textarea></label>
       <label>Keterangan<textarea name="ket" id="u_ket" rows="2"></textarea></label>
-      <div class="modal-actions"><button type="button" class="btn btn-ghost" onclick="document.getElementById('mUbah').style.display='none'">Batal</button><button class="btn btn-green" type="submit">Perbarui</button></div>
+      <div class="modal-actions"><button type="button" class="btn btn-ghost" onclick="document.getElementById('mUbah').style.display='none'"><i class="fa-solid fa-xmark"></i> Batal</button><button class="btn btn-green" type="submit"><i class="fa-solid fa-floppy-disk"></i> Perbarui</button></div>
     </form>
   </div>
 </div>

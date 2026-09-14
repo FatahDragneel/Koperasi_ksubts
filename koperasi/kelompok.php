@@ -102,7 +102,7 @@ include __DIR__ . '/includes/app_header.php';
 <div class="row" style="margin-bottom:14px;align-items:center;">
   <p style="color:var(--muted);margin:0;"><?= (int)$jml ?> kelompok. Ketua dan HP terisi otomatis setelah jabatan Ketua dipilih di Detail.</p>
   <span style="flex:1;"></span>
-  <button class="btn btn-green" type="button" onclick="openModal('mTambahKel')">+ Tambah kelompok</button>
+  <button class="btn btn-green" type="button" onclick="openModal('mTambahKel')"><i class="fa-solid fa-plus"></i> Tambah kelompok</button>
 </div>
 <div class="table-wrap">
   <table>
@@ -135,9 +135,9 @@ include __DIR__ . '/includes/app_header.php';
         <td><span class="badge b-aktif"><?= (int)$r['jml'] ?></span></td>
         <td>
           <div class="row" style="gap:6px;">
-            <a class="btn btn-ghost btn-sm" href="kelompok_detail.php?id=<?= (int)$r['id'] ?>">Detail</a>
-            <button class="btn btn-gold btn-sm" type="button" onclick='editKel(<?= json_encode($rowsJson[(int)$r['id']], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>Ubah</button>
-            <a class="btn btn-danger btn-sm" href="kelompok.php?hapus=<?= (int)$r['id'] ?>&_csrf=<?= e(csrf_token()) ?>" onclick="return confirm('Hapus <?= e($r['kode_kelompok']) ?>? Hanya bisa jika belum dipakai.');">Hapus</a>
+            <a class="btn btn-ghost btn-sm" href="kelompok_detail.php?id=<?= (int)$r['id'] ?>"><i class="fa-solid fa-eye"></i> Detail</a>
+            <button class="btn btn-gold btn-sm" type="button" onclick='editKel(<?= json_encode($rowsJson[(int)$r['id']], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'><i class="fa-solid fa-pen"></i> Ubah</button>
+            <a class="btn btn-danger btn-sm" href="kelompok.php?hapus=<?= (int)$r['id'] ?>&_csrf=<?= e(csrf_token()) ?>" onclick="return confirm('Hapus <?= e($r['kode_kelompok']) ?>? Hanya bisa jika belum dipakai.');"><i class="fa-solid fa-trash"></i> Hapus</a>
           </div>
         </td>
       </tr>
@@ -175,8 +175,8 @@ include __DIR__ . '/includes/app_header.php';
     </div>
     <label>Fee per kg (Rp)</label><input type="number" step="1" min="0" name="fee_per_kg">
     <div class="row" style="margin-top:16px;justify-content:flex-end;">
-      <button type="button" class="btn btn-ghost" onclick="closeModal('mTambahKel')">Batal</button>
-      <button class="btn btn-green">Simpan</button>
+      <button type="button" class="btn btn-ghost" onclick="closeModal('mTambahKel')"><i class="fa-solid fa-xmark"></i> Batal</button>
+      <button class="btn btn-green"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
     </div>
   </form>
 </div>
@@ -209,8 +209,8 @@ include __DIR__ . '/includes/app_header.php';
     </div>
     <label>Fee per kg (Rp)</label><input type="number" step="1" min="0" name="fee_per_kg" id="kelFee">
     <div class="row" style="margin-top:16px;justify-content:flex-end;">
-      <button type="button" class="btn btn-ghost" onclick="closeModal('mKel')">Batal</button>
-      <button class="btn btn-green">Simpan</button>
+      <button type="button" class="btn btn-ghost" onclick="closeModal('mKel')"><i class="fa-solid fa-xmark"></i> Batal</button>
+      <button class="btn btn-green"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
     </div>
   </form>
 </div>

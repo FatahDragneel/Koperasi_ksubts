@@ -1228,6 +1228,13 @@ function require_staff(): void {
     }
 }
 
+function is_ajax(): bool {
+    if (($_POST['ajax'] ?? '') === '1') {
+        return true;
+    }
+    return strtolower($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'xmlhttprequest';
+}
+
 function flash(string $key, ?string $val = null) {
     if ($val !== null) {
         $_SESSION['flash'][$key] = $val;

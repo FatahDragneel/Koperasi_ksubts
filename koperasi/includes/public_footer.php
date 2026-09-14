@@ -16,5 +16,7 @@
   </div>
   <div class="container copy">© <?= date('Y') ?> <?= e($s['nama_koperasi'] ?? 'Koperasi Produsen') ?><?= !empty($s['nib']) ? ' · NIB '.e($s['nib']) : '' ?><?= !empty($s['no_badan_hukum']) ? ' · '.e($s['no_badan_hukum']) : '' ?></div>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/app.js?v=1"></script>
 </body>
 </html>
