@@ -6,7 +6,7 @@ ensure_lembaga_koperasi_schema();
 $title = 'Gapoktan';
 $pdo = db();
 
-if (is_post()) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $act = $_POST['act'] ?? '';
     if ($act === 'simpan') {
         $id = (int)($_POST['id'] ?? 0);
@@ -25,7 +25,8 @@ if (is_post()) {
             ]);
             flash('ok', 'Gapoktan baru berhasil ditambahkan.');
         }
-        redirect('gapoktan.php');
+           header('Location: gaoktan.php'); 
+exit;
     }
 }
 
@@ -39,7 +40,8 @@ if (($_GET['act'] ?? '') === 'hapus') {
         $pdo->prepare('DELETE FROM gapoktan WHERE id=?')->execute([$id]);
         flash('ok', 'Gapoktan berhasil dihapus.');
     }
-    redirect('gapoktan.php');
+    header('Location: gaoktan.php'); 
+exit;
 }
 
 $rows = $pdo->query("SELECT g.*, lk.nama_koperasi, (SELECT COUNT(*) FROM kelompok k WHERE k.id_gapoktan=g.id) jml FROM gapoktan g LEFT JOIN lembaga_koperasi lk ON lk.id=g.id_koperasi ORDER BY g.nama_gapoktan")->fetchAll();
@@ -77,7 +79,7 @@ include __DIR__ . '/includes/app_header.php';
   </table>
 </div>
 
-<div class="modal-bg" id="mTambah" style="display:none;">
+<div class="modal-bg" id="mTambah" style="justify-content: center; align-items: center;">
   <div class="modal">
     <h3>Tambah Gapoktan</h3>
     <form method="post">
