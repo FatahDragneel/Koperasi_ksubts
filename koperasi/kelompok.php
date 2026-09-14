@@ -167,6 +167,7 @@ foreach ($rows as $r) {
 }
 include __DIR__ . '/includes/app_header.php';
 ?>
+<p style="margin-bottom:14px;"><a class="btn btn-ghost btn-sm" href="lembaga.php">← Kembali ke Lembaga</a></p>
 <div class="row" style="margin-bottom:14px;align-items:center;">
   <p style="color:var(--muted);margin:0;"><?= (int)$jml ?> kelompok. <?= $staff ? 'Ketua dan HP terisi otomatis setelah jabatan Ketua dipilih di Detail.' : 'Tekan Gabung untuk masuk, atau Tambah kelompok untuk membuat baru.' ?></p>
   <span style="flex:1;"></span>
