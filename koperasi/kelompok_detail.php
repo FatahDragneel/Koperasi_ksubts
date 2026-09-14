@@ -125,7 +125,7 @@ $calon = $pdo->query("SELECT id, no_anggota, nama FROM anggota WHERE status IN (
 $title = ($k['kode_kelompok'] ?: ('KT-' . $nomor)) . ' · ' . ($k['nama_kelompok'] ?: ('Kelompok ' . $nomor));
 include __DIR__ . '/includes/app_header.php';
 ?>
-<p style="margin-bottom:12px;"><a class="btn btn-ghost btn-sm" href="kelompok.php"><i class="fa-solid fa-arrow-left"></i> Daftar kelompok</a></p>
+<p style="margin-bottom:14px;"><a class="btn btn-ghost btn-sm" href="kelompok.php"><i class="fa-solid fa-arrow-left"></i> Daftar kelompok</a></p>
 <?php if ($staff): ?>
 
 <div class="cards" style="grid-template-columns:1fr 1fr;">
