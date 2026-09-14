@@ -89,7 +89,7 @@ $autoKode = 'KOP-' . str_pad((string)$nextId, 3, '0', STR_PAD_LEFT);
 $milikSaya = $aid > 0 ? array_map('intval', array_column(lembaga_anggota($aid), 'id')) : [];
 include __DIR__ . '/includes/app_header.php';
 ?>
-<p style="margin:0 0 10px;"><a href="lembaga.php"><i class="fa-solid fa-arrow-left"></i> Kembali ke Lembaga</a></p>
+<p style="margin-bottom:14px;"><a class="btn btn-ghost btn-sm" href="lembaga.php"><i class="fa-solid fa-arrow-left"></i> Kembali ke Lembaga</a></p>
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
   <h2 style="margin:0;">Koperasi</h2>
   <button class="btn btn-green" onclick="document.getElementById('mTambah').style.display='flex'"><i class="fa-solid fa-plus"></i> Tambah koperasi</button>
