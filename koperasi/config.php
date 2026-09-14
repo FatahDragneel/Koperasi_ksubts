@@ -28,7 +28,7 @@ header('X-XSS-Protection: 1; mode=block');
 header('Cache-Control: no-store');
 
 define('DB_HOST', '127.0.0.1');
-define('DB_NAME', 'koperasi_bina_tani');
+define('DB_NAME', 'kelompok_bina_tani2');
 // XAMPP default: root tanpa sandi. Ubah jika MySQL Anda beda.
 define('DB_USER', 'root');
 define('DB_PASS', '');
@@ -46,6 +46,23 @@ define('FITUR_PINJAMAN', false);
 function perlu_fitur_pinjaman(): void {
     if (!FITUR_PINJAMAN) {
         flash('err', 'Fitur pinjaman sedang disembunyikan.');
+        header('Location: dashboard.php');
+        exit;
+    }
+}
+
+# ============================================================
+# FITUR PENGALIHAN HAK DISEMBUNYIKAN.
+# Menu, halaman, dan arsip pengalihan tidak tampil.
+# Data pengalihan lama tetap aman di database.
+# Untuk menampilkan lagi: ubah false menjadi true di bawah ini.
+# ============================================================
+define('FITUR_PENGALIHAN', false);
+
+# Penjaga halaman pengalihan: alihkan ke dashboard bila disembunyikan.
+function perlu_fitur_pengalihan(): void {
+    if (!FITUR_PENGALIHAN) {
+        flash('err', 'Fitur pengalihan hak sedang disembunyikan.');
         header('Location: dashboard.php');
         exit;
     }

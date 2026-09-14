@@ -291,7 +291,7 @@ try {
     $arsipAlih = $ah->fetchAll();
 } catch (Throwable $e) {}
 ?>
-<?php if ($arsipAlih): ?>
+<?php if ($arsipAlih && FITUR_PENGALIHAN): ?>
 <div class="card" style="margin-top:16px;">
   <h3>Arsip pengalihan hak</h3>
   <div class="table-wrap" style="margin-top:10px;">

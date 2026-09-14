@@ -62,7 +62,9 @@ function nav_active($file) {
       <a class="<?= nav_active('profil_koperasi.php') ?>" href="profil_koperasi.php">🏛 Profil koperasi</a>
       <?php if (in_array($u['role'], ['admin','pengurus'])): ?>
         <a class="<?= nav_active('anggota.php') ?>" href="anggota.php">☺ Anggota</a>
+        <?php if (FITUR_PENGALIHAN): ?>
         <a class="<?= nav_active('pengalihan.php') ?>" href="pengalihan.php">⇄ Pengalihan hak</a>
+        <?php endif; ?>
         <a class="<?= nav_active('kelompok.php') ?>" href="kelompok.php">▣ Kelompok</a>
         <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php">🌱 Pupuk organik</a>
         <a class="<?= nav_active('verifikasi.php') ?>" href="verifikasi.php">☑ Verifikasi anggota</a>

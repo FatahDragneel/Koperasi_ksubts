@@ -12,7 +12,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', '0');
 
 $host = '127.0.0.1';
-$name = 'koperasi_bina_tani';
+$name = 'kelompok_bina_tani2';
 $tries = [['root', ''], ['root', 'root'], ['koperasi', 'koperasi123']];
 
 $pdo = null;

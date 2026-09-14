@@ -48,8 +48,8 @@ dengan usaha utama **produksi pupuk organik**.
 - **Unit usaha pupuk organik** (`pupuk.php`): master produk, catat hasil
   produksi + biaya, penjualan tunai/piutang ke anggota/umum, stok otomatis,
   dan jurnal akuntansi otomatis (persediaan 1312, pendapatan 4114).
-- **Simpanan**: simpanan pokok/wajib/sukarela, penarikan, pengalihan hak, SHU.
-  (Fitur pinjaman + angsuran disembunyikan — saklar `FITUR_PINJAMAN` di `config.php`.)
+- **Simpanan**: simpanan pokok/wajib/sukarela, penarikan, SHU.
+  (Fitur pinjaman + angsuran + pengalihan hak disembunyikan — saklar di `config.php`.)
 - **Niaga TBS & kelompok tani**: lahan, timbangan, harga, surat jalan PKS,
   invoice, antrean truk, saprodi.
 - **Akuntansi**: COA, jurnal umum/otomatis, buku besar, laporan, kas.
@@ -59,7 +59,7 @@ dengan usaha utama **produksi pupuk organik**.
 1. Salin folder `koperasi/` ke `C:\xampp\htdocs\koperasi`.
 2. Jalankan Apache + MySQL, lalu pilih **salah satu**:
    - **Opsi A (disarankan)** — instalasi baru + data contoh: di phpMyAdmin buat
-     database `koperasi_bina_tani`, tab **Import**, pilih `koperasi/database.sql`.
+     database `kelompok_bina_tani2`, tab **Import**, pilih `koperasi/database.sql`.
    - **Opsi B** — database sudah ada: buka `http://localhost/koperasi/setup.php`
      (melengkapi tabel/kolom yang kurang tanpa menghapus data).
    > Jangan lakukan keduanya berurutan — impor setelah setup menimbulkan
@@ -78,6 +78,6 @@ Instalasi hosting: ikuti `koperasi/PANDUAN-HOSTINGER.txt`.
    Lalu **Simpan** — pengurus & modal otomatis dipakai dokumen BA.
 3. Hasilnya tampil di **Profil koperasi**, bagan struktur, dan situs publik.
 
-Catatan: nama database MySQL (`koperasi_bina_tani`) hanya nama teknis internal
+Catatan: nama database MySQL (`kelompok_bina_tani2`) hanya nama teknis internal
 dan tidak tampil di aplikasi, jadi tidak wajib diganti. Kalau ingin diganti,
 ubah serentak di `config.php`, `database.sql`, dan `setup.php`.

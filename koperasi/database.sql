@@ -7,8 +7,8 @@
 -- ERROR #1062 Duplicate entry? Artinya DB sudah terisi (habis setup.php atau
 -- impor 2x). Solusi: JANGAN impor ulang (data sudah ada), ATAU kosongkan dulu:
 -- phpMyAdmin -> klik database -> centang semua tabel -> Hapus/Drop -> impor ulang.
-CREATE DATABASE IF NOT EXISTS koperasi_bina_tani CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE koperasi_bina_tani;
+CREATE DATABASE IF NOT EXISTS kelompok_bina_tani2 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE kelompok_bina_tani2;
 
 CREATE TABLE IF NOT EXISTS pengaturan (
   id INT PRIMARY KEY DEFAULT 1,

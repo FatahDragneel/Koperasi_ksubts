@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . '/config.php';
 require_login();
+perlu_fitur_pengalihan();
 ensure_pengalihan_schema();
 ensure_anggota_schema();
 $title = 'Pengalihan keanggotaan & lahan';
