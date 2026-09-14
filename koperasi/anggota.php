@@ -203,15 +203,15 @@ if ($q) {
 }
 include __DIR__ . '/includes/app_header.php';
 ?>
-<div class="toolbar-stack">
-  <form method="get" class="row" style="width:100%;">
-    <input name="q" value="<?= e($q) ?>" placeholder="Cari nama / nomor / desa / poktan" style="flex:1;min-width:0;max-width:none;">
-    <button class="btn btn-ghost" type="submit">Cari</button>
+<div class="toolbar">
+  <form method="get" class="toolbar-search">
+    <input name="q" value="<?= e($q) ?>" placeholder="Cari nama / nomor / desa / poktan">
+    <button class="btn btn-green" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Cari</button>
   </form>
-  <div class="row">
-    <a class="btn btn-ghost" href="cetak.php?jenis=anggota" target="_blank">Cetak tabel</a>
-    <a class="btn btn-ghost" href="verifikasi.php">Tinjau berkas</a>
-    <button class="btn btn-green" type="button" onclick="openModal('mAnggota')">+ Anggota baru</button>
+  <div class="toolbar-actions">
+    <a class="btn btn-ghost" href="cetak.php?jenis=anggota" target="_blank"><i class="fa-solid fa-print"></i> Cetak tabel</a>
+    <a class="btn btn-ghost" href="verifikasi.php"><i class="fa-solid fa-folder-open"></i> Tinjau berkas</a>
+    <button class="btn btn-green" type="button" onclick="openModal('mAnggota')"><i class="fa-solid fa-plus"></i> Anggota baru</button>
   </div>
 </div>
 <div class="table-wrap">

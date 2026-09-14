@@ -127,7 +127,7 @@ include __DIR__ . '/includes/app_header.php';
   <div class="kpi"><span>Penjualan bulan ini</span><b><?= rupiah($jualBulan) ?></b></div>
   <div class="kpi"><span>Jenis produk aktif</span><b><?= count($produk) ?></b></div>
 </div>
-<div class="row" style="margin-bottom:14px;justify-content:flex-end;gap:8px;">
+<div class="toolbar toolbar-end">
   <button class="btn btn-ghost" type="button" onclick="openModal('mProduk')">+ Produk</button>
   <button class="btn btn-ghost" type="button" onclick="openModal('mProduksi')">+ Hasil produksi</button>
   <button class="btn btn-green" type="button" onclick="openModal('mJual')">+ Penjualan</button>

@@ -22,7 +22,7 @@ if (isset($_GET['hapus'])) {
 $rows = $pdo->query("SELECT * FROM pengumuman ORDER BY tanggal DESC")->fetchAll();
 include __DIR__ . '/includes/app_header.php';
 ?>
-<div class="row" style="margin-bottom:16px;justify-content:flex-end;">
+<div class="toolbar toolbar-end">
   <button class="btn btn-green" type="button" onclick="openModal('mNews')">+ Pengumuman</button>
 </div>
 <div class="cards">

@@ -137,7 +137,7 @@ if ($staff) {
 }
 include __DIR__ . '/includes/app_header.php';
 ?>
-<div class="row" style="margin-bottom:16px;justify-content:flex-end;">
+<div class="toolbar toolbar-end">
   <a class="btn btn-ghost" href="cetak.php?jenis=pinjaman" target="_blank">Cetak daftar</a>
   <?php if (!$staff): ?>
   <a class="btn btn-ghost" href="pinjaman_bayar.php">Kirim bukti bayar</a>

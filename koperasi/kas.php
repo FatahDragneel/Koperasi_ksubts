@@ -93,7 +93,7 @@ include __DIR__ . '/includes/app_header.php';
   Pinjaman ditolak tidak dihitung.
 </p>
 
-<div class="row" style="margin-bottom:16px;justify-content:flex-end;">
+<div class="toolbar toolbar-end">
   <button class="btn btn-green" type="button" onclick="openModal('mKas')">+ Catat kas lain</button>
 </div>
 

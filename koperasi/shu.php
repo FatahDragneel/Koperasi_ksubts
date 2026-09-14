@@ -111,7 +111,7 @@ usort($rows, fn($a, $b) => $b['bagian'] <=> $a['bagian']);
 
 include __DIR__ . '/includes/app_header.php';
 ?>
-<form method="get" class="row" style="margin-bottom:16px;">
+<form method="get" class="toolbar">
   <label style="margin:0;">Tahun</label>
   <input type="number" name="tahun" value="<?= $tahun ?>" style="max-width:120px;">
   <button class="btn btn-ghost" type="submit">Tampilkan</button>

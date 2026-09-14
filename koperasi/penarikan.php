@@ -147,7 +147,7 @@ include __DIR__ . '/includes/app_header.php';
     <div class="kpi"><span>Saham</span><b><?= rupiah($ringkas['sukarela']) ?></b></div>
     <div class="kpi"><span>Total</span><b><?= rupiah($ringkas['pokok']+$ringkas['wajib']+$ringkas['sukarela']) ?></b></div>
   </div>
-  <div class="row" style="margin-bottom:16px;justify-content:flex-end;">
+  <div class="toolbar toolbar-end">
     <form method="post" onsubmit="return confirm('Ajukan penarikan seluruh simpanan? Setelah disetujui, keanggotaan menjadi nonaktif.');">
       <?= csrf_field() ?>
       <input type="hidden" name="act" value="ajukan">

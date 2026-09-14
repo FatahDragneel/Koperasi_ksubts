@@ -41,7 +41,7 @@ $piutang = (float)$pdo->query("SELECT COALESCE(SUM(sisa_piutang),0) FROM saprodi
 include __DIR__ . '/includes/app_header.php';
 ?>
 <div class="kpis"><div class="kpi"><span>Piutang saprodi</span><b><?= rupiah($piutang) ?></b></div></div>
-<div class="row" style="margin-bottom:14px;justify-content:flex-end;">
+<div class="toolbar toolbar-end">
   <button class="btn btn-green" type="button" onclick="openModal('mSap')">+ Nota saprodi</button>
 </div>
 <div class="table-wrap">

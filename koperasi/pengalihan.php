@@ -214,7 +214,7 @@ include __DIR__ . '/includes/app_header.php';
   Alih hak lahan &amp; simpanan: pengajuan → pengurus setujui → ID baru aktif, ID lama nonaktif (Keluar - Alih Hak).
   WhatsApp/email otomatis belum terhubung; notifikasi tercatat di Pengumuman internal.
 </p>
-<div class="row" style="margin-bottom:16px;justify-content:flex-end;">
+<div class="toolbar toolbar-end">
   <button class="btn btn-green" type="button" onclick="openModal('mAlih')">+ Pengajuan pengalihan</button>
 </div>
 <div class="table-wrap">

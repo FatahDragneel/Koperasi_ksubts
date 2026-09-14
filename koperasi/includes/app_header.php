@@ -46,7 +46,7 @@ function nav_active($file) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css?v=24">
-  <link rel="stylesheet" href="assets/theme.css?v=1">
+  <link rel="stylesheet" href="assets/theme.css?v=2">
 </head>
 <body>
 <input type="checkbox" id="navCek" class="nav-cek" autocomplete="off">

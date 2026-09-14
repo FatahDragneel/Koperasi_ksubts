@@ -171,47 +171,37 @@ include __DIR__ . '/includes/app_header.php';
 <?php if ($staff): ?>
   <p style="font-size:13px;color:var(--muted);margin:-4px 0 14px;">Total pokok &amp; wajib hanya anggota aktif dan pasif. Nonaktif tidak dijumlahkan.</p>
 <?php endif; ?>
-<form method="get" class="card" style="margin-bottom:16px;padding:14px 16px;">
-  <div class="row" style="flex-wrap:wrap;gap:12px;align-items:flex-end;">
-    <?php if ($staff): ?>
-    <div style="min-width:220px;flex:1;">
-      <label>Anggota</label>
-      <select name="anggota_id">
-        <option value="">Semua anggota</option>
-        <?php foreach ($anggotaFilter as $a): ?>
-          <option value="<?= (int)$a['id'] ?>" <?= $fAnggota === (int)$a['id'] ? 'selected' : '' ?>><?= e($a['no_anggota'].' — '.$a['nama']) ?></option>
-        <?php endforeach; ?>
-      </select>
-    </div>
-    <?php endif; ?>
-    <div style="min-width:160px;">
-      <label>Jenis simpanan</label>
-      <select name="jenis_id">
-        <option value="">Semua jenis</option>
-        <?php foreach ($jenis as $j): ?>
-          <option value="<?= (int)$j['id'] ?>" <?= $fJenis === (int)$j['id'] ? 'selected' : '' ?>><?= e($j['nama']) ?></option>
-        <?php endforeach; ?>
-      </select>
-    </div>
-    <div style="min-width:140px;">
-      <label>Bulan</label>
-      <input type="month" name="bulan" value="<?= e($fBulan) ?>">
-    </div>
-    <div class="row" style="gap:8px;">
-      <button class="btn btn-green" type="submit">Cari</button>
-      <?php if ($adaFilter): ?>
-        <a class="btn btn-ghost" href="simpanan.php">Reset</a>
-      <?php endif; ?>
-    </div>
-  </div>
-</form>
-<div class="row" style="margin-bottom:16px;justify-content:flex-end;">
-  <a class="btn btn-ghost" href="cetak.php?<?= e($qsCetak) ?>" target="_blank"><?= $adaFilter ? 'Cetak hasil pencarian' : 'Cetak daftar' ?></a>
+<form method="get" class="toolbar toolbar-card">
   <?php if ($staff): ?>
-  <button class="btn btn-green" type="button" onclick="openModal('mWajib')">+ Simpanan wajib (semua anggota)</button>
-  <button class="btn btn-gold" type="button" onclick="openModal('mSukarela')">+ Simpanan saham</button>
+  <label class="tb-field">Anggota
+    <select name="anggota_id">
+      <option value="">Semua anggota</option>
+      <?php foreach ($anggotaFilter as $a): ?>
+        <option value="<?= (int)$a['id'] ?>" <?= $fAnggota === (int)$a['id'] ? 'selected' : '' ?>><?= e($a['no_anggota'].' — '.$a['nama']) ?></option>
+      <?php endforeach; ?>
+    </select>
+  </label>
   <?php endif; ?>
-</div>
+  <label class="tb-field">Jenis
+    <select name="jenis_id">
+      <option value="">Semua jenis</option>
+      <?php foreach ($jenis as $j): ?>
+        <option value="<?= (int)$j['id'] ?>" <?= $fJenis === (int)$j['id'] ? 'selected' : '' ?>><?= e($j['nama']) ?></option>
+      <?php endforeach; ?>
+    </select>
+  </label>
+  <label class="tb-field">Bulan <input type="month" name="bulan" value="<?= e($fBulan) ?>"></label>
+  <button class="btn btn-green" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Cari</button>
+  <?php if ($adaFilter): ?>
+    <a class="btn btn-ghost" href="simpanan.php">Reset</a>
+  <?php endif; ?>
+  <span class="toolbar-spacer"></span>
+  <a class="btn btn-ghost" href="cetak.php?<?= e($qsCetak) ?>" target="_blank"><i class="fa-solid fa-print"></i> <?= $adaFilter ? 'Cetak hasil pencarian' : 'Cetak daftar' ?></a>
+  <?php if ($staff): ?>
+  <button class="btn btn-green" type="button" onclick="openModal('mWajib')"><i class="fa-solid fa-plus"></i> Simpanan wajib (semua anggota)</button>
+  <button class="btn btn-gold" type="button" onclick="openModal('mSukarela')"><i class="fa-solid fa-plus"></i> Simpanan saham</button>
+  <?php endif; ?>
+</form>
 <?php if ($adaFilter): ?>
   <p style="font-size:13px;color:var(--muted);margin:-8px 0 12px;"><?= count($rows) ?> transaksi sesuai pencarian. Total tampilan: <?= rupiah(array_sum(array_column($rows, 'jumlah'))) ?>.</p>
 <?php endif; ?>

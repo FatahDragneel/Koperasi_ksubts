@@ -162,3 +162,24 @@ input:focus, select:focus, textarea:focus {
 @media print {
   #toastBox, .modal-bg { display: none !important; }
 }
+
+/* ---- 13. Toolbar horizontal (pencarian + tombol sebaris) ---- */
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.toolbar-card{background:#fff;border:1px solid #ece6d6;border-radius:16px;padding:12px 14px;box-shadow:var(--shadow)}
+.toolbar-end{justify-content:flex-end}
+.toolbar-search{display:flex;gap:8px;flex:1 1 240px;min-width:0;align-items:center}
+.toolbar-search input{flex:1;min-width:0}
+.toolbar-actions{display:flex;gap:8px;align-items:center;margin-left:auto;flex-wrap:wrap}
+.toolbar-spacer{flex:1 1 auto}
+.toolbar .btn{flex:none}
+.tb-field{display:inline-flex;align-items:center;gap:7px;margin:0;font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap}
+.tb-field select,.tb-field input{width:auto;max-width:200px;flex:none}
+@media (max-width:960px){
+  .toolbar{flex-wrap:nowrap;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}
+  .toolbar-search{flex:0 0 auto}
+  .toolbar-search input{width:46vw;min-width:150px;flex:none}
+  .toolbar-actions{flex-wrap:nowrap;margin-left:0}
+  .toolbar-spacer{display:none}
+  .main .toolbar .btn{flex:0 0 auto}
+  .tb-field select,.tb-field input{max-width:42vw}
+}
