@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             flash('ok', 'Gapoktan baru berhasil ditambahkan.');
         }
-           header('Location: gaoktan.php'); 
+           header('Location: gapoktan.php'); 
 exit;
     }
 }
@@ -40,7 +40,7 @@ if (($_GET['act'] ?? '') === 'hapus') {
         $pdo->prepare('DELETE FROM gapoktan WHERE id=?')->execute([$id]);
         flash('ok', 'Gapoktan berhasil dihapus.');
     }
-    header('Location: gaoktan.php'); 
+    header('Location: gapoktan.php'); 
 exit;
 }
 
