@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 require __DIR__ . '/config.php';
 require_staff();
 ensure_kelompok_schema();
@@ -76,19 +73,19 @@ if (isset($_GET['hapus'])) {
     header('Location: kelompok.php'); exit;
 }
 
-$map = ['kode' => 'kode_kelompok', 'nama' => 'nama_kelompok', 'ketua' => 'nama_ketua', 'plasma' => 'plasma', 'luas' => 'luas_tanah', 'anggota' => 'jml'];
-$sort = sort_params($map, 'kode');
-$rows = $pdo->query("SELECT k.*, (SELECT COUNT(*) FROM anggota_kelompok ak JOIN anggota a ON a.id=ak.anggota_id WHERE ak.id_kelompok=k.id AND a.status='aktif') jml FROM kelompok k ORDER BY k.nomor " . (($sort['dir'] ?? 'ASC') === 'DESC' ? 'DESC' : 'ASC'))->fetchAll();
-if ($sort['key'] !== 'kode') {
-    $col = $map[$sort['key']];
-    usort($rows, function ($a, $b) use ($col, $sort) {
-        $va = $a[$col] ?? '';
-        $vb = $b[$col] ?? '';
-        $cmp = (is_numeric($va) && is_numeric($vb)) ? ((float)$va <=> (float)$vb) : strcasecmp((string)$va, (string)$vb);
-        return $sort['dir'] === 'DESC' ? -$cmp : $cmp;
-        return ($sort['dir'] ?? 'ASC') === 'DESC' ? -$cmp : $cmp;
-    });
+$mapUrut = ['kode' => 'kode_kelompok', 'nama' => 'nama_kelompok', 'ketua' => 'nama_ketua', 'plasma' => 'plasma', 'luas' => 'luas_tanah', 'anggota' => 'jml'];
+[$kUrut, $dUrut] = sort_params();
+if ($kUrut === '' || !isset($mapUrut[$kUrut])) {
+    $kUrut = 'kode';
 }
+$rows = $pdo->query("SELECT k.*, (SELECT COUNT(*) FROM anggota_kelompok ak JOIN anggota a ON a.id=ak.anggota_id WHERE ak.id_kelompok=k.id AND a.status='aktif') jml FROM kelompok k ORDER BY k.nomor ASC")->fetchAll();
+$colUrut = $mapUrut[$kUrut];
+usort($rows, function ($a, $b) use ($colUrut, $dUrut) {
+    $va = $a[$colUrut] ?? '';
+    $vb = $b[$colUrut] ?? '';
+    $cmp = (is_numeric($va) && is_numeric($vb)) ? ((float)$va <=> (float)$vb) : strcasecmp((string)$va, (string)$vb);
+    return $dUrut === 'desc' ? -$cmp : $cmp;
+});
 $jml = count($rows);
 $rowsJson = [];
 foreach ($rows as $r) {
@@ -102,16 +99,6 @@ foreach ($rows as $r) {
 }
 include __DIR__ . '/includes/app_header.php';
 ?>
-<script>
-function openModal(id) {
-    var modal = document.getElementById(id);
-    if (modal) { modal.style.display = 'flex'; }
-}
-function closeModal(id) {
-    var modal = document.getElementById(id);
-    if (modal) { modal.style.display = 'none'; }
-}
-</script>
 <div class="row" style="margin-bottom:14px;align-items:center;">
   <p style="color:var(--muted);margin:0;"><?= (int)$jml ?> kelompok. Ketua dan HP terisi otomatis setelah jabatan Ketua dipilih di Detail.</p>
   <span style="flex:1;"></span>
