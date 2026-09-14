@@ -158,6 +158,9 @@ include __DIR__ . '/includes/app_header.php';
 <div class="card" style="max-width:640px;">
   <h3><?= e(($l['kode_koperasi'] ?: 'KOP') . ' · ' . ($l['nama_koperasi'] ?: 'Koperasi')) ?></h3>
   <p style="font-size:14px;margin-top:10px;">Ketua: <strong><?= e($l['nama_ketua'] ?: 'Belum dipilih') ?></strong><?= !empty($l['alamat']) ? '<br>Alamat: ' . e($l['alamat']) : '' ?><?= !empty($l['keterangan']) ? '<br>Keterangan: ' . e($l['keterangan']) : '' ?></p>
+  <?php if (unit_milik_saya('lembaga_koperasi', $id, $aid)): ?>
+  <p style="font-size:13px;color:var(--muted);">Ini buatan Anda — <a href="lembaga_koperasi.php">ubah dari daftar koperasi</a>.</p>
+  <?php endif; ?>
   <p style="margin-top:10px;">Status: <?= $ikut ? '<span class="badge b-aktif">Tergabung</span>' : '<span class="badge b-pending">Belum tergabung</span>' ?></p>
   <?php if ($ikut): ?>
   <form method="post" onsubmit="return confirm('Keluar dari koperasi ini?')">

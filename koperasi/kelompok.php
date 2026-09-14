@@ -12,6 +12,53 @@ $aid = (int)($u['anggota_id'] ?? 0);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $act = $_POST['act'] ?? '';
     if (!$staff) {
+        if ($act === 'simpan') {
+            $sid = (int)($_POST['id'] ?? 0);
+            $tgl = trim($_POST['tanggal_terbentuk'] ?? '');
+            if ($sid > 0) {
+                if (!unit_milik_saya('kelompok', $sid, $aid)) {
+                    flash('err', 'Hanya kelompok buatan sendiri yang bisa diubah.');
+                } else {
+                    $pdo->prepare('UPDATE kelompok SET kode_kelompok=?, nama_kelompok=?, plasma=?, wilayah_dusun=?, blok_hamparan=?, tanggal_terbentuk=?, luas_tanah=?, lokasi=?, desa=?, kecamatan=? WHERE id=?')->execute([
+                        trim($_POST['kode_kelompok'] ?? '') ?: null,
+                        trim($_POST['nama_kelompok'] ?? '') ?: null,
+                        trim($_POST['plasma'] ?? '') ?: null,
+                        trim($_POST['wilayah_dusun'] ?? '') ?: null,
+                        trim($_POST['blok_hamparan'] ?? '') ?: null,
+                        $tgl !== '' ? $tgl : null,
+                        (float)($_POST['luas_tanah'] ?? 0),
+                        trim($_POST['lokasi'] ?? '') ?: null,
+                        trim($_POST['desa'] ?? '') ?: null,
+                        trim($_POST['kecamatan'] ?? '') ?: null,
+                        $sid,
+                    ]);
+                    sinkron_ketua_kelompok($sid);
+                    flash('ok', 'Kelompok berhasil diperbarui.');
+                }
+            } else {
+                $nomor = nomor_kelompok_baru();
+                $kode = trim($_POST['kode_kelompok'] ?? '') ?: ('KT-' . str_pad((string)$nomor, 2, '0', STR_PAD_LEFT));
+                $nama = trim($_POST['nama_kelompok'] ?? '') ?: ('Kelompok Tani ' . $nomor);
+                try {
+                    $pdo->prepare('INSERT INTO kelompok (nomor, kode_kelompok, nama_kelompok, plasma, wilayah_dusun, blok_hamparan, tanggal_terbentuk, luas_tanah, lokasi, desa, kecamatan, dibuat_oleh) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)')->execute([
+                        $nomor, $kode, $nama,
+                        trim($_POST['plasma'] ?? '') ?: null,
+                        trim($_POST['wilayah_dusun'] ?? '') ?: null,
+                        trim($_POST['blok_hamparan'] ?? '') ?: null,
+                        $tgl !== '' ? $tgl : null,
+                        (float)($_POST['luas_tanah'] ?? 0),
+                        trim($_POST['lokasi'] ?? '') ?: null,
+                        trim($_POST['desa'] ?? '') ?: null,
+                        trim($_POST['kecamatan'] ?? '') ?: null,
+                        $aid > 0 ? $aid : null,
+                    ]);
+                    flash('ok', "Kelompok $kode dibentuk.");
+                } catch (Throwable $e) {
+                    flash('err', 'Gagal menambah kelompok. Kode atau nomor mungkin sudah dipakai.');
+                }
+            }
+            header('Location: kelompok.php'); exit;
+        }
         $gid = (int)($_POST['id'] ?? 0);
         if ($gid < 1 || $aid < 1) {
             flash('err', 'Permintaan tidak valid.');
@@ -112,20 +159,18 @@ $rowsJson = [];
 foreach ($rows as $r) {
     $rowsJson[(int)$r['id']] = [
         'id' => (int)$r['id'], 'kode' => $r['kode_kelompok'], 'nama' => $r['nama_kelompok'],
-        'plasma' => $r['plasma'] ?? '', 'ketua' => $r['nama_ketua'], 'hp' => $r['no_hp_ketua'],
+        'plasma' => $r['plasma'] ?? '', 'ketua' => $r['nama_ketua'], 'hp' => $staff ? $r['no_hp_ketua'] : '',
         'wilayah' => $r['wilayah_dusun'], 'blok' => $r['blok_hamparan'], 'tgl' => $r['tanggal_terbentuk'],
         'luas' => $r['luas_tanah'], 'lokasi' => $r['lokasi'], 'desa' => $r['desa'],
-        'kecamatan' => $r['kecamatan'], 'fee' => $r['fee_per_kg'],
+        'kecamatan' => $r['kecamatan'], 'fee' => $staff ? $r['fee_per_kg'] : 0,
     ];
 }
 include __DIR__ . '/includes/app_header.php';
 ?>
 <div class="row" style="margin-bottom:14px;align-items:center;">
-  <p style="color:var(--muted);margin:0;"><?= (int)$jml ?> kelompok. <?= $staff ? 'Ketua dan HP terisi otomatis setelah jabatan Ketua dipilih di Detail.' : 'Tekan Gabung untuk masuk kelompok, Keluar untuk berhenti.' ?></p>
+  <p style="color:var(--muted);margin:0;"><?= (int)$jml ?> kelompok. <?= $staff ? 'Ketua dan HP terisi otomatis setelah jabatan Ketua dipilih di Detail.' : 'Tekan Gabung untuk masuk, atau Tambah kelompok untuk membuat baru.' ?></p>
   <span style="flex:1;"></span>
-  <?php if ($staff): ?>
   <button class="btn btn-green" type="button" onclick="openModal('mTambahKel')"><i class="fa-solid fa-plus"></i> Tambah kelompok</button>
-  <?php endif; ?>
 </div>
 <div class="table-wrap">
   <table>
@@ -159,10 +204,14 @@ include __DIR__ . '/includes/app_header.php';
         <td>
           <div class="row" style="gap:6px;">
             <a class="btn btn-ghost btn-sm" href="kelompok_detail.php?id=<?= (int)$r['id'] ?>"><i class="fa-solid fa-eye"></i> Detail</a>
-            <?php if ($staff): ?>
+            <?php $punya = $staff || unit_milik_saya('kelompok', (int)$r['id'], $aid); ?>
+            <?php if ($punya): ?>
             <button class="btn btn-gold btn-sm" type="button" onclick='editKel(<?= json_encode($rowsJson[(int)$r['id']], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'><i class="fa-solid fa-pen"></i> Ubah</button>
+            <?php if ($staff): ?>
             <a class="btn btn-danger btn-sm" href="kelompok.php?hapus=<?= (int)$r['id'] ?>&_csrf=<?= e(csrf_token()) ?>" onclick="return confirm('Hapus <?= e($r['kode_kelompok']) ?>? Hanya bisa jika belum dipakai.');"><i class="fa-solid fa-trash"></i> Hapus</a>
-            <?php else: ?>
+            <?php endif; ?>
+            <?php endif; ?>
+            <?php if (!$staff): ?>
             <?php if (in_array((int)$r['id'], $milikSaya, true)): ?>
             <form method="post" style="display:inline;" onsubmit="return confirm('Keluar dari kelompok ini?')">
               <?= csrf_field() ?>
@@ -183,16 +232,16 @@ include __DIR__ . '/includes/app_header.php';
         </td>
       </tr>
     <?php endforeach; if (!$rows): ?>
-      <tr><td colspan="8"><?= $staff ? 'Belum ada kelompok. Klik “Tambah kelompok” untuk membentuk yang pertama.' : 'Belum ada kelompok.' ?></td></tr>
+      <tr><td colspan="8">Belum ada kelompok. Klik “Tambah kelompok” untuk membentuk yang pertama.</td></tr>
     <?php endif; ?>
     </tbody>
   </table>
 </div>
 
-<?php if ($staff): ?>
 <div class="modal-bg" id="mTambahKel">
   <form class="modal" method="post">
     <?= csrf_field() ?>
+    <input type="hidden" name="act" value="simpan">
     <h3>Tambah kelompok</h3>
     <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">Kode &amp; nama otomatis jika dikosongkan</p>
     <div class="grid-2">
@@ -215,7 +264,7 @@ include __DIR__ . '/includes/app_header.php';
       <div><label>Desa</label><input name="desa"></div>
       <div><label>Kecamatan</label><input name="kecamatan"></div>
     </div>
-    <label>Fee per kg (Rp)</label><input type="number" step="1" min="0" name="fee_per_kg">
+    <?php if ($staff): ?><label>Fee per kg (Rp)</label><input type="number" step="1" min="0" name="fee_per_kg"><?php endif; ?>
     <div class="row" style="margin-top:16px;justify-content:flex-end;">
       <button type="button" class="btn btn-ghost" onclick="closeModal('mTambahKel')"><i class="fa-solid fa-xmark"></i> Batal</button>
       <button class="btn btn-green"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
@@ -227,6 +276,7 @@ include __DIR__ . '/includes/app_header.php';
   <form class="modal" method="post">
     <?= csrf_field() ?>
     <input type="hidden" name="id" id="kelId">
+    <input type="hidden" name="act" value="simpan">
     <h3>Ubah kelompok</h3>
     <div class="grid-2">
       <div><label>Kode</label><input name="kode_kelompok" id="kelKode" placeholder="mis. KT-01"></div>
@@ -249,14 +299,13 @@ include __DIR__ . '/includes/app_header.php';
       <div><label>Desa</label><input name="desa" id="kelDesa"></div>
       <div><label>Kecamatan</label><input name="kecamatan" id="kelKec"></div>
     </div>
-    <label>Fee per kg (Rp)</label><input type="number" step="1" min="0" name="fee_per_kg" id="kelFee">
+    <?php if ($staff): ?><label>Fee per kg (Rp)</label><input type="number" step="1" min="0" name="fee_per_kg" id="kelFee"><?php endif; ?>
     <div class="row" style="margin-top:16px;justify-content:flex-end;">
       <button type="button" class="btn btn-ghost" onclick="closeModal('mKel')"><i class="fa-solid fa-xmark"></i> Batal</button>
       <button class="btn btn-green"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
     </div>
   </form>
 </div>
-<?php endif; ?>
 <script>
 function openModal(id) {
   const modal = document.getElementById(id);

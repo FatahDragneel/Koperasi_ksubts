@@ -158,6 +158,9 @@ include __DIR__ . '/includes/app_header.php';
 <div class="card" style="max-width:640px;">
   <h3><?= e(($g['kode_gapoktan'] ?: 'GAP') . ' · ' . ($g['nama_gapoktan'] ?: 'Gapoktan')) ?></h3>
   <p style="font-size:14px;margin-top:10px;">Ketua: <strong><?= e($g['nama_ketua'] ?: 'Belum dipilih') ?></strong><?= !empty($g['alamat']) ? '<br>Alamat: ' . e($g['alamat']) : '' ?><?= !empty($g['keterangan']) ? '<br>Keterangan: ' . e($g['keterangan']) : '' ?></p>
+  <?php if (unit_milik_saya('gapoktan', $id, $aid)): ?>
+  <p style="font-size:13px;color:var(--muted);">Ini buatan Anda — <a href="gapoktan.php">ubah dari daftar gapoktan</a>.</p>
+  <?php endif; ?>
   <p style="margin-top:10px;">Status: <?= $ikut ? '<span class="badge b-aktif">Tergabung</span>' : '<span class="badge b-pending">Belum tergabung</span>' ?></p>
   <?php if ($ikut): ?>
   <form method="post" onsubmit="return confirm('Keluar dari gapoktan ini?')">

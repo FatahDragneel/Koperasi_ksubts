@@ -125,6 +125,7 @@ $cols = [
         'fee_per_kg' => "DECIMAL(12,2) NOT NULL DEFAULT 0",
         'plasma' => "VARCHAR(120) NULL",
         'id_gapoktan' => "INT NULL",
+        'dibuat_oleh' => "INT NULL",
     ],
 ];
 foreach ($cols as $table => $list) {

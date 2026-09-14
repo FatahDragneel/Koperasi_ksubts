@@ -516,6 +516,7 @@ function ensure_kelompok_schema(): void {
             'blok_hamparan' => "VARCHAR(120) NULL",
             'tanggal_terbentuk' => "DATE NULL",
             'plasma' => "VARCHAR(120) NULL",
+            'dibuat_oleh' => "INT NULL",
         ];
         $kcols = array_column(db()->query('SHOW COLUMNS FROM kelompok')->fetchAll(), 'Field');
         foreach ($addsK as $col => $def) {
@@ -578,10 +579,11 @@ function ensure_gapoktan_schema(): void {
             no_hp_ketua VARCHAR(30) NULL,
             alamat VARCHAR(255) NULL,
             keterangan VARCHAR(255) NULL,
-            id_koperasi INT NULL
+            id_koperasi INT NULL,
+            dibuat_oleh INT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
         $gcols = array_column(db()->query('SHOW COLUMNS FROM gapoktan')->fetchAll(), 'Field');
-        foreach (['kode_gapoktan' => 'VARCHAR(20) NULL', 'nama_gapoktan' => 'VARCHAR(120) NULL', 'nama_ketua' => 'VARCHAR(100) NULL', 'no_hp_ketua' => 'VARCHAR(30) NULL', 'alamat' => 'VARCHAR(255) NULL', 'keterangan' => 'VARCHAR(255) NULL', 'id_koperasi' => 'INT NULL'] as $col => $def) {
+        foreach (['kode_gapoktan' => 'VARCHAR(20) NULL', 'nama_gapoktan' => 'VARCHAR(120) NULL', 'nama_ketua' => 'VARCHAR(100) NULL', 'no_hp_ketua' => 'VARCHAR(30) NULL', 'alamat' => 'VARCHAR(255) NULL', 'keterangan' => 'VARCHAR(255) NULL', 'id_koperasi' => 'INT NULL', 'dibuat_oleh' => 'INT NULL'] as $col => $def) {
             if (!in_array($col, $gcols, true)) {
                 db()->exec("ALTER TABLE gapoktan ADD COLUMN `$col` $def");
             }
@@ -606,8 +608,13 @@ function ensure_lembaga_koperasi_schema(): void {
             nama_ketua VARCHAR(100) NULL,
             no_hp_ketua VARCHAR(30) NULL,
             alamat VARCHAR(255) NULL,
-            keterangan VARCHAR(255) NULL
+            keterangan VARCHAR(255) NULL,
+            dibuat_oleh INT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        $lcols = array_column(db()->query('SHOW COLUMNS FROM lembaga_koperasi')->fetchAll(), 'Field');
+        if (!in_array('dibuat_oleh', $lcols, true)) {
+            db()->exec('ALTER TABLE lembaga_koperasi ADD COLUMN dibuat_oleh INT NULL');
+        }
     } catch (Throwable $e) {
     }
 }
@@ -684,6 +691,19 @@ function keluar_anggota_dari_lembaga(int $anggotaId, int $idKoperasi): void {
     try {
         db()->prepare('DELETE FROM anggota_lembaga WHERE anggota_id=? AND id_koperasi=?')->execute([$anggotaId, $idKoperasi]);
     } catch (Throwable $e) {
+    }
+}
+
+function unit_milik_saya(string $tabel, int $id, int $aid): bool {
+    if (!in_array($tabel, ['kelompok', 'gapoktan', 'lembaga_koperasi'], true) || $id < 1 || $aid < 1) {
+        return false;
+    }
+    try {
+        $st = db()->prepare("SELECT dibuat_oleh FROM `$tabel` WHERE id=?");
+        $st->execute([$id]);
+        return (int)$st->fetchColumn() === $aid;
+    } catch (Throwable $e) {
+        return false;
     }
 }
 

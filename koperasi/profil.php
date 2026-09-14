@@ -36,6 +36,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($act === 'keluar_kel' && !$staff && !empty($u['anggota_id'])) {
         keluar_anggota_dari_kelompok((int)$u['anggota_id'], (int)($_POST['id_kelompok'] ?? 0));
         flash('ok', 'Anda keluar dari kelompok.');
+    } elseif ($act === 'data' && !$staff && !empty($u['anggota_id'])) {
+        $nama = trim((string)($_POST['nama'] ?? ''));
+        $jk = ($_POST['jenis_kelamin'] ?? 'L') === 'P' ? 'P' : 'L';
+        if ($nama === '') {
+            flash('err', 'Nama tidak boleh kosong.');
+        } else {
+            $pdo->prepare('UPDATE anggota SET nama=?,nik=?,jenis_kelamin=?,tempat_lahir=?,tanggal_lahir=?,alamat=?,desa=?,kecamatan=?,no_hp=?,pekerjaan=? WHERE id=?')->execute([
+                $nama,
+                trim((string)($_POST['nik'] ?? '')) ?: null,
+                $jk,
+                trim((string)($_POST['tempat_lahir'] ?? '')) ?: null,
+                trim((string)($_POST['tanggal_lahir'] ?? '')) ?: null,
+                trim((string)($_POST['alamat'] ?? '')) ?: null,
+                trim((string)($_POST['desa'] ?? '')) ?: null,
+                trim((string)($_POST['kecamatan'] ?? '')) ?: null,
+                trim((string)($_POST['no_hp'] ?? '')) ?: null,
+                trim((string)($_POST['pekerjaan'] ?? '')) ?: null,
+                (int)$u['anggota_id'],
+            ]);
+            $_SESSION['user']['nama'] = $nama;
+            flash('ok', 'Data diri diperbarui.');
+        }
     } elseif (!empty($_POST['password'])) {
         if ($_POST['password'] !== ($_POST['password2'] ?? '')) {
             flash('err', 'Konfirmasi sandi tidak sama.');
@@ -122,7 +144,10 @@ if ($staff):
 
 <div class="cards" style="grid-template-columns:1fr 1fr;">
   <div class="card">
-    <h3>Data saya</h3>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h3>Data saya</h3>
+      <button class="btn btn-gold btn-sm" type="button" onclick="openModal('mData')"><i class="fa-solid fa-pen"></i> Ubah</button>
+    </div>
     <div class="grid-2" style="margin-top:12px;">
       <p><strong>No. Anggota</strong><br><?= e($anggota['no_anggota']) ?></p>
       <p><strong>Nama</strong><br><?= e($anggota['nama']) ?></p>
@@ -250,6 +275,39 @@ if ($staff):
     <label>Ulangi sandi</label>
     <input type="password" name="password2" required minlength="6">
     <button class="btn btn-green" style="margin-top:14px;">Simpan sandi</button>
+  </form>
+</div>
+<div class="modal-bg" id="mData">
+  <form class="modal" method="post">
+    <?= csrf_field() ?>
+    <input type="hidden" name="act" value="data">
+    <h3>Ubah data saya</h3>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">Nomor anggota, status, dan STDB hanya bisa diubah pengurus.</p>
+    <label>Nama lengkap<input name="nama" value="<?= e($anggota['nama'] ?? '') ?>" required></label>
+    <div class="grid-2">
+      <div><label>NIK</label><input name="nik" value="<?= e($anggota['nik'] ?? '') ?>"></div>
+      <div><label>Jenis kelamin</label><select name="jenis_kelamin">
+        <option value="L" <?= ($anggota['jenis_kelamin'] ?? 'L') === 'L' ? 'selected' : '' ?>>Laki-laki</option>
+        <option value="P" <?= ($anggota['jenis_kelamin'] ?? '') === 'P' ? 'selected' : '' ?>>Perempuan</option>
+      </select></div>
+    </div>
+    <div class="grid-2">
+      <div><label>Tempat lahir</label><input name="tempat_lahir" value="<?= e($anggota['tempat_lahir'] ?? '') ?>"></div>
+      <div><label>Tanggal lahir</label><input type="date" name="tanggal_lahir" value="<?= e($anggota['tanggal_lahir'] ?? '') ?>"></div>
+    </div>
+    <div class="grid-2">
+      <div><label>No. HP</label><input name="no_hp" value="<?= e($anggota['no_hp'] ?? '') ?>"></div>
+      <div><label>Pekerjaan</label><input name="pekerjaan" value="<?= e($anggota['pekerjaan'] ?? '') ?>"></div>
+    </div>
+    <label>Alamat<textarea name="alamat" rows="2"><?= e($anggota['alamat'] ?? '') ?></textarea></label>
+    <div class="grid-2">
+      <div><label>Desa</label><input name="desa" value="<?= e($anggota['desa'] ?? '') ?>"></div>
+      <div><label>Kecamatan</label><input name="kecamatan" value="<?= e($anggota['kecamatan'] ?? '') ?>"></div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" onclick="closeModal('mData')"><i class="fa-solid fa-xmark"></i> Batal</button>
+      <button class="btn btn-green" type="submit"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
+    </div>
   </form>
 </div>
 <?php endif; ?>

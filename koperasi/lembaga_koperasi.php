@@ -12,6 +12,27 @@ $pdo = db();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $act = $_POST['act'] ?? '';
     if (!$staff) {
+        if ($act === 'simpan') {
+            $sid = (int)($_POST['id'] ?? 0);
+            if ($sid > 0) {
+                if (!unit_milik_saya('lembaga_koperasi', $sid, $aid)) {
+                    flash('err', 'Hanya koperasi buatan sendiri yang bisa diubah.');
+                } else {
+                    $pdo->prepare('UPDATE lembaga_koperasi SET kode_koperasi=?, nama_koperasi=?, nama_ketua=?, alamat=?, keterangan=? WHERE id=?')->execute([
+                        trim($_POST['kode'] ?? ''), trim($_POST['nama'] ?? ''), trim($_POST['ketua'] ?? ''),
+                        trim($_POST['alamat'] ?? ''), trim($_POST['ket'] ?? ''), $sid,
+                    ]);
+                    flash('ok', 'Koperasi berhasil diperbarui.');
+                }
+            } else {
+                $pdo->prepare('INSERT INTO lembaga_koperasi (kode_koperasi, nama_koperasi, nama_ketua, alamat, keterangan, dibuat_oleh) VALUES (?,?,?,?,?,?)')->execute([
+                    trim($_POST['kode'] ?? ''), trim($_POST['nama'] ?? ''), trim($_POST['ketua'] ?? ''),
+                    trim($_POST['alamat'] ?? ''), trim($_POST['ket'] ?? ''), $aid > 0 ? $aid : null,
+                ]);
+                flash('ok', 'Koperasi baru berhasil ditambahkan.');
+            }
+            header('Location: lembaga_koperasi.php'); exit;
+        }
         $gid = (int)($_POST['id'] ?? 0);
         if ($gid < 1 || $aid < 1) {
             flash('err', 'Permintaan tidak valid.');
@@ -71,15 +92,14 @@ include __DIR__ . '/includes/app_header.php';
 <p style="margin:0 0 10px;"><a href="lembaga.php"><i class="fa-solid fa-arrow-left"></i> Kembali ke Lembaga</a></p>
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
   <h2 style="margin:0;">Koperasi</h2>
-  <?php if ($staff): ?>
-  <button class="btn btn-green" onclick="document.getElementById('mTambah').style.display='flex'"><i class="fa-solid fa-plus"></i> Tambah koperasi</button><?php endif; ?>
+  <button class="btn btn-green" onclick="document.getElementById('mTambah').style.display='flex'"><i class="fa-solid fa-plus"></i> Tambah koperasi</button>
 </div>
 <div class="table-wrap">
   <table>
     <?php if ($staff): ?><thead><tr><th>Kode</th><th>Nama koperasi</th><th>Ketua</th><th>No. HP</th><th>Anggota</th><th>Aksi</th></tr></thead><?php else: ?><thead><tr><th>Kode</th><th>Nama koperasi</th><th>Ketua</th><th>Status saya</th><th>Aksi</th></tr></thead><?php endif; ?>
     <tbody>
     <?php if (!$rows): ?>
-      <tr><td colspan="<?= $staff ? 6 : 5 ?>"><?= $staff ? 'Belum ada koperasi. Klik “Tambah koperasi” untuk membentuk yang pertama.' : 'Belum ada koperasi.' ?></td></tr>
+      <tr><td colspan="<?= $staff ? 6 : 5 ?>">Belum ada koperasi. Klik “Tambah koperasi” untuk membentuk yang pertama.</td></tr>
     <?php endif; ?>
     <?php foreach ($rows as $r): ?>
       <tr>
@@ -89,10 +109,14 @@ include __DIR__ . '/includes/app_header.php';
         <?php if ($staff): ?><td><?= e($r['no_hp_ketua'] ?? '') ?: '—' ?></td><?php endif; ?>
         <?php if ($staff): ?><td><?= (int)$r['jml'] ?> anggota</td><?php else: ?><td><?= in_array((int)$r['id'], $milikSaya, true) ? '<span class="badge b-aktif">Tergabung</span>' : '<span class="badge b-pending">Belum</span>' ?></td><?php endif; ?>
         <td style="white-space:nowrap;">
+          <?php $punya = $staff || unit_milik_saya('lembaga_koperasi', (int)$r['id'], $aid); ?>
+          <?php if ($punya): ?>
+          <button class="btn btn-ghost btn-sm" onclick='editKop(<?= json_encode(['id' => $r['id'], 'kode' => $r['kode_koperasi'], 'nama' => $r['nama_koperasi'], 'ketua' => $r['nama_ketua'], 'hp' => $staff ? $r['no_hp_ketua'] : '', 'alamat' => $r['alamat'], 'ket' => $r['keterangan']]) ?>)'><i class="fa-solid fa-pen"></i> Ubah</button>
           <?php if ($staff): ?>
-          <button class="btn btn-ghost btn-sm" onclick='editKop(<?= json_encode(['id' => $r['id'], 'kode' => $r['kode_koperasi'], 'nama' => $r['nama_koperasi'], 'ketua' => $r['nama_ketua'], 'hp' => $r['no_hp_ketua'], 'alamat' => $r['alamat'], 'ket' => $r['keterangan']]) ?>)'><i class="fa-solid fa-pen"></i> Ubah</button>
           <a class="btn btn-red btn-sm" href="lembaga_koperasi.php?act=hapus&id=<?= (int)$r['id'] ?>&_csrf=<?= e(csrf_token()) ?>" onclick="return confirm('Hapus koperasi <?= e($r['nama_koperasi'] ?? '') ?>?')"><i class="fa-solid fa-trash"></i> Hapus</a>
-          <?php else: ?>
+          <?php endif; ?>
+          <?php endif; ?>
+          <?php if (!$staff): ?>
           <?php if (in_array((int)$r['id'], $milikSaya, true)): ?>
           <form method="post" style="display:inline;" onsubmit="return confirm('Keluar dari koperasi ini?')">
             <?= csrf_field() ?>
@@ -117,7 +141,6 @@ include __DIR__ . '/includes/app_header.php';
   </table>
 </div>
 
-<?php if ($staff): ?>
 <div class="modal-bg" id="mTambah" style="justify-content: center; align-items: center;">
   <div class="modal">
     <h3>Tambah Koperasi</h3>
@@ -128,7 +151,7 @@ include __DIR__ . '/includes/app_header.php';
       <label>Kode koperasi<input name="kode" value="<?= e($autoKode) ?>" required></label>
       <label>Nama koperasi<input name="nama" required placeholder="cth: Koperasi Bina Tani"></label>
       <label>Nama ketua<input name="ketua"></label>
-      <label>No. HP ketua<input name="hp"></label>
+      <?php if ($staff): ?><label>No. HP ketua<input name="hp"></label><?php endif; ?>
       <label>Alamat<textarea name="alamat" rows="2"></textarea></label>
       <label>Keterangan<textarea name="ket" rows="2"></textarea></label>
       <div class="modal-actions"><button type="button" class="btn btn-ghost" onclick="document.getElementById('mTambah').style.display='none'"><i class="fa-solid fa-xmark"></i> Batal</button><button class="btn btn-green" type="submit"><i class="fa-solid fa-floppy-disk"></i> Simpan</button></div>
@@ -145,14 +168,13 @@ include __DIR__ . '/includes/app_header.php';
       <label>Kode koperasi<input name="kode" id="u_kode" required></label>
       <label>Nama koperasi<input name="nama" id="u_nama" required></label>
       <label>Nama ketua<input name="ketua" id="u_ketua"></label>
-      <label>No. HP ketua<input name="hp" id="u_hp"></label>
+      <?php if ($staff): ?><label>No. HP ketua<input name="hp" id="u_hp"></label><?php endif; ?>
       <label>Alamat<textarea name="alamat" id="u_alamat" rows="2"></textarea></label>
       <label>Keterangan<textarea name="ket" id="u_ket" rows="2"></textarea></label>
       <div class="modal-actions"><button type="button" class="btn btn-ghost" onclick="document.getElementById('mUbah').style.display='none'"><i class="fa-solid fa-xmark"></i> Batal</button><button class="btn btn-green" type="submit"><i class="fa-solid fa-floppy-disk"></i> Perbarui</button></div>
     </form>
   </div>
 </div>
-<?php endif; ?>
 <script>
 function editKop(g) {
   document.getElementById('u_id').value = g.id;
