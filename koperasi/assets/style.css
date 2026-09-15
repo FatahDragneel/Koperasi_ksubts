@@ -239,6 +239,7 @@ textarea { min-height: 90px; resize: vertical; }
   padding: 10px 12px; border-radius: 12px; color: #d7eadc; font-size: 14px; font-weight: 600; margin-bottom: 4px;
 }
 .side-nav a:hover, .side-nav a.active { background: rgba(232,197,71,.18); color: var(--gold-l); }
+.nav-sect { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: #e8c547; opacity: .8; font-weight: 800; padding: 12px 12px 6px; }
 .sidebar > div:last-child { flex: 0 0 auto; }
 .main { padding: 24px 28px 48px; min-width: 0; overflow-x: hidden; }
 .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }

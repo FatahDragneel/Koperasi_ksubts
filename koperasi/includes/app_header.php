@@ -49,7 +49,7 @@ function nav_active_lembaga() {
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="assets/style.css?v=24">
+  <link rel="stylesheet" href="assets/style.css?v=25">
   <link rel="stylesheet" href="assets/theme.css?v=2">
 </head>
 <body>
@@ -67,41 +67,46 @@ function nav_active_lembaga() {
     </div>
     <nav class="side-nav">
       <a class="<?= nav_active('dashboard.php') ?>" href="dashboard.php"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-      <a class="<?= nav_active('profil_koperasi.php') ?>" href="profil_koperasi.php"><i class="fa-solid fa-building-columns"></i> Profil koperasi</a>
       <?php if (in_array($u['role'], ['admin','pengurus'])): ?>
+        <div class="nav-sect">Koperasi</div>
+        <a class="<?= nav_active('profil_koperasi.php') ?>" href="profil_koperasi.php"><i class="fa-solid fa-building-columns"></i> Profil koperasi</a>
+        <a class="<?= nav_active('pengumuman.php') ?>" href="pengumuman.php"><i class="fa-solid fa-bullhorn"></i> Pengumuman</a>
+        <a class="<?= nav_active('laporan.php') ?>" href="laporan.php"><i class="fa-solid fa-chart-line"></i> Laporan</a>
+        <div class="nav-sect">Anggota &amp; lembaga</div>
         <a class="<?= nav_active('anggota.php') ?>" href="anggota.php"><i class="fa-solid fa-users"></i> Anggota</a>
+        <a class="<?= nav_active('verifikasi.php') ?>" href="verifikasi.php"><i class="fa-solid fa-user-check"></i> Verifikasi anggota</a>
         <?php if (FITUR_PENGALIHAN): ?>
         <a class="<?= nav_active('pengalihan.php') ?>" href="pengalihan.php"><i class="fa-solid fa-right-left"></i> Pengalihan hak</a>
         <?php endif; ?>
         <a class="<?= nav_active_lembaga() ?>" href="lembaga.php"><i class="fa-solid fa-sitemap"></i> Lembaga</a>
-        <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php"><i class="fa-solid fa-seedling"></i> Pupuk organik</a>
-        <a class="<?= nav_active('verifikasi.php') ?>" href="verifikasi.php"><i class="fa-solid fa-user-check"></i> Verifikasi anggota</a>
-        <?php if (FITUR_PINJAMAN): ?>
-        <a class="<?= nav_active('verifikasi_bayar.php') ?>" href="verifikasi_bayar.php"><i class="fa-solid fa-money-check-dollar"></i> Verifikasi bayar</a>
-        <?php endif; ?>
+        <div class="nav-sect">Keuangan</div>
         <a class="<?= nav_active('simpanan.php') ?>" href="simpanan.php"><i class="fa-solid fa-piggy-bank"></i> Simpanan</a>
         <a class="<?= nav_active('penarikan.php') ?>" href="penarikan.php"><i class="fa-solid fa-hand-holding-dollar"></i> Penarikan simpanan</a>
         <?php if (FITUR_PINJAMAN): ?>
+        <a class="<?= nav_active('verifikasi_bayar.php') ?>" href="verifikasi_bayar.php"><i class="fa-solid fa-money-check-dollar"></i> Verifikasi bayar</a>
         <a class="<?= nav_active('pinjaman.php') ?>" href="pinjaman.php"><i class="fa-solid fa-file-invoice-dollar"></i> Pinjaman</a>
         <a class="<?= nav_active('angsuran.php') ?>" href="angsuran.php"><i class="fa-solid fa-money-bill-wave"></i> Angsuran</a>
         <?php endif; ?>
-        <a class="<?= nav_active('pengumuman.php') ?>" href="pengumuman.php"><i class="fa-solid fa-bullhorn"></i> Pengumuman</a>
-        <a class="<?= nav_active('laporan.php') ?>" href="laporan.php"><i class="fa-solid fa-chart-line"></i> Laporan</a>
+        <div class="nav-sect">Usaha</div>
+        <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php"><i class="fa-solid fa-seedling"></i> Pupuk organik</a>
+        <div class="nav-sect">Sistem</div>
         <a class="<?= nav_active('pengaturan.php') ?>" href="pengaturan.php"><i class="fa-solid fa-gear"></i> Pengaturan</a>
+        <a class="<?= nav_active('profil.php') ?>" href="profil.php"><i class="fa-solid fa-circle-user"></i> Profil</a>
       <?php else: ?>
+        <div class="nav-sect">Data saya</div>
+        <a class="<?= nav_active('profil.php') ?>" href="profil.php"><i class="fa-solid fa-circle-user"></i> Data &amp; usaha saya</a>
         <a class="<?= nav_active('simpanan.php') ?>" href="simpanan.php"><i class="fa-solid fa-piggy-bank"></i> Simpanan Saya</a>
         <a class="<?= nav_active('penarikan.php') ?>" href="penarikan.php"><i class="fa-solid fa-hand-holding-dollar"></i> Penarikan simpanan</a>
         <?php if (FITUR_PINJAMAN): ?>
         <a class="<?= nav_active('pinjaman.php') ?>" href="pinjaman.php"><i class="fa-solid fa-file-invoice-dollar"></i> Pinjaman Saya</a>
         <a class="<?= nav_active('pinjaman_bayar.php') ?>" href="pinjaman_bayar.php"><i class="fa-solid fa-credit-card"></i> Bayar angsuran</a>
         <?php endif; ?>
-        <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php"><i class="fa-solid fa-seedling"></i> Pupuk organik</a>
+        <div class="nav-sect">Lembaga &amp; usaha</div>
         <a class="<?= nav_active_lembaga() ?>" href="lembaga.php"><i class="fa-solid fa-sitemap"></i> Lembaga</a>
-        <a class="<?= nav_active('profil_koperasi.php') ?>" href="profil_koperasi.php#ba"><i class="fa-solid fa-scroll"></i> Berita acara</a>
-        <a class="<?= nav_active('profil.php') ?>" href="profil.php"><i class="fa-solid fa-circle-user"></i> Data &amp; usaha saya</a>
-      <?php endif; ?>
-      <?php if (in_array($u['role'], ['admin','pengurus'])): ?>
-      <a class="<?= nav_active('profil.php') ?>" href="profil.php"><i class="fa-solid fa-circle-user"></i> Profil</a>
+        <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php"><i class="fa-solid fa-seedling"></i> Pupuk organik</a>
+        <div class="nav-sect">Informasi</div>
+        <a class="<?= nav_active('profil_koperasi.php') ?>" href="profil_koperasi.php"><i class="fa-solid fa-building-columns"></i> Profil koperasi</a>
+        <a href="profil_koperasi.php#ba"><i class="fa-solid fa-scroll"></i> Berita acara</a>
       <?php endif; ?>
       <a href="logout.php"><i class="fa-solid fa-right-from-bracket"></i> Keluar</a>
     </nav>
