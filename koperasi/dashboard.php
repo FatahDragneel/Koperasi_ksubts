@@ -58,6 +58,11 @@ if ($staff) {
     $jmlAnggota = (int)$pdo->query("SELECT COUNT(*) FROM anggota WHERE status IN ('aktif','pasif')")->fetchColumn();
     $jmlAktif = (int)$pdo->query("SELECT COUNT(*) FROM anggota WHERE status='aktif'")->fetchColumn();
     $jmlPasif = (int)$pdo->query("SELECT COUNT(*) FROM anggota WHERE status='pasif'")->fetchColumn();
+    $jmlLembagaSaya = 0;
+    try {
+        $jmlLembagaSaya = count(kelompok_anggota($aid)) + count(gapoktan_anggota($aid)) + count(lembaga_anggota($aid));
+    } catch (Throwable $e) {
+    }
 }
 include __DIR__ . '/includes/app_header.php';
 ?>
@@ -88,6 +93,66 @@ include __DIR__ . '/includes/app_header.php';
 <?php endif; ?>
 
 <div class="cards" style="grid-template-columns:1fr 1fr;">
+  <div class="card">
+    <h3 style="margin-bottom:2px;">Menu cepat</h3>
+    <?php if ($staff): ?>
+    <div class="qnav-sect">Koperasi</div>
+    <div class="qnav">
+      <a class="btn btn-ghost btn-sm" href="profil_koperasi.php"><i class="fa-solid fa-building-columns"></i> Profil koperasi</a>
+      <a class="btn btn-ghost btn-sm" href="pengumuman.php"><i class="fa-solid fa-bullhorn"></i> Pengumuman</a>
+      <a class="btn btn-ghost btn-sm" href="laporan.php"><i class="fa-solid fa-chart-line"></i> Laporan</a>
+    </div>
+    <div class="qnav-sect">Anggota &amp; lembaga</div>
+    <div class="qnav">
+      <a class="btn btn-ghost btn-sm" href="anggota.php"><i class="fa-solid fa-users"></i> Anggota</a>
+      <a class="btn btn-ghost btn-sm" href="verifikasi.php"><i class="fa-solid fa-user-check"></i> Verifikasi anggota</a>
+      <?php if (FITUR_PENGALIHAN): ?>
+      <a class="btn btn-ghost btn-sm" href="pengalihan.php"><i class="fa-solid fa-right-left"></i> Pengalihan hak</a>
+      <?php endif; ?>
+      <a class="btn btn-ghost btn-sm" href="lembaga.php"><i class="fa-solid fa-sitemap"></i> Lembaga</a>
+    </div>
+    <div class="qnav-sect">Keuangan</div>
+    <div class="qnav">
+      <a class="btn btn-ghost btn-sm" href="simpanan.php"><i class="fa-solid fa-piggy-bank"></i> Simpanan</a>
+      <a class="btn btn-ghost btn-sm" href="penarikan.php"><i class="fa-solid fa-hand-holding-dollar"></i> Penarikan simpanan</a>
+      <?php if (FITUR_PINJAMAN): ?>
+      <a class="btn btn-ghost btn-sm" href="verifikasi_bayar.php"><i class="fa-solid fa-money-check-dollar"></i> Verifikasi bayar</a>
+      <a class="btn btn-ghost btn-sm" href="pinjaman.php"><i class="fa-solid fa-file-invoice-dollar"></i> Pinjaman</a>
+      <a class="btn btn-ghost btn-sm" href="angsuran.php"><i class="fa-solid fa-money-bill-wave"></i> Angsuran</a>
+      <?php endif; ?>
+    </div>
+    <div class="qnav-sect">Usaha</div>
+    <div class="qnav">
+      <a class="btn btn-ghost btn-sm" href="pupuk.php"><i class="fa-solid fa-seedling"></i> Pupuk organik</a>
+    </div>
+    <div class="qnav-sect">Sistem</div>
+    <div class="qnav">
+      <a class="btn btn-ghost btn-sm" href="pengaturan.php"><i class="fa-solid fa-gear"></i> Pengaturan</a>
+      <a class="btn btn-ghost btn-sm" href="profil.php"><i class="fa-solid fa-circle-user"></i> Profil</a>
+    </div>
+    <?php else: ?>
+    <div class="qnav-sect">Data saya</div>
+    <div class="qnav">
+      <a class="btn btn-ghost btn-sm" href="profil.php"><i class="fa-solid fa-circle-user"></i> Data &amp; usaha saya</a>
+      <a class="btn btn-ghost btn-sm" href="simpanan.php"><i class="fa-solid fa-piggy-bank"></i> Simpanan Saya</a>
+      <a class="btn btn-ghost btn-sm" href="penarikan.php"><i class="fa-solid fa-hand-holding-dollar"></i> Penarikan simpanan</a>
+      <?php if (FITUR_PINJAMAN): ?>
+      <a class="btn btn-ghost btn-sm" href="pinjaman.php"><i class="fa-solid fa-file-invoice-dollar"></i> Pinjaman Saya</a>
+      <a class="btn btn-ghost btn-sm" href="pinjaman_bayar.php"><i class="fa-solid fa-credit-card"></i> Bayar angsuran</a>
+      <?php endif; ?>
+    </div>
+    <div class="qnav-sect">Lembaga &amp; usaha</div>
+    <div class="qnav">
+      <a class="btn btn-ghost btn-sm" href="lembaga.php"><i class="fa-solid fa-sitemap"></i> Lembaga</a>
+      <a class="btn btn-ghost btn-sm" href="pupuk.php"><i class="fa-solid fa-seedling"></i> Pupuk organik</a>
+    </div>
+    <div class="qnav-sect">Informasi</div>
+    <div class="qnav">
+      <a class="btn btn-ghost btn-sm" href="profil_koperasi.php"><i class="fa-solid fa-building-columns"></i> Profil koperasi</a>
+      <a class="btn btn-ghost btn-sm" href="profil_koperasi.php#ba"><i class="fa-solid fa-scroll"></i> Berita acara</a>
+    </div>
+    <?php endif; ?>
+  </div>
   <?php if (FITUR_PINJAMAN): ?>
   <div class="card">
     <h3 style="margin-bottom:12px;">Pinjaman terbaru</h3>
