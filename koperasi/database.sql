@@ -43,7 +43,9 @@ CREATE TABLE IF NOT EXISTS kelompok (
   kecamatan VARCHAR(80) NULL,
   fee_per_kg DECIMAL(12,2) NOT NULL DEFAULT 0,
   id_gapoktan INT NULL,
-  dibuat_oleh INT NULL
+  dibuat_oleh INT NULL,
+  komoditi VARCHAR(120) NULL,
+  jumlah_anggota INT NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS gapoktan (
@@ -55,7 +57,10 @@ CREATE TABLE IF NOT EXISTS gapoktan (
   alamat VARCHAR(255) NULL,
   keterangan VARCHAR(255) NULL,
   id_koperasi INT NULL,
-  dibuat_oleh INT NULL
+  dibuat_oleh INT NULL,
+  komoditi VARCHAR(120) NULL,
+  luas_lahan DECIMAL(12,2) NULL DEFAULT 0,
+  jumlah_anggota INT NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS lembaga_koperasi (
@@ -66,7 +71,10 @@ CREATE TABLE IF NOT EXISTS lembaga_koperasi (
   no_hp_ketua VARCHAR(30) NULL,
   alamat VARCHAR(255) NULL,
   keterangan VARCHAR(255) NULL,
-  dibuat_oleh INT NULL
+  dibuat_oleh INT NULL,
+  komoditi VARCHAR(120) NULL,
+  luas_lahan DECIMAL(12,2) NULL DEFAULT 0,
+  jumlah_anggota INT NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS anggota (

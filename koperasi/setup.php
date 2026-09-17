@@ -126,6 +126,8 @@ $cols = [
         'plasma' => "VARCHAR(120) NULL",
         'id_gapoktan' => "INT NULL",
         'dibuat_oleh' => "INT NULL",
+        'komoditi' => "VARCHAR(120) NULL",
+        'jumlah_anggota' => "INT NOT NULL DEFAULT 0",
     ],
 ];
 foreach ($cols as $table => $list) {

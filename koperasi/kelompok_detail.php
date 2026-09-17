@@ -70,11 +70,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     if ($act === 'profil') {
-        $pdo->prepare('UPDATE kelompok SET luas_tanah=?, lokasi=?, desa=?, kecamatan=? WHERE id=?')->execute([
+        $pdo->prepare('UPDATE kelompok SET luas_tanah=?, lokasi=?, desa=?, kecamatan=?, komoditi=?, jumlah_anggota=? WHERE id=?')->execute([
             $_POST['luas_tanah'] !== '' ? (float)$_POST['luas_tanah'] : 0,
             trim($_POST['lokasi'] ?? ''),
             trim($_POST['desa'] ?? ''),
             trim($_POST['kecamatan'] ?? ''),
+            trim($_POST['komoditi'] ?? '') ?: null,
+            (int)($_POST['jumlah_anggota'] ?? 0),
             $id,
         ]);
         flash('ok', 'Profil kelompok disimpan.');
@@ -148,6 +150,10 @@ include __DIR__ . '/includes/app_header.php';
       <div><label>Desa</label><input name="desa" value="<?= e($k['desa']) ?>"></div>
       <div><label>Kecamatan</label><input name="kecamatan" value="<?= e($k['kecamatan']) ?>"></div>
     </div>
+    <div class="grid-2">
+      <div><label>Komoditi</label><input name="komoditi" value="<?= e($k['komoditi'] ?? '') ?>"></div>
+      <div><label>Jumlah anggota</label><input type="number" step="1" min="0" name="jumlah_anggota" value="<?= e($k['jumlah_anggota'] ?? '') ?>"></div>
+    </div>
     <button class="btn btn-green" style="margin-top:14px;">Simpan profil kelompok</button>
   </form>
   <form class="card" method="post" data-ajax="masuk" data-tbody="#tbodyKel" data-count="#cntKel" data-select="#calonAnggota" data-opt="mark">
@@ -199,7 +205,7 @@ include __DIR__ . '/includes/app_header.php';
 ?>
 <div class="card" style="max-width:640px;">
   <h3><?= e(($k['kode_kelompok'] ?: 'KT') . ' · ' . ($k['nama_kelompok'] ?: 'Kelompok')) ?></h3>
-  <p style="font-size:14px;margin-top:10px;">Ketua: <strong><?= e($k['nama_ketua'] ?: 'Belum dipilih') ?></strong><?= !empty($k['plasma']) ? '<br>Plasma: ' . e($k['plasma']) : '' ?><?= trim(($k['wilayah_dusun'] ?? '') . ' ' . ($k['blok_hamparan'] ?? '')) !== '' ? '<br>Wilayah: ' . e(trim(($k['wilayah_dusun'] ?? '') . ' ' . ($k['blok_hamparan'] ?? ''))) : '' ?><?= !empty($k['tanggal_terbentuk']) ? '<br>Terbentuk: ' . e(tgl($k['tanggal_terbentuk'])) : '' ?><?= ((float)($k['luas_tanah'] ?? 0) > 0) ? '<br>Luas: ' . e(number_format((float)$k['luas_tanah'], 2, ',', '.')) . ' ha' : '' ?><?= !empty($k['lokasi']) ? '<br>Lokasi: ' . e($k['lokasi']) : '' ?><?= !empty($k['desa']) ? '<br>Desa: ' . e($k['desa']) : '' ?><?= !empty($k['kecamatan']) ? '<br>Kecamatan: ' . e($k['kecamatan']) : '' ?></p>
+  <p style="font-size:14px;margin-top:10px;">Ketua: <strong><?= e($k['nama_ketua'] ?: 'Belum dipilih') ?></strong><?= !empty($k['plasma']) ? '<br>Plasma: ' . e($k['plasma']) : '' ?><?= !empty($k['komoditi']) ? '<br>Komoditi: ' . e($k['komoditi']) : '' ?><?= ((int)($k['jumlah_anggota'] ?? 0) > 0) ? '<br>Jumlah anggota: ' . (int)$k['jumlah_anggota'] : '' ?><?= trim(($k['wilayah_dusun'] ?? '') . ' ' . ($k['blok_hamparan'] ?? '')) !== '' ? '<br>Wilayah: ' . e(trim(($k['wilayah_dusun'] ?? '') . ' ' . ($k['blok_hamparan'] ?? ''))) : '' ?><?= !empty($k['tanggal_terbentuk']) ? '<br>Terbentuk: ' . e(tgl($k['tanggal_terbentuk'])) : '' ?><?= ((float)($k['luas_tanah'] ?? 0) > 0) ? '<br>Luas: ' . e(number_format((float)$k['luas_tanah'], 2, ',', '.')) . ' ha' : '' ?><?= !empty($k['lokasi']) ? '<br>Lokasi: ' . e($k['lokasi']) : '' ?><?= !empty($k['desa']) ? '<br>Desa: ' . e($k['desa']) : '' ?><?= !empty($k['kecamatan']) ? '<br>Kecamatan: ' . e($k['kecamatan']) : '' ?></p>
   <?php if (unit_milik_saya('kelompok', $id, $aid)): ?>
   <p style="font-size:13px;color:var(--muted);">Ini buatan Anda — <a href="kelompok.php">ubah dari daftar kelompok</a>.</p>
   <?php endif; ?>

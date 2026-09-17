@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!unit_milik_saya('kelompok', $sid, $aid)) {
                     flash('err', 'Hanya kelompok buatan sendiri yang bisa diubah.');
                 } else {
-                    $pdo->prepare('UPDATE kelompok SET kode_kelompok=?, nama_kelompok=?, plasma=?, wilayah_dusun=?, blok_hamparan=?, tanggal_terbentuk=?, luas_tanah=?, lokasi=?, desa=?, kecamatan=? WHERE id=?')->execute([
+                    $pdo->prepare('UPDATE kelompok SET kode_kelompok=?, nama_kelompok=?, plasma=?, wilayah_dusun=?, blok_hamparan=?, tanggal_terbentuk=?, luas_tanah=?, lokasi=?, desa=?, kecamatan=?, komoditi=?, jumlah_anggota=? WHERE id=?')->execute([
                         trim($_POST['kode_kelompok'] ?? '') ?: null,
                         trim($_POST['nama_kelompok'] ?? '') ?: null,
                         trim($_POST['plasma'] ?? '') ?: null,
@@ -30,6 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         trim($_POST['lokasi'] ?? '') ?: null,
                         trim($_POST['desa'] ?? '') ?: null,
                         trim($_POST['kecamatan'] ?? '') ?: null,
+trim($_POST['komoditi'] ?? '') ?: null,
+                        (int)($_POST['jumlah_anggota'] ?? 0),
                         $sid,
                     ]);
                     sinkron_ketua_kelompok($sid);
@@ -40,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $kode = trim($_POST['kode_kelompok'] ?? '') ?: ('KT-' . str_pad((string)$nomor, 2, '0', STR_PAD_LEFT));
                 $nama = trim($_POST['nama_kelompok'] ?? '') ?: ('Kelompok Tani ' . $nomor);
                 try {
-                    $pdo->prepare('INSERT INTO kelompok (nomor, kode_kelompok, nama_kelompok, plasma, wilayah_dusun, blok_hamparan, tanggal_terbentuk, luas_tanah, lokasi, desa, kecamatan, dibuat_oleh) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)')->execute([
+                    $pdo->prepare('INSERT INTO kelompok (nomor, kode_kelompok, nama_kelompok, plasma, wilayah_dusun, blok_hamparan, tanggal_terbentuk, luas_tanah, lokasi, desa, kecamatan, komoditi, jumlah_anggota, dibuat_oleh) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)')->execute([
                         $nomor, $kode, $nama,
                         trim($_POST['plasma'] ?? '') ?: null,
                         trim($_POST['wilayah_dusun'] ?? '') ?: null,
@@ -50,6 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         trim($_POST['lokasi'] ?? '') ?: null,
                         trim($_POST['desa'] ?? '') ?: null,
                         trim($_POST['kecamatan'] ?? '') ?: null,
+trim($_POST['komoditi'] ?? '') ?: null,
+                        (int)($_POST['jumlah_anggota'] ?? 0),
                         $aid > 0 ? $aid : null,
                     ]);
                     flash('ok', "Kelompok $kode dibentuk.");
@@ -76,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = (int)($_POST['id'] ?? 0);
     $tgl = trim($_POST['tanggal_terbentuk'] ?? '');
     if ($id) {
-        $pdo->prepare('UPDATE kelompok SET kode_kelompok=?, nama_kelompok=?, plasma=?, wilayah_dusun=?, blok_hamparan=?, tanggal_terbentuk=?, luas_tanah=?, lokasi=?, desa=?, kecamatan=?, fee_per_kg=? WHERE id=?')->execute([
+        $pdo->prepare('UPDATE kelompok SET kode_kelompok=?, nama_kelompok=?, plasma=?, wilayah_dusun=?, blok_hamparan=?, tanggal_terbentuk=?, luas_tanah=?, lokasi=?, desa=?, kecamatan=?, komoditi=?, jumlah_anggota=?, fee_per_kg=? WHERE id=?')->execute([
             trim($_POST['kode_kelompok'] ?? '') ?: null,
             trim($_POST['nama_kelompok'] ?? '') ?: null,
             trim($_POST['plasma'] ?? '') ?: null,
@@ -87,6 +91,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             trim($_POST['lokasi'] ?? '') ?: null,
             trim($_POST['desa'] ?? '') ?: null,
             trim($_POST['kecamatan'] ?? '') ?: null,
+            trim($_POST['komoditi'] ?? '') ?: null,
+            (int)($_POST['jumlah_anggota'] ?? 0),
             (float)($_POST['fee_per_kg'] ?? 0),
             $id,
         ]);
@@ -97,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $kode = trim($_POST['kode_kelompok'] ?? '') ?: ('KT-' . str_pad((string)$nomor, 2, '0', STR_PAD_LEFT));
         $nama = trim($_POST['nama_kelompok'] ?? '') ?: ('Kelompok Tani ' . $nomor);
         try {
-            $pdo->prepare('INSERT INTO kelompok (nomor, kode_kelompok, nama_kelompok, plasma, wilayah_dusun, blok_hamparan, tanggal_terbentuk, luas_tanah, lokasi, desa, kecamatan, fee_per_kg) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)')->execute([
+            $pdo->prepare('INSERT INTO kelompok (nomor, kode_kelompok, nama_kelompok, plasma, wilayah_dusun, blok_hamparan, tanggal_terbentuk, luas_tanah, lokasi, desa, kecamatan, komoditi, jumlah_anggota, fee_per_kg) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)')->execute([
                 $nomor, $kode, $nama,
                 trim($_POST['plasma'] ?? '') ?: null,
                 trim($_POST['wilayah_dusun'] ?? '') ?: null,
@@ -107,6 +113,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 trim($_POST['lokasi'] ?? '') ?: null,
                 trim($_POST['desa'] ?? '') ?: null,
                 trim($_POST['kecamatan'] ?? '') ?: null,
+                trim($_POST['komoditi'] ?? '') ?: null,
+                (int)($_POST['jumlah_anggota'] ?? 0),
                 (float)($_POST['fee_per_kg'] ?? 0),
             ]);
             flash('ok', "Kelompok $kode dibentuk.");
@@ -162,7 +170,7 @@ foreach ($rows as $r) {
         'plasma' => $r['plasma'] ?? '', 'ketua' => $r['nama_ketua'], 'hp' => $staff ? $r['no_hp_ketua'] : '',
         'wilayah' => $r['wilayah_dusun'], 'blok' => $r['blok_hamparan'], 'tgl' => $r['tanggal_terbentuk'],
         'luas' => $r['luas_tanah'], 'lokasi' => $r['lokasi'], 'desa' => $r['desa'],
-        'kecamatan' => $r['kecamatan'], 'fee' => $staff ? $r['fee_per_kg'] : 0,
+        'kecamatan' => $r['kecamatan'], 'komoditi' => $r['komoditi'] ?? '', 'jml' => $r['jumlah_anggota'] ?? 0, 'fee' => $staff ? $r['fee_per_kg'] : 0,
     ];
 }
 include __DIR__ . '/includes/app_header.php';
@@ -254,6 +262,10 @@ include __DIR__ . '/includes/app_header.php';
       <div><label>Tanggal terbentuk</label><input type="date" name="tanggal_terbentuk"></div>
     </div>
     <div class="grid-2">
+      <div><label>Komoditi</label><input name="komoditi" placeholder="cth: Kelapa sawit"></div>
+      <div><label>Jumlah anggota</label><input type="number" step="1" min="0" name="jumlah_anggota"></div>
+    </div>
+    <div class="grid-2">
       <div><label>Wilayah / dusun</label><input name="wilayah_dusun"></div>
       <div><label>Blok hamparan</label><input name="blok_hamparan"></div>
     </div>
@@ -287,6 +299,10 @@ include __DIR__ . '/includes/app_header.php';
     <div class="grid-2">
       <div><label>Plasma (opsional)</label><input name="plasma" id="kelPlasma" placeholder="mis. Plasma A"></div>
       <div><label>Tanggal terbentuk</label><input type="date" name="tanggal_terbentuk" id="kelTgl"></div>
+    </div>
+    <div class="grid-2">
+      <div><label>Komoditi</label><input name="komoditi" id="kelKomoditi"></div>
+      <div><label>Jumlah anggota</label><input type="number" step="1" min="0" name="jumlah_anggota" id="kelJml"></div>
     </div>
     <div class="grid-2">
       <div><label>Wilayah / dusun</label><input name="wilayah_dusun" id="kelWilayah"></div>
@@ -327,6 +343,8 @@ function editKel(r) {
   document.getElementById('kelKode').value = r.kode || '';
   document.getElementById('kelNama').value = r.nama || '';
   document.getElementById('kelPlasma').value = r.plasma || '';
+  document.getElementById('kelKomoditi').value = r.komoditi || '';
+  document.getElementById('kelJml').value = r.jml || '';
   document.getElementById('kelWilayah').value = r.wilayah || '';
   document.getElementById('kelBlok').value = r.blok || '';
   document.getElementById('kelTgl').value = r.tgl || '';

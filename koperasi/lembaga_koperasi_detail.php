@@ -56,9 +56,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     if ($act === 'profil') {
-        $pdo->prepare('UPDATE lembaga_koperasi SET kode_koperasi=?, nama_koperasi=?, nama_ketua=?, no_hp_ketua=?, alamat=?, keterangan=? WHERE id=?')->execute([
+        $pdo->prepare('UPDATE lembaga_koperasi SET kode_koperasi=?, nama_koperasi=?, nama_ketua=?, no_hp_ketua=?, komoditi=?, luas_lahan=?, jumlah_anggota=?, alamat=?, keterangan=? WHERE id=?')->execute([
             trim($_POST['kode'] ?? ''), trim($_POST['nama'] ?? ''), trim($_POST['ketua'] ?? ''),
-            trim($_POST['hp'] ?? ''), trim($_POST['alamat'] ?? ''), trim($_POST['ket'] ?? ''), $id,
+            trim($_POST['hp'] ?? ''), trim($_POST['komoditi'] ?? ''), (float)($_POST['luas_lahan'] ?? 0), (int)($_POST['jumlah_anggota'] ?? 0), trim($_POST['alamat'] ?? ''), trim($_POST['ket'] ?? ''), $id,
         ]);
         flash('ok', 'Profil koperasi disimpan.');
     } elseif ($act === 'masuk') {
@@ -121,6 +121,9 @@ include __DIR__ . '/includes/app_header.php';
       <label>Nama koperasi<input name="nama" value="<?= e($l['nama_koperasi'] ?? '') ?>" required></label>
       <label>Nama ketua<input name="ketua" value="<?= e($l['nama_ketua'] ?? '') ?>"></label>
       <label>No. HP ketua<input name="hp" value="<?= e($l['no_hp_ketua'] ?? '') ?>"></label>
+      <label>Komoditi<input name="komoditi" value="<?= e($l['komoditi'] ?? '') ?>"></label>
+      <label>Luas lahan (ha)<input type="number" step="0.01" min="0" name="luas_lahan" value="<?= e($l['luas_lahan'] ?? '') ?>"></label>
+      <label>Jumlah anggota<input type="number" step="1" min="0" name="jumlah_anggota" value="<?= e($l['jumlah_anggota'] ?? '') ?>"></label>
       <label>Alamat<textarea name="alamat" rows="2"><?= e($l['alamat'] ?? '') ?></textarea></label>
       <label>Keterangan<textarea name="ket" rows="2"><?= e($l['keterangan'] ?? '') ?></textarea></label>
       <button class="btn btn-green" type="submit"><i class="fa-solid fa-floppy-disk"></i> Simpan profil</button>
@@ -157,7 +160,7 @@ include __DIR__ . '/includes/app_header.php';
 <?php else: ?>
 <div class="card" style="max-width:640px;">
   <h3><?= e(($l['kode_koperasi'] ?: 'KOP') . ' · ' . ($l['nama_koperasi'] ?: 'Koperasi')) ?></h3>
-  <p style="font-size:14px;margin-top:10px;">Ketua: <strong><?= e($l['nama_ketua'] ?: 'Belum dipilih') ?></strong><?= !empty($l['alamat']) ? '<br>Alamat: ' . e($l['alamat']) : '' ?><?= !empty($l['keterangan']) ? '<br>Keterangan: ' . e($l['keterangan']) : '' ?></p>
+  <p style="font-size:14px;margin-top:10px;">Ketua: <strong><?= e($l['nama_ketua'] ?: 'Belum dipilih') ?></strong><?= !empty($l['komoditi']) ? '<br>Komoditi: ' . e($l['komoditi']) : '' ?><?= ((float)($l['luas_lahan'] ?? 0) > 0) ? '<br>Luas lahan: ' . e(number_format((float)$l['luas_lahan'], 2, ',', '.')) . ' ha' : '' ?><?= ((int)($l['jumlah_anggota'] ?? 0) > 0) ? '<br>Jumlah anggota: ' . (int)$l['jumlah_anggota'] : '' ?><?= !empty($l['alamat']) ? '<br>Alamat: ' . e($l['alamat']) : '' ?><?= !empty($l['keterangan']) ? '<br>Keterangan: ' . e($l['keterangan']) : '' ?></p>
   <?php if (unit_milik_saya('lembaga_koperasi', $id, $aid)): ?>
   <p style="font-size:13px;color:var(--muted);">Ini buatan Anda — <a href="lembaga_koperasi.php">ubah dari daftar koperasi</a>.</p>
   <?php endif; ?>

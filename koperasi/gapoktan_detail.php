@@ -56,9 +56,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     if ($act === 'profil') {
-        $pdo->prepare('UPDATE gapoktan SET kode_gapoktan=?, nama_gapoktan=?, nama_ketua=?, no_hp_ketua=?, alamat=?, keterangan=? WHERE id=?')->execute([
+        $pdo->prepare('UPDATE gapoktan SET kode_gapoktan=?, nama_gapoktan=?, nama_ketua=?, no_hp_ketua=?, komoditi=?, luas_lahan=?, jumlah_anggota=?, alamat=?, keterangan=? WHERE id=?')->execute([
             trim($_POST['kode'] ?? ''), trim($_POST['nama'] ?? ''), trim($_POST['ketua'] ?? ''),
-            trim($_POST['hp'] ?? ''), trim($_POST['alamat'] ?? ''), trim($_POST['ket'] ?? ''), $id,
+            trim($_POST['hp'] ?? ''), trim($_POST['komoditi'] ?? ''), (float)($_POST['luas_lahan'] ?? 0), (int)($_POST['jumlah_anggota'] ?? 0), trim($_POST['alamat'] ?? ''), trim($_POST['ket'] ?? ''), $id,
         ]);
         flash('ok', 'Profil gapoktan disimpan.');
     } elseif ($act === 'masuk') {
@@ -121,6 +121,9 @@ include __DIR__ . '/includes/app_header.php';
       <label>Nama gapoktan<input name="nama" value="<?= e($g['nama_gapoktan'] ?? '') ?>" required></label>
       <label>Nama ketua<input name="ketua" value="<?= e($g['nama_ketua'] ?? '') ?>"></label>
       <label>No. HP ketua<input name="hp" value="<?= e($g['no_hp_ketua'] ?? '') ?>"></label>
+      <label>Komoditi<input name="komoditi" value="<?= e($g['komoditi'] ?? '') ?>"></label>
+      <label>Luas lahan (ha)<input type="number" step="0.01" min="0" name="luas_lahan" value="<?= e($g['luas_lahan'] ?? '') ?>"></label>
+      <label>Jumlah anggota<input type="number" step="1" min="0" name="jumlah_anggota" value="<?= e($g['jumlah_anggota'] ?? '') ?>"></label>
       <label>Alamat<textarea name="alamat" rows="2"><?= e($g['alamat'] ?? '') ?></textarea></label>
       <label>Keterangan<textarea name="ket" rows="2"><?= e($g['keterangan'] ?? '') ?></textarea></label>
       <button class="btn btn-green" type="submit"><i class="fa-solid fa-floppy-disk"></i> Simpan profil</button>
@@ -157,7 +160,7 @@ include __DIR__ . '/includes/app_header.php';
 <?php else: ?>
 <div class="card" style="max-width:640px;">
   <h3><?= e(($g['kode_gapoktan'] ?: 'GAP') . ' · ' . ($g['nama_gapoktan'] ?: 'Gapoktan')) ?></h3>
-  <p style="font-size:14px;margin-top:10px;">Ketua: <strong><?= e($g['nama_ketua'] ?: 'Belum dipilih') ?></strong><?= !empty($g['alamat']) ? '<br>Alamat: ' . e($g['alamat']) : '' ?><?= !empty($g['keterangan']) ? '<br>Keterangan: ' . e($g['keterangan']) : '' ?></p>
+  <p style="font-size:14px;margin-top:10px;">Ketua: <strong><?= e($g['nama_ketua'] ?: 'Belum dipilih') ?></strong><?= !empty($g['komoditi']) ? '<br>Komoditi: ' . e($g['komoditi']) : '' ?><?= ((float)($g['luas_lahan'] ?? 0) > 0) ? '<br>Luas lahan: ' . e(number_format((float)$g['luas_lahan'], 2, ',', '.')) . ' ha' : '' ?><?= ((int)($g['jumlah_anggota'] ?? 0) > 0) ? '<br>Jumlah anggota: ' . (int)$g['jumlah_anggota'] : '' ?><?= !empty($g['alamat']) ? '<br>Alamat: ' . e($g['alamat']) : '' ?><?= !empty($g['keterangan']) ? '<br>Keterangan: ' . e($g['keterangan']) : '' ?></p>
   <?php if (unit_milik_saya('gapoktan', $id, $aid)): ?>
   <p style="font-size:13px;color:var(--muted);">Ini buatan Anda — <a href="gapoktan.php">ubah dari daftar gapoktan</a>.</p>
   <?php endif; ?>

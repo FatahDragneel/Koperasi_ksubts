@@ -18,15 +18,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!unit_milik_saya('lembaga_koperasi', $sid, $aid)) {
                     flash('err', 'Hanya koperasi buatan sendiri yang bisa diubah.');
                 } else {
-                    $pdo->prepare('UPDATE lembaga_koperasi SET kode_koperasi=?, nama_koperasi=?, nama_ketua=?, alamat=?, keterangan=? WHERE id=?')->execute([
-                        trim($_POST['kode'] ?? ''), trim($_POST['nama'] ?? ''), trim($_POST['ketua'] ?? ''),
+                    $pdo->prepare('UPDATE lembaga_koperasi SET kode_koperasi=?, nama_koperasi=?, nama_ketua=?, komoditi=?, luas_lahan=?, jumlah_anggota=?, alamat=?, keterangan=? WHERE id=?')->execute([
+                        trim($_POST['kode'] ?? ''), trim($_POST['nama'] ?? ''), trim($_POST['ketua'] ?? ''), trim($_POST['komoditi'] ?? ''), (float)($_POST['luas_lahan'] ?? 0), (int)($_POST['jumlah_anggota'] ?? 0), 
                         trim($_POST['alamat'] ?? ''), trim($_POST['ket'] ?? ''), $sid,
                     ]);
                     flash('ok', 'Koperasi berhasil diperbarui.');
                 }
             } else {
-                $pdo->prepare('INSERT INTO lembaga_koperasi (kode_koperasi, nama_koperasi, nama_ketua, alamat, keterangan, dibuat_oleh) VALUES (?,?,?,?,?,?)')->execute([
-                    trim($_POST['kode'] ?? ''), trim($_POST['nama'] ?? ''), trim($_POST['ketua'] ?? ''),
+                $pdo->prepare('INSERT INTO lembaga_koperasi (kode_koperasi, nama_koperasi, nama_ketua, komoditi, luas_lahan, jumlah_anggota, alamat, keterangan, dibuat_oleh) VALUES (?,?,?,?,?,?,?,?,?)')->execute([
+                    trim($_POST['kode'] ?? ''), trim($_POST['nama'] ?? ''), trim($_POST['ketua'] ?? ''), trim($_POST['komoditi'] ?? ''), (float)($_POST['luas_lahan'] ?? 0), (int)($_POST['jumlah_anggota'] ?? 0), 
                     trim($_POST['alamat'] ?? ''), trim($_POST['ket'] ?? ''), $aid > 0 ? $aid : null,
                 ]);
                 flash('ok', 'Koperasi baru berhasil ditambahkan.');
@@ -50,15 +50,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($act === 'simpan') {
         $id = (int)($_POST['id'] ?? 0);
         if ($id > 0) {
-            $pdo->prepare('UPDATE lembaga_koperasi SET kode_koperasi=?, nama_koperasi=?, nama_ketua=?, no_hp_ketua=?, alamat=?, keterangan=? WHERE id=?')->execute([
+            $pdo->prepare('UPDATE lembaga_koperasi SET kode_koperasi=?, nama_koperasi=?, nama_ketua=?, no_hp_ketua=?, komoditi=?, luas_lahan=?, jumlah_anggota=?, alamat=?, keterangan=? WHERE id=?')->execute([
                 trim($_POST['kode'] ?? ''), trim($_POST['nama'] ?? ''), trim($_POST['ketua'] ?? ''),
-                trim($_POST['hp'] ?? ''), trim($_POST['alamat'] ?? ''), trim($_POST['ket'] ?? ''), $id,
+                trim($_POST['hp'] ?? ''), trim($_POST['komoditi'] ?? ''), (float)($_POST['luas_lahan'] ?? 0), (int)($_POST['jumlah_anggota'] ?? 0), trim($_POST['alamat'] ?? ''), trim($_POST['ket'] ?? ''), $id,
             ]);
             flash('ok', 'Koperasi berhasil diperbarui.');
         } else {
-            $pdo->prepare('INSERT INTO lembaga_koperasi (kode_koperasi, nama_koperasi, nama_ketua, no_hp_ketua, alamat, keterangan) VALUES (?,?,?,?,?,?)')->execute([
+            $pdo->prepare('INSERT INTO lembaga_koperasi (kode_koperasi, nama_koperasi, nama_ketua, no_hp_ketua, komoditi, luas_lahan, jumlah_anggota, alamat, keterangan) VALUES (?,?,?,?,?,?,?,?,?)')->execute([
                 trim($_POST['kode'] ?? ''), trim($_POST['nama'] ?? ''), trim($_POST['ketua'] ?? ''),
-                trim($_POST['hp'] ?? ''), trim($_POST['alamat'] ?? ''), trim($_POST['ket'] ?? ''),
+                trim($_POST['hp'] ?? ''), trim($_POST['komoditi'] ?? ''), (float)($_POST['luas_lahan'] ?? 0), (int)($_POST['jumlah_anggota'] ?? 0), trim($_POST['alamat'] ?? ''), trim($_POST['ket'] ?? ''),
             ]);
             flash('ok', 'Koperasi baru berhasil ditambahkan.');
         }
@@ -111,7 +111,7 @@ include __DIR__ . '/includes/app_header.php';
         <td style="white-space:nowrap;">
           <?php $punya = $staff || unit_milik_saya('lembaga_koperasi', (int)$r['id'], $aid); ?>
           <?php if ($punya): ?>
-          <button class="btn btn-ghost btn-sm" onclick='editKop(<?= json_encode(['id' => $r['id'], 'kode' => $r['kode_koperasi'], 'nama' => $r['nama_koperasi'], 'ketua' => $r['nama_ketua'], 'hp' => $staff ? $r['no_hp_ketua'] : '', 'alamat' => $r['alamat'], 'ket' => $r['keterangan']]) ?>)'><i class="fa-solid fa-pen"></i> Ubah</button>
+          <button class="btn btn-ghost btn-sm" onclick='editKop(<?= json_encode(['id' => $r['id'], 'kode' => $r['kode_koperasi'], 'nama' => $r['nama_koperasi'], 'ketua' => $r['nama_ketua'], 'hp' => $staff ? $r['no_hp_ketua'] : '', 'komoditi' => $r['komoditi'] ?? '', 'luas' => $r['luas_lahan'] ?? '', 'jml' => $r['jumlah_anggota'] ?? 0, 'alamat' => $r['alamat'], 'ket' => $r['keterangan']]) ?>)'><i class="fa-solid fa-pen"></i> Ubah</button>
           <?php if ($staff): ?>
           <a class="btn btn-red btn-sm" href="lembaga_koperasi.php?act=hapus&id=<?= (int)$r['id'] ?>&_csrf=<?= e(csrf_token()) ?>" onclick="return confirm('Hapus koperasi <?= e($r['nama_koperasi'] ?? '') ?>?')"><i class="fa-solid fa-trash"></i> Hapus</a>
           <?php endif; ?>
@@ -152,6 +152,9 @@ include __DIR__ . '/includes/app_header.php';
       <label>Nama koperasi<input name="nama" required placeholder="cth: Koperasi Bina Tani"></label>
       <label>Nama ketua<input name="ketua"></label>
       <?php if ($staff): ?><label>No. HP ketua<input name="hp"></label><?php endif; ?>
+      <label>Komoditi<input name="komoditi" placeholder="cth: Kelapa sawit"></label>
+      <label>Luas lahan (ha)<input type="number" step="0.01" min="0" name="luas_lahan"></label>
+      <label>Jumlah anggota<input type="number" step="1" min="0" name="jumlah_anggota"></label>
       <label>Alamat<textarea name="alamat" rows="2"></textarea></label>
       <label>Keterangan<textarea name="ket" rows="2"></textarea></label>
       <div class="modal-actions"><button type="button" class="btn btn-ghost" onclick="document.getElementById('mTambah').style.display='none'"><i class="fa-solid fa-xmark"></i> Batal</button><button class="btn btn-green" type="submit"><i class="fa-solid fa-floppy-disk"></i> Simpan</button></div>
@@ -169,6 +172,9 @@ include __DIR__ . '/includes/app_header.php';
       <label>Nama koperasi<input name="nama" id="u_nama" required></label>
       <label>Nama ketua<input name="ketua" id="u_ketua"></label>
       <?php if ($staff): ?><label>No. HP ketua<input name="hp" id="u_hp"></label><?php endif; ?>
+      <label>Komoditi<input name="komoditi" id="u_komoditi"></label>
+      <label>Luas lahan (ha)<input type="number" step="0.01" min="0" name="luas_lahan" id="u_luas"></label>
+      <label>Jumlah anggota<input type="number" step="1" min="0" name="jumlah_anggota" id="u_jml"></label>
       <label>Alamat<textarea name="alamat" id="u_alamat" rows="2"></textarea></label>
       <label>Keterangan<textarea name="ket" id="u_ket" rows="2"></textarea></label>
       <div class="modal-actions"><button type="button" class="btn btn-ghost" onclick="document.getElementById('mUbah').style.display='none'"><i class="fa-solid fa-xmark"></i> Batal</button><button class="btn btn-green" type="submit"><i class="fa-solid fa-floppy-disk"></i> Perbarui</button></div>
@@ -182,6 +188,9 @@ function editKop(g) {
   document.getElementById('u_nama').value = g.nama || '';
   document.getElementById('u_ketua').value = g.ketua || '';
   document.getElementById('u_hp').value = g.hp || '';
+  document.getElementById('u_komoditi').value = g.komoditi || '';
+  document.getElementById('u_luas').value = g.luas || '';
+  document.getElementById('u_jml').value = g.jml || '';
   document.getElementById('u_alamat').value = g.alamat || '';
   document.getElementById('u_ket').value = g.ket || '';
   document.getElementById('mUbah').style.display = 'flex';
