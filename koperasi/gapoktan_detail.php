@@ -161,6 +161,9 @@ include __DIR__ . '/includes/app_header.php';
 <div class="card" style="max-width:640px;">
   <h3><?= e(($g['kode_gapoktan'] ?: 'GAP') . ' · ' . ($g['nama_gapoktan'] ?: 'Gapoktan')) ?></h3>
   <p style="font-size:14px;margin-top:10px;">Ketua: <strong><?= e($g['nama_ketua'] ?: 'Belum dipilih') ?></strong><?= !empty($g['komoditi']) ? '<br>Komoditi: ' . e($g['komoditi']) : '' ?><?= ((float)($g['luas_lahan'] ?? 0) > 0) ? '<br>Luas lahan koperasi: ' . e(number_format((float)$g['luas_lahan'], 2, ',', '.')) . ' ha' : '' ?><?= ((int)($g['jumlah_anggota'] ?? 0) > 0) ? '<br>Jumlah anggota: ' . (int)$g['jumlah_anggota'] : '' ?><?= !empty($g['alamat']) ? '<br>Alamat: ' . e($g['alamat']) : '' ?><?= !empty($g['keterangan']) ? '<br>Keterangan: ' . e($g['keterangan']) : '' ?></p>
+  <?php if ($ikut): ?>
+  <p style="font-size:14px;">No. HP ketua: <strong><?= e($g['no_hp_ketua'] ?: '—') ?></strong></p>
+  <?php endif; ?>
   <?php if (unit_milik_saya('gapoktan', $id, $aid)): ?>
   <p style="font-size:13px;color:var(--muted);">Ini buatan Anda — <a href="gapoktan.php">ubah dari daftar gapoktan</a>.</p>
   <?php endif; ?>

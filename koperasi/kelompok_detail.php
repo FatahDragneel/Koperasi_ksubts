@@ -206,6 +206,9 @@ include __DIR__ . '/includes/app_header.php';
 <div class="card" style="max-width:640px;">
   <h3><?= e(($k['kode_kelompok'] ?: 'KT') . ' · ' . ($k['nama_kelompok'] ?: 'Kelompok')) ?></h3>
   <p style="font-size:14px;margin-top:10px;">Ketua: <strong><?= e($k['nama_ketua'] ?: 'Belum dipilih') ?></strong><?= !empty($k['plasma']) ? '<br>Plasma: ' . e($k['plasma']) : '' ?><?= !empty($k['komoditi']) ? '<br>Komoditi: ' . e($k['komoditi']) : '' ?><?= ((int)($k['jumlah_anggota'] ?? 0) > 0) ? '<br>Jumlah anggota: ' . (int)$k['jumlah_anggota'] : '' ?><?= trim(($k['wilayah_dusun'] ?? '') . ' ' . ($k['blok_hamparan'] ?? '')) !== '' ? '<br>Wilayah: ' . e(trim(($k['wilayah_dusun'] ?? '') . ' ' . ($k['blok_hamparan'] ?? ''))) : '' ?><?= !empty($k['tanggal_terbentuk']) ? '<br>Terbentuk: ' . e(tgl($k['tanggal_terbentuk'])) : '' ?><?= ((float)($k['luas_tanah'] ?? 0) > 0) ? '<br>Luas: ' . e(number_format((float)$k['luas_tanah'], 2, ',', '.')) . ' ha' : '' ?><?= !empty($k['lokasi']) ? '<br>Lokasi: ' . e($k['lokasi']) : '' ?><?= !empty($k['desa']) ? '<br>Desa: ' . e($k['desa']) : '' ?><?= !empty($k['kecamatan']) ? '<br>Kecamatan: ' . e($k['kecamatan']) : '' ?></p>
+  <?php if ($ikutKel): ?>
+  <p style="font-size:14px;">No. HP ketua: <strong><?= e($k['no_hp_ketua'] ?: '—') ?></strong><br>Fee per kg: <strong><?= rupiah($k['fee_per_kg'] ?? 0) ?></strong></p>
+  <?php endif; ?>
   <?php if (unit_milik_saya('kelompok', $id, $aid)): ?>
   <p style="font-size:13px;color:var(--muted);">Ini buatan Anda — <a href="kelompok.php">ubah dari daftar kelompok</a>.</p>
   <?php endif; ?>

@@ -161,6 +161,9 @@ include __DIR__ . '/includes/app_header.php';
 <div class="card" style="max-width:640px;">
   <h3><?= e(($l['kode_koperasi'] ?: 'KOP') . ' · ' . ($l['nama_koperasi'] ?: 'Koperasi')) ?></h3>
   <p style="font-size:14px;margin-top:10px;">Ketua: <strong><?= e($l['nama_ketua'] ?: 'Belum dipilih') ?></strong><?= !empty($l['komoditi']) ? '<br>Komoditi: ' . e($l['komoditi']) : '' ?><?= ((float)($l['luas_lahan'] ?? 0) > 0) ? '<br>Luas lahan koperasi: ' . e(number_format((float)$l['luas_lahan'], 2, ',', '.')) . ' ha' : '' ?><?= ((int)($l['jumlah_anggota'] ?? 0) > 0) ? '<br>Jumlah anggota: ' . (int)$l['jumlah_anggota'] : '' ?><?= !empty($l['alamat']) ? '<br>Alamat: ' . e($l['alamat']) : '' ?><?= !empty($l['keterangan']) ? '<br>Keterangan: ' . e($l['keterangan']) : '' ?></p>
+  <?php if ($ikut): ?>
+  <p style="font-size:14px;">No. HP ketua: <strong><?= e($l['no_hp_ketua'] ?: '—') ?></strong></p>
+  <?php endif; ?>
   <?php if (unit_milik_saya('lembaga_koperasi', $id, $aid)): ?>
   <p style="font-size:13px;color:var(--muted);">Ini buatan Anda — <a href="lembaga_koperasi.php">ubah dari daftar koperasi</a>.</p>
   <?php endif; ?>
