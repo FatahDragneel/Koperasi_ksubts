@@ -258,7 +258,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'masa_jabatan' => $masaJab,
         'ktu' => trim((string)($_POST['ktu'] ?? '')),
         'kasir' => trim((string)($_POST['kasir'] ?? '')),
-        'unit_kiri' => $ambilUnit('ukiri'),
+        // 'unit_kiri' => $ambilUnit('ukiri'),
         'unit_bawah' => $ambilUnit('ubawah'),
         'unit_kanan' => $ambilUnit('ukanan'),
     ], JSON_UNESCAPED_UNICODE);
@@ -484,7 +484,7 @@ include __DIR__ . '/includes/app_header.php';
         echo '</div>';
         echo '<button type="button" class="btn btn-ghost btn-sm" style="margin-bottom:8px;" onclick="tambahUnit(\'' . $pre . '\')">+ Unit</button>';
     };
-    $formUnit('ukiri', $stuk['unit_kiri'] ?? [], 'Unit kantor (kiri)');
+    // $formUnit('ukiri', $stuk['unit_kiri'] ?? [], 'Unit kantor (kiri)');
     $formUnit('ubawah', $stuk['unit_bawah'] ?? [], 'Unit pendukung (bawah)');
     $formUnit('ukanan', $stuk['unit_kanan'] ?? [], 'Unit usaha (kanan)');
     ?>
