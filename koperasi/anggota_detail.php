@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['act'] ?? '') === 'ubah') {
         $pdo->prepare('UPDATE anggota SET password=? WHERE id=?')->execute([password_hash($_POST['password_baru'], PASSWORD_DEFAULT), $id]);
     }
     update_berkas_anggota($id);
-    flash('ok', 'Data anggota disimpan. Kelompok lama tetap, kelompok baru ditambahkan.');
+    flash('ok', 'Data anggota disimpan. Lembaga lama tetap, lembaga baru ditambahkan.');
     header('Location: anggota_detail.php?id=' . $id);
     exit;
 }
@@ -172,7 +172,7 @@ include __DIR__ . '/includes/app_header.php';
     <p><strong>Desa / Kecamatan</strong><br><?= e($a['desa'] ?: '—') ?>, <?= e($a['kecamatan'] ?: '—') ?></p>
   </div>
   <div class="card">
-    <h3>Kelompok</h3>
+    <h3>Lembaga</h3>
     <?php if ($kelompokSaya): ?>
       <div class="table-wrap" style="margin-top:10px;">
         <table>
@@ -190,7 +190,7 @@ include __DIR__ . '/includes/app_header.php';
         </table>
       </div>
     <?php else: ?>
-      <p style="margin-top:10px;">Belum masuk kelompok.</p>
+      <p style="margin-top:10px;">Belum masuk lembaga.</p>
     <?php endif; ?>
     <p style="margin-top:10px;"><strong>STDB</strong> <?= ($a['stdb'] ?? '') === 'sudah' ? 'Sudah' : 'Belum' ?><?= !empty($a['no_stdb']) ? ' · '.e($a['no_stdb']) : '' ?></p>
     <p style="margin-top:10px;"><strong>Username login</strong> <?= e($akun ?: '—') ?><br>
@@ -214,7 +214,7 @@ include __DIR__ . '/includes/app_header.php';
             <td><?= e(($l['atas_nama_shm'] ?? '') ?: '—') ?><?php if (!empty($l['no_shm'])): ?><br><small><?= e($l['no_shm']) ?></small><?php endif; ?></td>
           </tr>
         <?php endforeach; if (!$lahan): ?>
-          <tr><td colspan="5">Belum ada. Luas lahan dicatat lewat data kelompok anggota ini.</td></tr>
+          <tr><td colspan="5">Belum ada. Luas lahan dicatat lewat data lembaga anggota ini.</td></tr>
         <?php endif; ?>
         </tbody>
       </table>
@@ -359,11 +359,11 @@ try {
     </div>
 
     <div class="form-sec">
-      <h4>Kelompok yang sudah dimiliki</h4>
+      <h4>Lembaga yang sudah dimiliki</h4>
       <?php if ($kelompokSaya): ?>
         <div class="table-wrap" style="margin-bottom:10px;">
           <table>
-            <thead><tr><th>Kelompok</th><th>Luas (ha)</th></tr></thead>
+            <thead><tr><th>Lembaga</th><th>Luas (ha)</th></tr></thead>
             <tbody>
             <?php foreach ($kelompokSaya as $gk): $kid=(int)$gk['id_kelompok']; ?>
               <tr>
@@ -374,9 +374,9 @@ try {
             </tbody>
           </table>
         </div>
-        <p style="font-size:12px;color:var(--muted);margin:0 0 10px;">Kelompok di atas tetap. Pilihan di bawah hanya kelompok yang belum dimiliki.</p>
+        <p style="font-size:12px;color:var(--muted);margin:0 0 10px;">Lembaga di atas tetap. Pilihan di bawah hanya lembaga yang belum dimiliki.</p>
       <?php else: ?>
-        <p style="font-size:13px;color:var(--muted);">Belum masuk kelompok. Tambah di bawah.</p>
+        <p style="font-size:13px;color:var(--muted);">Belum masuk lembaga. Tambah di bawah.</p>
       <?php endif; ?>
       <?= html_slot_kelompok(5, $idsSudah, 'Tambah berapa kelompok lagi?', true) ?>
       <div class="grid-2" style="margin-top:12px;">

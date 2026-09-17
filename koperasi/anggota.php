@@ -218,7 +218,7 @@ include __DIR__ . '/includes/app_header.php';
   <table>
     <thead>
       <tr>
-        <?= th_urut('no', 'No. Anggota') ?><?= th_urut('nama', 'Nama') ?><?= th_urut('kelompok', 'Kelompok / ketua') ?><?= th_urut('lahan', 'Lahan') ?><?= th_urut('piutang', 'Piutang saprodi') ?><?= th_urut('shu', 'SHU ' . date('Y')) ?><?= th_urut('status', 'Status') ?><th></th>
+        <?= th_urut('no', 'No. Anggota') ?><?= th_urut('nama', 'Nama') ?><?= th_urut('kelompok', 'Lembaga') ?><?= th_urut('lahan', 'Luas lahan') ?><?= th_urut('piutang', 'Piutang') ?><?= th_urut('shu', 'SHU ' . date('Y')) ?><?= th_urut('status', 'Status') ?><th></th>
       </tr>
     </thead>
     <tbody>
