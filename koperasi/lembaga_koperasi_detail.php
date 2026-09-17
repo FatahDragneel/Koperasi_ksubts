@@ -106,6 +106,11 @@ if ($staff) {
 } else {
     $ikut = $aid > 0 && in_array($id, array_map('intval', array_column(lembaga_anggota($aid), 'id')), true);
     $anggotaLem = anggota_di_lembaga($id);
+    if (!$ikut) {
+        flash('err', 'Detail koperasi hanya bisa dilihat setelah Anda bergabung.');
+        header('Location: lembaga_koperasi.php');
+        exit;
+    }
 }
 include __DIR__ . '/includes/app_header.php';
 ?>

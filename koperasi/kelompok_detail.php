@@ -123,6 +123,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $anggotaKel = anggota_di_kelompok($nomor);
 $idsKel = array_map(fn($a) => (int)$a['id'], $anggotaKel);
 $calon = $pdo->query("SELECT id, no_anggota, nama FROM anggota WHERE status IN ('aktif','pending') ORDER BY nama")->fetchAll();
+if (!$staff) {
+    $cekIkutKel = $aid > 0 && in_array($id, array_map('intval', array_column(kelompok_anggota($aid), 'id_kelompok')), true);
+    if (!$cekIkutKel) {
+        flash('err', 'Detail kelompok hanya bisa dilihat setelah Anda bergabung.');
+        header('Location: kelompok.php');
+        exit;
+    }
+}
 
 $title = ($k['kode_kelompok'] ?: ('KT-' . $nomor)) . ' · ' . ($k['nama_kelompok'] ?: ('Kelompok ' . $nomor));
 include __DIR__ . '/includes/app_header.php';

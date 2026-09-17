@@ -106,6 +106,11 @@ if ($staff) {
 } else {
     $ikut = $aid > 0 && in_array($id, array_map('intval', array_column(gapoktan_anggota($aid), 'id')), true);
     $anggotaGap = anggota_di_gapoktan($id);
+    if (!$ikut) {
+        flash('err', 'Detail gapoktan hanya bisa dilihat setelah Anda bergabung.');
+        header('Location: gapoktan.php');
+        exit;
+    }
 }
 include __DIR__ . '/includes/app_header.php';
 ?>
