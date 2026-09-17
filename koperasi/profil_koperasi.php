@@ -193,7 +193,7 @@ $jmlPendiriBA = count(daftar_pendiri_ba($ba['pendiri_txt']));
     <?php endif; ?>
     <div class="bts-split">
       <div class="bts-col">
-        <div class="bts-row"><?php foreach ($stuk['unit_kiri'] as $u) echo $kotak($u); ?></div>
+        <!-- <div class="bts-row"><?php foreach ($stuk['unit_kiri'] as $u) echo $kotak($u); ?></div> -->
         <?php if (!empty($stuk['unit_bawah'])): ?>
           <div class="bts-v"></div>
           <div class="bts-row"><?php foreach ($stuk['unit_bawah'] as $u) echo $kotak($u); ?></div>
