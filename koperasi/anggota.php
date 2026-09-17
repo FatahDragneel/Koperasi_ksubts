@@ -3,6 +3,9 @@ require __DIR__ . '/config.php';
 require_staff();
 $title = 'Data Anggota';
 $pdo = db();
+ensure_gapoktan_schema();
+ensure_lembaga_koperasi_schema();
+ensure_lembaga_anggota_schema();
 
 function anggota_fields(): array {
     return [
@@ -170,7 +173,9 @@ $sql = "SELECT a.*,
     (SELECT COALESCE(SUM(luas_hektar),0) FROM lahan_sawit l WHERE l.anggota_id=a.id) AS luas_kebun,
     (SELECT GROUP_CONCAT(DISTINCT tahun_tanam ORDER BY tahun_tanam SEPARATOR ', ') FROM lahan_sawit l WHERE l.anggota_id=a.id AND l.tahun_tanam IS NOT NULL) AS tahun_tanam,
     (SELECT COALESCE(SUM(total_shu),0) FROM shu_alokasi h WHERE h.anggota_id=a.id AND h.tahun_buku=$tahun) AS shu_tahun,
-    (SELECT GROUP_CONCAT(DISTINCT k3.kode_kelompok ORDER BY k3.nomor SEPARATOR ', ') FROM anggota_kelompok ak3 JOIN kelompok k3 ON k3.id=ak3.id_kelompok WHERE ak3.anggota_id=a.id) AS semua_kelompok
+    (SELECT GROUP_CONCAT(DISTINCT k3.kode_kelompok ORDER BY k3.nomor SEPARATOR ', ') FROM anggota_kelompok ak3 JOIN kelompok k3 ON k3.id=ak3.id_kelompok WHERE ak3.anggota_id=a.id) AS semua_kelompok,
+    (SELECT GROUP_CONCAT(DISTINCT g.kode_gapoktan ORDER BY g.kode_gapoktan SEPARATOR ', ') FROM anggota_gapoktan ag JOIN gapoktan g ON g.id=ag.id_gapoktan WHERE ag.anggota_id=a.id) AS semua_gapoktan,
+    (SELECT GROUP_CONCAT(DISTINCT l.kode_koperasi ORDER BY l.kode_koperasi SEPARATOR ', ') FROM anggota_lembaga al JOIN lembaga_koperasi l ON l.id=al.id_koperasi WHERE al.anggota_id=a.id) AS semua_koperasi
   FROM anggota a
   LEFT JOIN kelompok k ON k.id=a.id_kelompok
   LEFT JOIN kelompok k2 ON a.id_kelompok IS NULL AND k2.nomor=CAST(a.kelompok_tani AS UNSIGNED)";
@@ -227,13 +232,21 @@ include __DIR__ . '/includes/app_header.php';
         <td><?= e($r['no_anggota']) ?></td>
         <td><?= e($r['nama']) ?></td>
         <td>
+          <?php $segLembaga = []; ?>
           <?php if (!empty($r['kode_kelompok'])): ?>
-            <strong><?= e($r['kode_kelompok']) ?></strong>
-            <?= !empty($r['nama_kelompok']) ? '<br><small>'.e($r['nama_kelompok']).'</small>' : '' ?>
-            <?= !empty($r['nama_ketua']) ? '<br><small>Ketua: '.e($r['nama_ketua']).'</small>' : '' ?>
-          <?php else: ?>
-            <?= !empty($r['plasma']) ? label_kelompok($r['kelompok_tani']) : '—' ?>
+            <?php $segLembaga[] = '<strong>'.e($r['kode_kelompok']).'</strong>'
+              . (!empty($r['nama_kelompok']) ? '<br><small>'.e($r['nama_kelompok']).'</small>' : '')
+              . (!empty($r['nama_ketua']) ? '<br><small>Ketua: '.e($r['nama_ketua']).'</small>' : ''); ?>
+          <?php elseif (!empty($r['plasma'])): ?>
+            <?php $segLembaga[] = label_kelompok($r['kelompok_tani']); ?>
           <?php endif; ?>
+          <?php if (!empty($r['semua_gapoktan'])): ?>
+            <?php $segLembaga[] = '<strong>'.e($r['semua_gapoktan']).'</strong> <small>(gapoktan)</small>'; ?>
+          <?php endif; ?>
+          <?php if (!empty($r['semua_koperasi'])): ?>
+            <?php $segLembaga[] = '<strong>'.e($r['semua_koperasi']).'</strong> <small>(koperasi)</small>'; ?>
+          <?php endif; ?>
+          <?= $segLembaga ? implode('<br>', $segLembaga) : '—' ?>
         </td>
         <td>
           <?php if ((int)($r['jml_lahan'] ?? 0) > 0): ?>
