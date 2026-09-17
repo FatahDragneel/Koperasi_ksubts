@@ -65,26 +65,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         keluar_anggota_dari_lembaga((int)$u['anggota_id'], (int)($_POST['id_koperasi'] ?? 0));
         flash('ok', 'Anda keluar dari koperasi.');
     } elseif ($act === 'data' && !$staff && !empty($u['anggota_id'])) {
+        $aidData = (int)$u['anggota_id'];
         $nama = trim((string)($_POST['nama'] ?? ''));
         $jk = ($_POST['jenis_kelamin'] ?? 'L') === 'P' ? 'P' : 'L';
-        if ($nama === '') {
-            flash('err', 'Nama tidak boleh kosong.');
+        $cur = $pdo->prepare('SELECT no_anggota, status FROM anggota WHERE id=?');
+        $cur->execute([$aidData]);
+        $cur = $cur->fetch() ?: [];
+        $noAgt = trim((string)($_POST['no_anggota'] ?? ''));
+        if ($noAgt === '') {
+            $noAgt = (string)($cur['no_anggota'] ?? '');
+        }
+        $st = (string)($_POST['status'] ?? '');
+        if (!in_array($st, ['aktif', 'pending', 'nonaktif'], true)) {
+            $st = (string)($cur['status'] ?? 'aktif');
+        }
+        $stdb = ($_POST['stdb'] ?? '') === 'sudah' ? 'sudah' : 'belum';
+        if ($nama === '' || $noAgt === '') {
+            flash('err', 'Nama dan nomor anggota tidak boleh kosong.');
         } else {
-            $pdo->prepare('UPDATE anggota SET nama=?,nik=?,jenis_kelamin=?,tempat_lahir=?,tanggal_lahir=?,alamat=?,desa=?,kecamatan=?,no_hp=?,pekerjaan=? WHERE id=?')->execute([
-                $nama,
-                trim((string)($_POST['nik'] ?? '')) ?: null,
-                $jk,
-                trim((string)($_POST['tempat_lahir'] ?? '')) ?: null,
-                trim((string)($_POST['tanggal_lahir'] ?? '')) ?: null,
-                trim((string)($_POST['alamat'] ?? '')) ?: null,
-                trim((string)($_POST['desa'] ?? '')) ?: null,
-                trim((string)($_POST['kecamatan'] ?? '')) ?: null,
-                trim((string)($_POST['no_hp'] ?? '')) ?: null,
-                trim((string)($_POST['pekerjaan'] ?? '')) ?: null,
-                (int)$u['anggota_id'],
-            ]);
-            $_SESSION['user']['nama'] = $nama;
-            flash('ok', 'Data diri diperbarui.');
+            try {
+                $pdo->prepare('UPDATE anggota SET no_anggota=?,nama=?,nik=?,jenis_kelamin=?,status=?,tempat_lahir=?,tanggal_lahir=?,alamat=?,desa=?,kecamatan=?,no_hp=?,pekerjaan=?,tanggal_daftar=?,stdb=?,no_stdb=? WHERE id=?')->execute([
+                    $noAgt,
+                    $nama,
+                    trim((string)($_POST['nik'] ?? '')) ?: null,
+                    $jk,
+                    $st,
+                    trim((string)($_POST['tempat_lahir'] ?? '')) ?: null,
+                    trim((string)($_POST['tanggal_lahir'] ?? '')) ?: null,
+                    trim((string)($_POST['alamat'] ?? '')) ?: null,
+                    trim((string)($_POST['desa'] ?? '')) ?: null,
+                    trim((string)($_POST['kecamatan'] ?? '')) ?: null,
+                    trim((string)($_POST['no_hp'] ?? '')) ?: null,
+                    trim((string)($_POST['pekerjaan'] ?? '')) ?: null,
+                    trim((string)($_POST['tanggal_daftar'] ?? '')) ?: null,
+                    $stdb,
+                    trim((string)($_POST['no_stdb'] ?? '')) ?: null,
+                    $aidData,
+                ]);
+                $_SESSION['user']['nama'] = $nama;
+                flash('ok', 'Data diri diperbarui.');
+            } catch (Throwable $e) {
+                flash('err', 'Gagal menyimpan. Nomor anggota mungkin sudah dipakai.');
+            }
         }
     } elseif (!empty($_POST['password'])) {
         if ($_POST['password'] !== ($_POST['password2'] ?? '')) {
@@ -178,7 +200,7 @@ if ($staff):
 <div class="kpis">
   <div class="kpi"><span>Kelompok</span><b><?= count($kelompokSaya ?? []) ?></b></div>
   <div class="kpi"><span>Lahan</span><b><?= count($lahan) ?> bidang</b></div>
-  <div class="kpi"><span>Piutang saprodi</span><b><?= rupiah($piutangSap) ?></b></div>
+  <div class="kpi"><span>Piutang</span><b><?= rupiah($piutangSap) ?></b></div>
   <?php if (FITUR_SHU): ?><div class="kpi"><span>SHU <?= $tahun ?></span><b><?= rupiah($shu['total_shu'] ?? 0) ?></b></div><?php endif; ?>
 </div>
 
@@ -321,7 +343,7 @@ if ($staff):
 </div>
 
 <div class="card" style="margin-top:16px;">
-  <h3>Saprodi / piutang saya</h3>
+  <h3>Piutang saya</h3>
   <p style="margin:8px 0 10px;">Sisa piutang: <strong><?= rupiah($piutangSap) ?></strong></p>
   <div class="table-wrap">
     <table>
@@ -337,7 +359,7 @@ if ($staff):
           <td><span class="badge <?= $sp['status_bayar']==='lunas'?'b-lunas':'b-pengajuan' ?>"><?= e($sp['status_bayar']) ?></span></td>
         </tr>
       <?php endforeach; if (!$saprodi): ?>
-        <tr><td colspan="6">Tidak ada nota saprodi atas nama Anda.</td></tr>
+        <tr><td colspan="6">Tidak ada nota atas nama Anda.</td></tr>
       <?php endif; ?>
       </tbody>
     </table>
@@ -360,13 +382,20 @@ if ($staff):
     <?= csrf_field() ?>
     <input type="hidden" name="act" value="data">
     <h3>Ubah data saya</h3>
-    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">Nomor anggota, status, dan STDB hanya bisa diubah pengurus.</p>
+    <div class="grid-2">
+      <div><label>No. Anggota</label><input name="no_anggota" value="<?= e($anggota['no_anggota'] ?? '') ?>" required></div>
+      <div><label>NIK</label><input name="nik" value="<?= e($anggota['nik'] ?? '') ?>"></div>
+    </div>
     <label>Nama lengkap<input name="nama" value="<?= e($anggota['nama'] ?? '') ?>" required></label>
     <div class="grid-2">
-      <div><label>NIK</label><input name="nik" value="<?= e($anggota['nik'] ?? '') ?>"></div>
       <div><label>Jenis kelamin</label><select name="jenis_kelamin">
         <option value="L" <?= ($anggota['jenis_kelamin'] ?? 'L') === 'L' ? 'selected' : '' ?>>Laki-laki</option>
         <option value="P" <?= ($anggota['jenis_kelamin'] ?? '') === 'P' ? 'selected' : '' ?>>Perempuan</option>
+      </select></div>
+      <div><label>Status</label><select name="status">
+        <?php foreach (['aktif' => 'Aktif', 'pending' => 'Pending', 'nonaktif' => 'Nonaktif'] as $v => $lbl): ?>
+        <option value="<?= $v ?>" <?= ($anggota['status'] ?? '') === $v ? 'selected' : '' ?>><?= $lbl ?></option>
+        <?php endforeach; ?>
       </select></div>
     </div>
     <div class="grid-2">
@@ -381,6 +410,14 @@ if ($staff):
     <div class="grid-2">
       <div><label>Desa</label><input name="desa" value="<?= e($anggota['desa'] ?? '') ?>"></div>
       <div><label>Kecamatan</label><input name="kecamatan" value="<?= e($anggota['kecamatan'] ?? '') ?>"></div>
+    </div>
+    <label>Tanggal daftar</label><input type="date" name="tanggal_daftar" value="<?= e($anggota['tanggal_daftar'] ?? '') ?>">
+    <div class="grid-2">
+      <div><label>STDB</label><select name="stdb">
+        <option value="belum" <?= ($anggota['stdb'] ?? '') !== 'sudah' ? 'selected' : '' ?>>Belum</option>
+        <option value="sudah" <?= ($anggota['stdb'] ?? '') === 'sudah' ? 'selected' : '' ?>>Sudah</option>
+      </select></div>
+      <div><label>Nomor STDB</label><input name="no_stdb" value="<?= e($anggota['no_stdb'] ?? '') ?>"></div>
     </div>
     <div class="modal-actions">
       <button type="button" class="btn btn-ghost" onclick="closeModal('mData')"><i class="fa-solid fa-xmark"></i> Batal</button>
