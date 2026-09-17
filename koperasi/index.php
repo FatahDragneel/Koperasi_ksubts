@@ -119,7 +119,7 @@ include __DIR__ . '/includes/public_header.php';
       <div class="card">
         <div class="icon">▣</div>
         <h3>Laporan Transparan</h3>
-        <p>Pembukuan terkomputerisasi. RAT membahas SHU dan rencana kerja tahunan.</p>
+        <p>Pembukuan terkomputerisasi. RAT membahas <?= FITUR_SHU ? 'SHU dan ' : '' ?>rencana kerja tahunan.</p>
       </div>
     </div>
   </div>

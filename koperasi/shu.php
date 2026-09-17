@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . '/config.php';
 require_staff();
+perlu_fitur_shu();
 ensure_kas_schema();
 ensure_logistik_schema();
 $title = 'SHU — Sisa Hasil Usaha';

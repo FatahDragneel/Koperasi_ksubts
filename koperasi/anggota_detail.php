@@ -200,7 +200,7 @@ include __DIR__ . '/includes/app_header.php';
 
 <div class="cards" style="grid-template-columns:1fr 1fr;margin-top:16px;">
   <div class="card">
-    <h3>Lahan sawit (data sendiri)</h3>
+    <h3>Lahan sawit (anggota)</h3>
     <div class="table-wrap" style="margin-top:10px;">
       <table>
         <thead><tr><th>Lokasi</th><th>Luas</th><th>Tahun tanam</th><th>Pokok</th><th>SHM atas nama</th></tr></thead>
@@ -221,7 +221,8 @@ include __DIR__ . '/includes/app_header.php';
     </div>
   </div>
   <div class="card">
-    <h3>SHU <?= $tahun ?> (data sendiri)</h3>
+    <?php if (FITUR_SHU): ?>
+    <h3>SHU <?= $tahun ?> (anggota)</h3>
     <?php if ($shu): ?>
       <div class="grid-2" style="margin-top:12px;">
         <p><strong>Jasa modal</strong><br><?= rupiah($shu['jasa_modal']) ?></p>
@@ -231,12 +232,13 @@ include __DIR__ . '/includes/app_header.php';
     <?php else: ?>
       <p style="margin-top:12px;color:var(--muted);">Belum dialokasi. Hitung di menu <a href="shu.php">SHU</a>.</p>
     <?php endif; ?>
+    <?php endif; ?>
     <p style="margin-top:12px;"><strong>Piutang saprodi</strong> <?= rupiah($piutangSap) ?></p>
   </div>
 </div>
 
 <div class="card" style="margin-top:16px;">
-  <h3>Saprodi (data sendiri)</h3>
+  <h3>Saprodi (anggota)</h3>
   <div class="table-wrap" style="margin-top:10px;">
     <table>
       <thead><tr><th>Tanggal</th><th>Barang</th><th>Qty</th><th>Total</th><th>Sisa piutang</th><th>Status</th></tr></thead>

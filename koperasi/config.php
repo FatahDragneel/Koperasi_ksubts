@@ -68,6 +68,23 @@ function perlu_fitur_pengalihan(): void {
     }
 }
 
+# ============================================================
+# FITUR SHU (SISA HASIL USAHA) DISEMBUNYIKAN.
+# Kartu, kolom, dan halaman SHU tidak tampil.
+# Data SHU lama tetap aman di database.
+# Untuk menampilkan lagi: ubah false menjadi true di bawah ini.
+# ============================================================
+define('FITUR_SHU', false);
+
+# Penjaga halaman SHU: alihkan ke dashboard bila disembunyikan.
+function perlu_fitur_shu(): void {
+    if (!FITUR_SHU) {
+        flash('err', 'Fitur SHU sedang disembunyikan.');
+        header('Location: dashboard.php');
+        exit;
+    }
+}
+
 function db(): PDO {
     static $pdo = null;
     if ($pdo !== null) {

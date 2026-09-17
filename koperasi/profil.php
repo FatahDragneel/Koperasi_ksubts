@@ -179,7 +179,7 @@ if ($staff):
   <div class="kpi"><span>Kelompok</span><b><?= count($kelompokSaya ?? []) ?></b></div>
   <div class="kpi"><span>Lahan</span><b><?= count($lahan) ?> bidang</b></div>
   <div class="kpi"><span>Piutang saprodi</span><b><?= rupiah($piutangSap) ?></b></div>
-  <div class="kpi"><span>SHU <?= $tahun ?></span><b><?= rupiah($shu['total_shu'] ?? 0) ?></b></div>
+  <?php if (FITUR_SHU): ?><div class="kpi"><span>SHU <?= $tahun ?></span><b><?= rupiah($shu['total_shu'] ?? 0) ?></b></div><?php endif; ?>
 </div>
 
 <div class="cards" style="grid-template-columns:1fr 1fr;">
@@ -201,6 +201,7 @@ if ($staff):
     <p style="margin-top:10px;"><strong>Alamat</strong><br><?= e($anggota['alamat'] ?: '—') ?></p>
     <p><strong>Username</strong> <?= e($anggota['username'] ?: '—') ?></p>
   </div>
+  <?php if (FITUR_SHU): ?>
   <div class="card">
     <h3>SHU saya <?= $tahun ?></h3>
     <?php if ($shu): ?>
@@ -213,6 +214,7 @@ if ($staff):
       <p style="margin-top:12px;color:var(--muted);">SHU <?= $tahun ?> belum dialokasikan pengurus.</p>
     <?php endif; ?>
   </div>
+  <?php endif; ?>
 </div>
 
 <div class="card" style="margin-top:16px;">
