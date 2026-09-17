@@ -171,7 +171,7 @@ include __DIR__ . '/includes/app_header.php';
       <label>Nama ketua<input name="ketua" id="u_ketua"></label>
       <?php if ($staff): ?><label>No. HP ketua<input name="hp" id="u_hp"></label><?php endif; ?>
       <label>Komoditi<input name="komoditi" id="u_komoditi"></label>
-      <label>Luas lahan koperasi<input type="number" step="0.01" min="0" name="luas_lahan" id="u_luas"></label>
+      <label>Luas lahan Gapoktan<input type="number" step="0.01" min="0" name="luas_lahan" id="u_luas"></label>
       <label>Jumlah anggota<input type="number" step="1" min="0" name="jumlah_anggota" id="u_jml"></label>
       <label>Alamat<textarea name="alamat" id="u_alamat" rows="2"></textarea></label>
       <label>Keterangan<textarea name="ket" id="u_ket" rows="2"></textarea></label>
