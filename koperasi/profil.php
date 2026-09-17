@@ -102,6 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     trim((string)($_POST['no_stdb'] ?? '')) ?: null,
                     $aidData,
                 ]);
+                update_berkas_anggota($aidData);
                 $_SESSION['user']['nama'] = $nama;
                 flash('ok', 'Data diri diperbarui.');
             } catch (Throwable $e) {
@@ -378,7 +379,7 @@ if ($staff):
   </form>
 </div>
 <div class="modal-bg" id="mData">
-  <form class="modal" method="post">
+  <form class="modal" method="post" enctype="multipart/form-data">
     <?= csrf_field() ?>
     <input type="hidden" name="act" value="data">
     <h3>Ubah data saya</h3>
@@ -419,6 +420,13 @@ if ($staff):
       </select></div>
       <div><label>Nomor STDB</label><input name="no_stdb" value="<?= e($anggota['no_stdb'] ?? '') ?>"></div>
     </div>
+    <h4 style="margin:14px 0 4px;">Berkas (gambar)</h4>
+    <p style="font-size:12px;color:var(--muted);margin:0 0 8px;">Kosongkan jika tidak diganti.<?= (!empty($anggota['foto']) || !empty($anggota['ktp_file']) || !empty($anggota['sertifikat_file'])) ? ' Tersimpan: ' . trim((!empty($anggota['foto']) ? 'foto diri, ' : '') . (!empty($anggota['ktp_file']) ? 'foto KTP, ' : '') . (!empty($anggota['sertifikat_file']) ? 'sertifikat' : ''), ', ') . '.' : '' ?></p>
+    <div class="grid-2">
+      <div><label>Ganti foto diri</label><input type="file" name="foto" accept="image/*"></div>
+      <div><label>Ganti foto KTP</label><input type="file" name="ktp_file" accept="image/*"></div>
+    </div>
+    <label>Ganti sertifikat tanah</label><input type="file" name="sertifikat_file" accept="image/*">
     <div class="modal-actions">
       <button type="button" class="btn btn-ghost" onclick="closeModal('mData')"><i class="fa-solid fa-xmark"></i> Batal</button>
       <button class="btn btn-green" type="submit"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
