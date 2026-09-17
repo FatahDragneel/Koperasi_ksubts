@@ -445,8 +445,8 @@ INSERT INTO pengaturan (id, nama_koperasi, alamat, telepon, email, tahun_berdiri
 INSERT INTO jenis_simpanan (kode, nama, keterangan, wajib) VALUES
 ('SPK', 'Simpanan Pokok', 'Dibayar sekali saat menjadi anggota', 1),
 ('SWJ', 'Simpanan Wajib', 'Dibayar setiap bulan oleh anggota aktif', 1),
-('SSK', 'Simpanan Saham', 'Simpanan bebas sesuai kemampuan anggota', 0),
-('SHR', 'Simpanan Hari Raya', 'Tabungan khusus menjelang hari raya', 0);
+('SSK', 'Saham', 'Simpanan bebas sesuai kemampuan anggota', 0),
+('SHR', 'Bagi Hasil Saham', 'Bagi hasil untuk pemilik saham', 0);
 
 -- Contoh kelompok (ubah/tambah/hapus via menu Kelompok; plasma bebas per kelompok).
 INSERT INTO kelompok (nomor, kode_kelompok, nama_kelompok, plasma, luas_tanah, fee_per_kg) VALUES
@@ -470,7 +470,7 @@ INSERT INTO coa_akun (kode, nama, kategori, saldo_normal) VALUES
 ('1312','Persediaan pupuk organik','Aset','debit'),
 ('2111','Simpanan pokok','Kewajiban','kredit'),
 ('2112','Simpanan wajib','Kewajiban','kredit'),
-('2113','Simpanan saham','Kewajiban','kredit'),
+('2113','Saham','Kewajiban','kredit'),
 ('2211','Utang kas kelompok','Kewajiban','kredit'),
 ('3111','Modal / ekuitas','Ekuitas','kredit'),
 ('4111','Pendapatan bagi hasil pinjaman','Pendapatan','kredit'),
@@ -479,7 +479,7 @@ INSERT INTO coa_akun (kode, nama, kategori, saldo_normal) VALUES
 ('4114','Pendapatan pupuk organik','Pendapatan','kredit'),
 ('5111','Biaya operasional','Biaya','debit'),
 ('5112','Pembelian TBS petani','Biaya','debit'),
-('5113','Biaya produksi pupuk','Biaya','debit');
+('5113','Biaya pembelian pupuk','Biaya','debit');
 
 -- sandi: admin123 / anggota123
 INSERT INTO users (username, password, nama, role) VALUES

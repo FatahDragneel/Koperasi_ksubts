@@ -42,6 +42,8 @@ $jmlPendiriBA = count(daftar_pendiri_ba($ba['pendiri_txt']));
     <p><strong>Jenis</strong><br><?= e($p('jenis_koperasi')) ?></p>
     <p><strong>Tanggal berdiri</strong><br><?= e(tgl($p('tanggal_berdiri'))) ?></p>
     <p><strong>Ketua</strong><br><?= e($ketua ?: '—') ?></p>
+    <p><strong>Sekretaris</strong><br><?= e((string)(($stuk['sekretaris'] ?? $s['sekretaris'] ?? '')) ?: '—') ?></p>
+    <p><strong>Bendahara</strong><br><?= e((string)(($stuk['bendahara'] ?? $s['bendahara'] ?? '')) ?: '—') ?></p>
   </div>
   <?php if (!empty($s['logo_file'])): ?>
     <p style="margin-top:12px;"><strong>Logo koperasi</strong></p>

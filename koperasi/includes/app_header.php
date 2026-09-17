@@ -59,7 +59,11 @@ function nav_active_lembaga() {
   <aside class="sidebar" id="appSide">
     <div class="side-brand">
       <label class="nav-close" for="navCek"><i class="fa-solid fa-xmark"></i></label>
+      <?php if (!empty($s['logo_file'])): ?>
+      <img src="logo.php" alt="Logo koperasi" style="width:44px;height:44px;border-radius:12px;object-fit:cover;background:#fff;flex:0 0 auto;">
+      <?php else: ?>
       <div class="logo"><?= e($__inisial) ?></div>
+      <?php endif; ?>
       <div>
         <small style="color:#e8c547;font-size:10px;letter-spacing:.12em;text-transform:uppercase;">Portal Koperasi</small>
         <strong style="display:block;font-size:13px;color:#fff;"><?= e($s['nama_koperasi'] ?? 'Koperasi') ?></strong>

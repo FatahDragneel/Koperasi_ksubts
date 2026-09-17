@@ -38,19 +38,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $jml = (float)str_replace(',', '.', (string)($_POST['jumlah'] ?? '0'));
         $biaya = (float)str_replace('.', '', (string)($_POST['biaya'] ?? '0'));
         if ($pid < 1 || $jml <= 0) {
-            flash('err', 'Pilih produk dan isi jumlah hasil produksi.');
+            flash('err', 'Pilih produk dan isi jumlah pembelian.');
         } else {
             $hpp = $jml > 0 ? round($biaya / $jml, 2) : 0;
             $pdo->prepare("INSERT INTO pupuk_mutasi (tanggal,produk_id,arah,jumlah,harga_satuan,total_nilai,pihak,keterangan,created_by) VALUES (?,?, 'masuk',?,?,?,?,?,?)")
-                ->execute([$tgl, $pid, $jml, $hpp, $biaya, 'Unit produksi', trim((string)($_POST['keterangan'] ?? 'Hasil produksi')), $u['id']]);
+                ->execute([$tgl, $pid, $jml, $hpp, $biaya, 'Unit produksi', trim((string)($_POST['keterangan'] ?? 'Pembelian')), $u['id']]);
             $mid = (int)$pdo->lastInsertId();
             if ($biaya > 0) {
-                posting_jurnal($tgl, 'Biaya produksi pupuk', [
+                posting_jurnal($tgl, 'Biaya pembelian pupuk', [
                     ['kode' => '1312', 'posisi' => 'debit', 'nominal' => $biaya],
                     ['kode' => '1111', 'posisi' => 'kredit', 'nominal' => $biaya],
                 ], 'pupuk_produksi', $mid, $u['id']);
             }
-            flash('ok', 'Hasil produksi dicatat. Stok bertambah ' . number_format($jml, 2, ',', '.') . '.');
+            flash('ok', 'Pembelian dicatat. Stok bertambah ' . number_format($jml, 2, ',', '.') . '.');
         }
     } elseif ($act === 'jual') {
         $pid = (int)($_POST['produk_id'] ?? 0);
@@ -129,7 +129,7 @@ include __DIR__ . '/includes/app_header.php';
 </div>
 <div class="toolbar toolbar-end">
   <button class="btn btn-ghost" type="button" onclick="openModal('mProduk')">+ Produk</button>
-  <button class="btn btn-ghost" type="button" onclick="openModal('mProduksi')">+ Hasil produksi</button>
+  <button class="btn btn-ghost" type="button" onclick="openModal('mProduksi')">+ Pembelian</button>
   <button class="btn btn-green" type="button" onclick="openModal('mJual')">+ Penjualan</button>
 </div>
 <?php else: ?>
@@ -175,7 +175,7 @@ include __DIR__ . '/includes/app_header.php';
         <tr>
           <td><?= tgl($r['tanggal']) ?></td>
           <td><?= e($r['kode'] . ' — ' . $r['nama_produk']) ?></td>
-          <?php if ($staff): ?><td><?= $r['arah'] === 'masuk' ? 'Produksi' : 'Jual' ?></td><?php endif; ?>
+          <?php if ($staff): ?><td><?= $r['arah'] === 'masuk' ? 'Pembelian' : 'Jual' ?></td><?php endif; ?>
           <td><?= number_format((float)$r['jumlah'], 2, ',', '.') . ' ' . e($r['satuan']) ?></td>
           <td><?= rupiah($r['harga_satuan']) ?></td>
           <td><?= rupiah($r['total_nilai']) ?></td>
@@ -219,19 +219,19 @@ include __DIR__ . '/includes/app_header.php';
   <form class="modal" method="post">
     <?= csrf_field() ?>
     <input type="hidden" name="act" value="produksi">
-    <h3>Catat hasil produksi</h3>
+    <h3>Catat pembelian</h3>
     <label>Produk</label>
     <select name="produk_id" required>
       <?php foreach ($produk as $p): ?><option value="<?= (int)$p['id'] ?>"><?= e($p['kode'] . ' — ' . $p['nama'] . ' (' . $p['satuan'] . ')') ?></option><?php endforeach; ?>
     </select>
     <div class="grid-2">
       <div><label>Tanggal</label><input type="date" name="tanggal" value="<?= date('Y-m-d') ?>"></div>
-      <div><label>Jumlah hasil</label><input name="jumlah" type="number" step="0.01" min="0" placeholder="0" required></div>
+      <div><label>Jumlah pembelian</label><input name="jumlah" type="number" step="0.01" min="0" placeholder="0" required></div>
     </div>
-    <label>Total biaya produksi (Rp) — bahan, upah, kemas</label>
+    <label>Total biaya pembelian (Rp)</label>
     <input name="biaya" value="0">
     <label>Keterangan</label>
-    <input name="keterangan" placeholder="cth. Batch fermentasi #...">
+    <input name="keterangan" placeholder="cth. Nota #...">
     <p style="font-size:12px;color:var(--muted);margin-top:8px;">Dijurnal otomatis: Persediaan pupuk (D) / Kas (K) sebesar biaya.</p>
     <div class="row" style="margin-top:14px;justify-content:flex-end;">
       <button type="button" class="btn btn-ghost" onclick="closeModal('mProduksi')">Batal</button>

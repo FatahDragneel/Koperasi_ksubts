@@ -152,8 +152,8 @@ if (has_table($pdo, 'jenis_simpanan') && (int)$pdo->query('SELECT COUNT(*) FROM 
     $add("INSERT INTO jenis_simpanan (kode,nama,keterangan,wajib) VALUES
       ('SPK','Simpanan Pokok','Dibayar sekali saat menjadi anggota',1),
       ('SWJ','Simpanan Wajib','Dibayar setiap bulan oleh anggota aktif',1),
-      ('SSK','Simpanan Saham','Simpanan bebas sesuai kemampuan anggota',0),
-      ('SHR','Simpanan Hari Raya','Tabungan khusus menjelang hari raya',0)");
+      ('SSK','Saham','Simpanan bebas sesuai kemampuan anggota',0),
+      ('SHR','Bagi Hasil Saham','Bagi hasil untuk pemilik saham',0)");
 }
 if (has_table($pdo, 'pengaturan') && (int)$pdo->query('SELECT COUNT(*) FROM pengaturan')->fetchColumn() === 0) {
     $add("INSERT INTO pengaturan (id,nama_koperasi,alamat,telepon,email,tahun_berdiri,tanggal_berdiri,ketua,bagi_hasil_persen,simpanan_pokok,simpanan_wajib,jenis_koperasi)
@@ -165,13 +165,13 @@ if (has_table($pdo, 'coa_akun') && (int)$pdo->query('SELECT COUNT(*) FROM coa_ak
       ('1211','Piutang pinjaman anggota','Aset','debit'),('1212','Piutang saprodi','Aset','debit'),
       ('1311','Persediaan / TBS','Aset','debit'),('1312','Persediaan pupuk organik','Aset','debit'),
       ('2111','Simpanan pokok','Kewajiban','kredit'),('2112','Simpanan wajib','Kewajiban','kredit'),
-      ('2113','Simpanan saham','Kewajiban','kredit'),('2211','Utang kas kelompok','Kewajiban','kredit'),
+      ('2113','Saham','Kewajiban','kredit'),('2211','Utang kas kelompok','Kewajiban','kredit'),
       ('3111','Modal / ekuitas','Ekuitas','kredit'),
       ('4111','Pendapatan bagi hasil pinjaman','Pendapatan','kredit'),
       ('4112','Pendapatan lain','Pendapatan','kredit'),('4113','Pendapatan margin TBS','Pendapatan','kredit'),
       ('4114','Pendapatan pupuk organik','Pendapatan','kredit'),
       ('5111','Biaya operasional','Biaya','debit'),('5112','Pembelian TBS petani','Biaya','debit'),
-      ('5113','Biaya produksi pupuk','Biaya','debit')");
+      ('5113','Biaya pembelian pupuk','Biaya','debit')");
 }
 if (has_table($pdo, 'users') && (int)$pdo->query('SELECT COUNT(*) FROM users')->fetchColumn() === 0) {
     $add("INSERT INTO users (username,password,nama,role) VALUES

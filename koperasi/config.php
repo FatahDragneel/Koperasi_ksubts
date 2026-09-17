@@ -1614,11 +1614,19 @@ function ensure_simpanan_sukarela_schema(): void {
     }
     # Penamaan ulang tampilan: Sukarela -> Saham (kode SSK & COA 2113 tetap).
     try {
-        db()->exec("UPDATE jenis_simpanan SET nama='Simpanan Saham' WHERE kode='SSK' AND nama<>'Simpanan Saham'");
+        db()->exec("UPDATE jenis_simpanan SET nama='Saham' WHERE kode='SSK' AND nama<>'Saham'");
     } catch (Throwable $e) {
     }
     try {
-        db()->exec("UPDATE coa_akun SET nama='Simpanan saham' WHERE kode='2113' AND nama<>'Simpanan saham'");
+        db()->exec("UPDATE coa_akun SET nama='Saham' WHERE kode='2113' AND nama<>'Saham'");
+    } catch (Throwable $e) {
+    }
+    try {
+        db()->exec("UPDATE jenis_simpanan SET nama='Bagi Hasil Saham', keterangan='Bagi hasil untuk pemilik saham' WHERE kode='SHR' AND nama<>'Bagi Hasil Saham'");
+    } catch (Throwable $e) {
+    }
+    try {
+        db()->exec("UPDATE coa_akun SET nama='Biaya pembelian pupuk' WHERE kode='5113' AND nama<>'Biaya pembelian pupuk'");
     } catch (Throwable $e) {
     }
 }
@@ -1926,7 +1934,7 @@ function ensure_akuntansi_schema(): void {
                 ['1311','Persediaan / TBS','Aset','debit'],
                 ['2111','Simpanan pokok','Kewajiban','kredit'],
                 ['2112','Simpanan wajib','Kewajiban','kredit'],
-                ['2113','Simpanan saham','Kewajiban','kredit'],
+                ['2113','Saham','Kewajiban','kredit'],
                 ['2211','Utang kas kelompok','Kewajiban','kredit'],
                 ['3111','Modal / ekuitas','Ekuitas','kredit'],
                 ['4111','Pendapatan bagi hasil pinjaman','Pendapatan','kredit'],
@@ -1943,7 +1951,7 @@ function ensure_akuntansi_schema(): void {
             $tambah = [
                 ['1312','Persediaan pupuk organik','Aset','debit'],
                 ['4114','Pendapatan pupuk organik','Pendapatan','kredit'],
-                ['5113','Biaya produksi pupuk','Biaya','debit'],
+                ['5113','Biaya pembelian pupuk','Biaya','debit'],
             ];
             $ins2 = db()->prepare('INSERT IGNORE INTO coa_akun (kode,nama,kategori,saldo_normal) VALUES (?,?,?,?)');
             foreach ($tambah as $r) {

@@ -42,10 +42,38 @@ try {
 } catch (Throwable $e) {
     $angsBulan = [];
 }
+$totSaham = 0;
+$stokProduk = [];
+$totStokProduk = 0;
+$jmlKel = $jmlGap = $jmlKop = 0;
+$agtKel = $agtGap = $agtKop = 0;
+try {
+    $totSaham = (float)$pdo->query("SELECT COALESCE(SUM(s.jumlah),0) FROM simpanan_sukarela s JOIN anggota a ON a.id=s.anggota_id WHERE a.status IN ('aktif','pasif')")->fetchColumn();
+} catch (Throwable $e) {
+}
+try {
+    foreach (daftar_pupuk_stok() as $pr) {
+        $nl = (float)$pr['stok'] * (float)$pr['harga_jual'];
+        $totStokProduk += $nl;
+        $stokProduk[] = ['nama' => (!empty($pr['kode']) ? $pr['kode'] . ' — ' : '') . ($pr['nama'] ?? 'Produk'), 'stok' => (float)$pr['stok'], 'satuan' => $pr['satuan'] ?? '', 'nilai' => $nl];
+    }
+} catch (Throwable $e) {
+}
+try {
+    $jmlKel = (int)$pdo->query('SELECT COUNT(*) FROM kelompok')->fetchColumn();
+    $jmlGap = (int)$pdo->query('SELECT COUNT(*) FROM gapoktan')->fetchColumn();
+    $jmlKop = (int)$pdo->query('SELECT COUNT(*) FROM lembaga_koperasi')->fetchColumn();
+    $agtKel = (int)$pdo->query('SELECT COUNT(*) FROM anggota_kelompok')->fetchColumn();
+    $agtGap = (int)$pdo->query('SELECT COUNT(*) FROM anggota_gapoktan')->fetchColumn();
+    $agtKop = (int)$pdo->query('SELECT COUNT(*) FROM anggota_lembaga')->fetchColumn();
+} catch (Throwable $e) {
+}
 include __DIR__ . '/includes/app_header.php';
 ?>
 <div class="kpis">
   <div class="kpi"><span>Akumulasi simpanan</span><b><?= rupiah($totS) ?></b></div>
+  <div class="kpi"><span>Saham terkumpul</span><b><?= rupiah($totSaham) ?></b></div>
+  <div class="kpi"><span>Stok produk</span><b><?= rupiah($totStokProduk) ?></b></div>
   <?php if (FITUR_PINJAMAN): ?>
   <div class="kpi"><span>Pokok tersalur (bukan ditolak)</span><b><?= rupiah($totP) ?></b></div>
   <div class="kpi"><span>Outstanding</span><b><?= rupiah($totSisa) ?></b></div>
@@ -92,6 +120,36 @@ include __DIR__ . '/includes/app_header.php';
     </div>
   </div>
   <?php endif; ?>
+</div>
+<div class="cards" style="grid-template-columns:1fr 1fr;margin-top:16px;">
+  <div class="card">
+    <h3>Jumlah setiap lembaga</h3>
+    <div class="table-wrap" style="margin-top:12px;">
+      <table>
+        <thead><tr><th>Lembaga</th><th>Unit</th><th>Anggota tergabung</th></tr></thead>
+        <tbody>
+          <tr><td>Kelompok</td><td><?= (int)$jmlKel ?> unit</td><td><?= (int)$agtKel ?> anggota</td></tr>
+          <tr><td>Gapoktan</td><td><?= (int)$jmlGap ?> unit</td><td><?= (int)$agtGap ?> anggota</td></tr>
+          <tr><td>Koperasi</td><td><?= (int)$jmlKop ?> unit</td><td><?= (int)$agtKop ?> anggota</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Stok produk</h3>
+    <div class="table-wrap" style="margin-top:12px;">
+      <table>
+        <thead><tr><th>Produk</th><th>Stok</th><th>Nilai</th></tr></thead>
+        <tbody>
+        <?php foreach ($stokProduk as $sp): ?>
+          <tr><td><?= e($sp['nama']) ?></td><td><?= number_format($sp['stok'], 2, ',', '.') . ' ' . e($sp['satuan']) ?></td><td><?= rupiah($sp['nilai']) ?></td></tr>
+        <?php endforeach; if (!$stokProduk): ?>
+          <tr><td colspan="3">Belum ada produk.</td></tr>
+        <?php endif; ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 <?php if (FITUR_PINJAMAN): ?>
 <p style="margin-top:16px;font-size:13px;color:var(--muted);">Bagi hasil = total tagihan − pokok. Outstanding = sisa pinjaman yang tidak ditolak.</p>

@@ -190,8 +190,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['act'] ?? '') === 'hapus_da
         $pdo->exec("INSERT INTO jenis_simpanan (kode, nama, keterangan, wajib) VALUES
             ('SPK', 'Simpanan Pokok', 'Dibayar sekali saat menjadi anggota', 1),
             ('SWJ', 'Simpanan Wajib', 'Dibayar setiap bulan oleh anggota aktif', 1),
-            ('SSK', 'Simpanan Saham', 'Simpanan bebas sesuai kemampuan anggota', 0),
-            ('SHR', 'Simpanan Hari Raya', 'Tabungan khusus menjelang hari raya', 0)");
+            ('SSK', 'Saham', 'Simpanan bebas sesuai kemampuan anggota', 0),
+            ('SHR', 'Bagi Hasil Saham', 'Bagi hasil untuk pemilik saham', 0)");
         ensure_kelompok_schema();
         ensure_akuntansi_schema();
         flash('ok', "Data operasional dihapus ($n tabel). Tabel users tetap. Isi ulang identitas koperasi di halaman ini.");
@@ -556,4 +556,17 @@ function tambahUnit(pre) {
   </form>
 </div>
 <?php endif; ?>
+<button id="btnBawah" class="btn btn-green" style="position:fixed;bottom:24px;right:24px;z-index:60;width:48px;height:48px;border-radius:50%;display:none;place-items:center;font-size:18px;box-shadow:0 6px 18px rgba(0,0,0,.25);" title="Gulir ke bawah"><i class="fa-solid fa-arrow-down"></i></button>
+<script>
+(function () {
+  var b = document.getElementById('btnBawah');
+  function cek() {
+    var d = document.documentElement;
+    b.style.display = (d.scrollHeight - d.scrollTop - d.clientHeight) > 300 ? 'grid' : 'none';
+  }
+  window.addEventListener('scroll', cek, { passive: true });
+  cek();
+  b.addEventListener('click', function () { window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' }); });
+})();
+</script>
 <?php include __DIR__ . '/includes/app_footer.php'; ?>

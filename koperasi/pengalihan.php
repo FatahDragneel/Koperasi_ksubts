@@ -334,7 +334,7 @@ include __DIR__ . '/includes/app_header.php';
       <option value="alihkan">Ya — pindahkan ke ID baru (anggota lama nonaktif)</option>
       <option value="baru">Tidak — ID baru setor pokok &amp; wajib baru (anggota lama pasif)</option>
     </select>
-    <label>Simpanan saham</label>
+    <label>Saham</label>
     <select name="sukarela_opsi">
       <option value="alihkan">Alihkan ke ID baru</option>
       <option value="tunai">Ambil tunai oleh anggota lama</option>
