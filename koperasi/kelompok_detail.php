@@ -203,31 +203,71 @@ include __DIR__ . '/includes/app_header.php';
   $ikutKel = $aid > 0 && in_array($id, array_map('intval', array_column(kelompok_anggota($aid), 'id_kelompok')), true);
   $jabSaya = $ikutKel ? jabatan_saya_kelompok($aid, $id) : '';
 ?>
-<div class="card" style="max-width:640px;">
-  <h3><?= e(($k['kode_kelompok'] ?: 'KT') . ' · ' . ($k['nama_kelompok'] ?: 'Kelompok')) ?></h3>
-  <p style="font-size:14px;margin-top:10px;">Ketua: <strong><?= e($k['nama_ketua'] ?: 'Belum dipilih') ?></strong><?= !empty($k['plasma']) ? '<br>Plasma: ' . e($k['plasma']) : '' ?><?= !empty($k['komoditi']) ? '<br>Komoditi: ' . e($k['komoditi']) : '' ?><?= ((int)($k['jumlah_anggota'] ?? 0) > 0) ? '<br>Jumlah anggota: ' . (int)$k['jumlah_anggota'] : '' ?><?= trim(($k['wilayah_dusun'] ?? '') . ' ' . ($k['blok_hamparan'] ?? '')) !== '' ? '<br>Wilayah: ' . e(trim(($k['wilayah_dusun'] ?? '') . ' ' . ($k['blok_hamparan'] ?? ''))) : '' ?><?= !empty($k['tanggal_terbentuk']) ? '<br>Terbentuk: ' . e(tgl($k['tanggal_terbentuk'])) : '' ?><?= ((float)($k['luas_tanah'] ?? 0) > 0) ? '<br>Luas: ' . e(number_format((float)$k['luas_tanah'], 2, ',', '.')) . ' ha' : '' ?><?= !empty($k['lokasi']) ? '<br>Lokasi: ' . e($k['lokasi']) : '' ?><?= !empty($k['desa']) ? '<br>Desa: ' . e($k['desa']) : '' ?><?= !empty($k['kecamatan']) ? '<br>Kecamatan: ' . e($k['kecamatan']) : '' ?></p>
-  <?php if ($ikutKel): ?>
-  <p style="font-size:14px;">No. HP ketua: <strong><?= e($k['no_hp_ketua'] ?: '—') ?></strong><br>Fee per kg: <strong><?= rupiah($k['fee_per_kg'] ?? 0) ?></strong></p>
-  <?php endif; ?>
-  <?php if (unit_milik_saya('kelompok', $id, $aid)): ?>
-  <p style="font-size:13px;color:var(--muted);">Ini buatan Anda — <a href="kelompok.php">ubah dari daftar kelompok</a>.</p>
-  <?php endif; ?>
-  <p style="margin-top:10px;">Status: <?= $ikutKel ? '<span class="badge b-aktif">Tergabung' . ($jabSaya !== '' ? ' · ' . e($jabSaya) : '') . '</span>' : '<span class="badge b-pending">Belum tergabung</span>' ?></p>
-  <?php if ($ikutKel): ?>
-  <form method="post" onsubmit="return confirm('Keluar dari kelompok ini?')">
-    <?= csrf_field() ?>
-    <input type="hidden" name="act" value="keluar">
-    <input type="hidden" name="kelompok_id" value="<?= $id ?>">
-    <button class="btn btn-ghost"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar dari kelompok</button>
-  </form>
-  <?php else: ?>
-  <form method="post">
-    <?= csrf_field() ?>
-    <input type="hidden" name="act" value="gabung">
-    <input type="hidden" name="kelompok_id" value="<?= $id ?>">
-    <button class="btn btn-green"><i class="fa-solid fa-plus"></i> Gabung kelompok ini</button>
-  </form>
-  <?php endif; ?>
+<div class="cards" style="grid-template-columns:1fr 1fr;">
+  <div class="card">
+    <h3><?= e($k['kode_kelompok'] ?: 'KT') ?></h3>
+    <p style="font-size:13px;color:var(--muted);"><?= e($k['nama_kelompok'] ?: 'Kelompok') ?><?= !empty($k['plasma']) ? ' · Plasma: ' . e($k['plasma']) : '' ?></p>
+    <p style="margin:10px 0;padding:10px;background:#f4faf5;border-radius:10px;">
+      <strong>Ketua</strong><br>
+      <?= e($k['nama_ketua'] ?: 'Belum dipilih') ?><br>
+      <small><?= e($k['no_hp_ketua'] ?: '—') ?></small>
+    </p>
+    <div class="grid-2">
+      <p><strong>Luas tanah</strong><br><?= ((float)($k['luas_tanah'] ?? 0) > 0) ? e(number_format((float)$k['luas_tanah'], 2, ',', '.')) . ' ha' : '—' ?></p>
+      <p><strong>Lokasi</strong><br><?= e($k['lokasi'] ?: '—') ?></p>
+      <p><strong>Desa</strong><br><?= e($k['desa'] ?: '—') ?></p>
+      <p><strong>Kecamatan</strong><br><?= e($k['kecamatan'] ?: '—') ?></p>
+      <p><strong>Wilayah / dusun</strong><br><?= e($k['wilayah_dusun'] ?: '—') ?></p>
+      <p><strong>Blok hamparan</strong><br><?= e($k['blok_hamparan'] ?: '—') ?></p>
+      <p><strong>Tanggal terbentuk</strong><br><?= !empty($k['tanggal_terbentuk']) ? e(tgl($k['tanggal_terbentuk'])) : '—' ?></p>
+      <p><strong>Komoditi</strong><br><?= e($k['komoditi'] ?: '—') ?></p>
+      <p><strong>Jumlah anggota</strong><br><?= (int)($k['jumlah_anggota'] ?? 0) > 0 ? (int)$k['jumlah_anggota'] : '—' ?></p>
+      <p><strong>Fee per kg</strong><br><?= rupiah($k['fee_per_kg'] ?? 0) ?></p>
+    </div>
+    <?php if (unit_milik_saya('kelompok', $id, $aid)): ?>
+    <p style="font-size:13px;color:var(--muted);">Ini buatan Anda — <a href="kelompok.php">ubah dari daftar kelompok</a>.</p>
+    <?php endif; ?>
+  </div>
+  <div class="card">
+    <h3>Keanggotaan saya</h3>
+    <p style="margin-top:10px;">Status: <?= $ikutKel ? '<span class="badge b-aktif">Tergabung' . ($jabSaya !== '' ? ' · ' . e($jabSaya) : '') . '</span>' : '<span class="badge b-pending">Belum tergabung</span>' ?></p>
+    <?php if ($ikutKel): ?>
+    <form method="post" onsubmit="return confirm('Keluar dari kelompok ini?')">
+      <?= csrf_field() ?>
+      <input type="hidden" name="act" value="keluar">
+      <input type="hidden" name="kelompok_id" value="<?= $id ?>">
+      <button class="btn btn-ghost"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar dari kelompok</button>
+    </form>
+    <?php else: ?>
+    <form method="post">
+      <?= csrf_field() ?>
+      <input type="hidden" name="act" value="gabung">
+      <input type="hidden" name="kelompok_id" value="<?= $id ?>">
+      <button class="btn btn-green"><i class="fa-solid fa-plus"></i> Gabung kelompok ini</button>
+    </form>
+    <?php endif; ?>
+  </div>
+</div>
+<div class="card" style="margin-top:18px;">
+  <h3>Anggota <?= e($k['kode_kelompok'] ?: '') ?> (<?= count($anggotaKel) ?>)</h3>
+  <div class="table-wrap" style="margin-top:12px;">
+    <table>
+      <thead><tr><th>No. Anggota</th><th>Nama</th><th>HP</th><th>Jabatan</th><th>Status</th></tr></thead>
+      <tbody>
+      <?php foreach ($anggotaKel as $a): ?>
+        <tr>
+          <td><?= e($a['no_anggota'] ?? '') ?></td>
+          <td><?= e($a['nama'] ?? '') ?></td>
+          <td><?= e($a['no_hp'] ?? '') ?: '—' ?></td>
+          <td><?= e($a['jabatan_kelompok'] ?? 'Anggota') ?></td>
+          <td><span class="badge b-<?= e($a['status'] ?? 'aktif') ?>"><?= e($a['status'] ?? 'aktif') ?></span></td>
+        </tr>
+      <?php endforeach; if (!$anggotaKel): ?>
+        <tr><td colspan="5">Belum ada anggota di kelompok ini.</td></tr>
+      <?php endif; ?>
+      </tbody>
+    </table>
+  </div>
 </div>
 <?php endif; ?>
 <?php include __DIR__ . '/includes/app_footer.php'; ?>

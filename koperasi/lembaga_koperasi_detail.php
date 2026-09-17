@@ -105,6 +105,7 @@ if ($staff) {
     $calon = $calon->fetchAll();
 } else {
     $ikut = $aid > 0 && in_array($id, array_map('intval', array_column(lembaga_anggota($aid), 'id')), true);
+    $anggotaLem = anggota_di_lembaga($id);
 }
 include __DIR__ . '/includes/app_header.php';
 ?>
@@ -158,31 +159,59 @@ include __DIR__ . '/includes/app_header.php';
   </div>
 </div>
 <?php else: ?>
-<div class="card" style="max-width:640px;">
-  <h3><?= e(($l['kode_koperasi'] ?: 'KOP') . ' · ' . ($l['nama_koperasi'] ?: 'Koperasi')) ?></h3>
-  <p style="font-size:14px;margin-top:10px;">Ketua: <strong><?= e($l['nama_ketua'] ?: 'Belum dipilih') ?></strong><?= !empty($l['komoditi']) ? '<br>Komoditi: ' . e($l['komoditi']) : '' ?><?= ((float)($l['luas_lahan'] ?? 0) > 0) ? '<br>Luas lahan koperasi: ' . e(number_format((float)$l['luas_lahan'], 2, ',', '.')) . ' ha' : '' ?><?= ((int)($l['jumlah_anggota'] ?? 0) > 0) ? '<br>Jumlah anggota: ' . (int)$l['jumlah_anggota'] : '' ?><?= !empty($l['alamat']) ? '<br>Alamat: ' . e($l['alamat']) : '' ?><?= !empty($l['keterangan']) ? '<br>Keterangan: ' . e($l['keterangan']) : '' ?></p>
-  <?php if ($ikut): ?>
-  <p style="font-size:14px;">No. HP ketua: <strong><?= e($l['no_hp_ketua'] ?: '—') ?></strong></p>
-  <?php endif; ?>
-  <?php if (unit_milik_saya('lembaga_koperasi', $id, $aid)): ?>
-  <p style="font-size:13px;color:var(--muted);">Ini buatan Anda — <a href="lembaga_koperasi.php">ubah dari daftar koperasi</a>.</p>
-  <?php endif; ?>
-  <p style="margin-top:10px;">Status: <?= $ikut ? '<span class="badge b-aktif">Tergabung</span>' : '<span class="badge b-pending">Belum tergabung</span>' ?></p>
-  <?php if ($ikut): ?>
-  <form method="post" onsubmit="return confirm('Keluar dari koperasi ini?')">
-    <?= csrf_field() ?>
-    <input type="hidden" name="act" value="keluar">
-    <input type="hidden" name="koperasi_id" value="<?= (int)$id ?>">
-    <button class="btn btn-ghost"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar dari koperasi</button>
-  </form>
-  <?php else: ?>
-  <form method="post">
-    <?= csrf_field() ?>
-    <input type="hidden" name="act" value="gabung">
-    <input type="hidden" name="koperasi_id" value="<?= (int)$id ?>">
-    <button class="btn btn-green"><i class="fa-solid fa-plus"></i> Gabung koperasi ini</button>
-  </form>
-  <?php endif; ?>
+<div class="cards" style="grid-template-columns:1fr 1fr;">
+  <div class="card">
+    <h3>Profil Koperasi</h3>
+    <div class="grid-2" style="margin-top:12px;">
+      <p><strong>Kode</strong><br><?= e($l['kode_koperasi'] ?: '—') ?></p>
+      <p><strong>Nama</strong><br><?= e($l['nama_koperasi'] ?: '—') ?></p>
+      <p><strong>Ketua</strong><br><?= e($l['nama_ketua'] ?: 'Belum dipilih') ?></p>
+      <p><strong>No. HP ketua</strong><br><?= e($l['no_hp_ketua'] ?: '—') ?></p>
+      <p><strong>Komoditi</strong><br><?= e($l['komoditi'] ?: '—') ?></p>
+      <p><strong>Luas lahan koperasi</strong><br><?= !empty($l['luas_lahan']) ? e($l['luas_lahan']) . ' ha' : '—' ?></p>
+      <p><strong>Jumlah anggota</strong><br><?= (int)($l['jumlah_anggota'] ?? 0) > 0 ? (int)$l['jumlah_anggota'] : '—' ?></p>
+      <p><strong>Alamat</strong><br><?= e($l['alamat'] ?: '—') ?></p>
+    </div>
+    <p style="margin-top:10px;"><strong>Keterangan</strong><br><?= e($l['keterangan'] ?: '—') ?></p>
+    <?php if (unit_milik_saya('lembaga_koperasi', $id, $aid)): ?>
+    <p style="font-size:13px;color:var(--muted);">Ini buatan Anda — <a href="lembaga_koperasi.php">ubah dari daftar koperasi</a>.</p>
+    <?php endif; ?>
+    <p style="margin-top:10px;">Status: <?= $ikut ? '<span class="badge b-aktif">Tergabung</span>' : '<span class="badge b-pending">Belum tergabung</span>' ?></p>
+    <?php if ($ikut): ?>
+    <form method="post" onsubmit="return confirm('Keluar dari koperasi ini?')">
+      <?= csrf_field() ?>
+      <input type="hidden" name="act" value="keluar">
+      <input type="hidden" name="koperasi_id" value="<?= (int)$id ?>">
+      <button class="btn btn-ghost"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar dari koperasi</button>
+    </form>
+    <?php else: ?>
+    <form method="post">
+      <?= csrf_field() ?>
+      <input type="hidden" name="act" value="gabung">
+      <input type="hidden" name="koperasi_id" value="<?= (int)$id ?>">
+      <button class="btn btn-green"><i class="fa-solid fa-plus"></i> Gabung koperasi ini</button>
+    </form>
+    <?php endif; ?>
+  </div>
+  <div class="card">
+    <h3>Anggota (<?= count($anggotaLem) ?>)</h3>
+    <div class="table-wrap" style="margin-top:10px;">
+      <table>
+        <thead><tr><th>No. Anggota</th><th>Nama</th><th>HP</th></tr></thead>
+        <tbody>
+        <?php foreach ($anggotaLem as $a): ?>
+          <tr>
+            <td><?= e($a['no_anggota'] ?? '') ?></td>
+            <td><?= e($a['nama'] ?? '') ?></td>
+            <td><?= e($a['no_hp'] ?? '') ?: '—' ?></td>
+          </tr>
+        <?php endforeach; if (!$anggotaLem): ?>
+          <tr><td colspan="3">Belum ada anggota di koperasi ini.</td></tr>
+        <?php endif; ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 <?php endif; ?>
 <?php include __DIR__ . '/includes/app_footer.php'; ?>

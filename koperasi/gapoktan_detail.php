@@ -105,6 +105,7 @@ if ($staff) {
     $calon = $calon->fetchAll();
 } else {
     $ikut = $aid > 0 && in_array($id, array_map('intval', array_column(gapoktan_anggota($aid), 'id')), true);
+    $anggotaGap = anggota_di_gapoktan($id);
 }
 include __DIR__ . '/includes/app_header.php';
 ?>
@@ -158,31 +159,59 @@ include __DIR__ . '/includes/app_header.php';
   </div>
 </div>
 <?php else: ?>
-<div class="card" style="max-width:640px;">
-  <h3><?= e(($g['kode_gapoktan'] ?: 'GAP') . ' · ' . ($g['nama_gapoktan'] ?: 'Gapoktan')) ?></h3>
-  <p style="font-size:14px;margin-top:10px;">Ketua: <strong><?= e($g['nama_ketua'] ?: 'Belum dipilih') ?></strong><?= !empty($g['komoditi']) ? '<br>Komoditi: ' . e($g['komoditi']) : '' ?><?= ((float)($g['luas_lahan'] ?? 0) > 0) ? '<br>Luas lahan koperasi: ' . e(number_format((float)$g['luas_lahan'], 2, ',', '.')) . ' ha' : '' ?><?= ((int)($g['jumlah_anggota'] ?? 0) > 0) ? '<br>Jumlah anggota: ' . (int)$g['jumlah_anggota'] : '' ?><?= !empty($g['alamat']) ? '<br>Alamat: ' . e($g['alamat']) : '' ?><?= !empty($g['keterangan']) ? '<br>Keterangan: ' . e($g['keterangan']) : '' ?></p>
-  <?php if ($ikut): ?>
-  <p style="font-size:14px;">No. HP ketua: <strong><?= e($g['no_hp_ketua'] ?: '—') ?></strong></p>
-  <?php endif; ?>
-  <?php if (unit_milik_saya('gapoktan', $id, $aid)): ?>
-  <p style="font-size:13px;color:var(--muted);">Ini buatan Anda — <a href="gapoktan.php">ubah dari daftar gapoktan</a>.</p>
-  <?php endif; ?>
-  <p style="margin-top:10px;">Status: <?= $ikut ? '<span class="badge b-aktif">Tergabung</span>' : '<span class="badge b-pending">Belum tergabung</span>' ?></p>
-  <?php if ($ikut): ?>
-  <form method="post" onsubmit="return confirm('Keluar dari gapoktan ini?')">
-    <?= csrf_field() ?>
-    <input type="hidden" name="act" value="keluar">
-    <input type="hidden" name="gapoktan_id" value="<?= (int)$id ?>">
-    <button class="btn btn-ghost"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar dari gapoktan</button>
-  </form>
-  <?php else: ?>
-  <form method="post">
-    <?= csrf_field() ?>
-    <input type="hidden" name="act" value="gabung">
-    <input type="hidden" name="gapoktan_id" value="<?= (int)$id ?>">
-    <button class="btn btn-green"><i class="fa-solid fa-plus"></i> Gabung gapoktan ini</button>
-  </form>
-  <?php endif; ?>
+<div class="cards" style="grid-template-columns:1fr 1fr;">
+  <div class="card">
+    <h3>Profil Gapoktan</h3>
+    <div class="grid-2" style="margin-top:12px;">
+      <p><strong>Kode</strong><br><?= e($g['kode_gapoktan'] ?: '—') ?></p>
+      <p><strong>Nama</strong><br><?= e($g['nama_gapoktan'] ?: '—') ?></p>
+      <p><strong>Ketua</strong><br><?= e($g['nama_ketua'] ?: 'Belum dipilih') ?></p>
+      <p><strong>No. HP ketua</strong><br><?= e($g['no_hp_ketua'] ?: '—') ?></p>
+      <p><strong>Komoditi</strong><br><?= e($g['komoditi'] ?: '—') ?></p>
+      <p><strong>Luas lahan koperasi</strong><br><?= !empty($g['luas_lahan']) ? e($g['luas_lahan']) . ' ha' : '—' ?></p>
+      <p><strong>Jumlah anggota</strong><br><?= (int)($g['jumlah_anggota'] ?? 0) > 0 ? (int)$g['jumlah_anggota'] : '—' ?></p>
+      <p><strong>Alamat</strong><br><?= e($g['alamat'] ?: '—') ?></p>
+    </div>
+    <p style="margin-top:10px;"><strong>Keterangan</strong><br><?= e($g['keterangan'] ?: '—') ?></p>
+    <?php if (unit_milik_saya('gapoktan', $id, $aid)): ?>
+    <p style="font-size:13px;color:var(--muted);">Ini buatan Anda — <a href="gapoktan.php">ubah dari daftar gapoktan</a>.</p>
+    <?php endif; ?>
+    <p style="margin-top:10px;">Status: <?= $ikut ? '<span class="badge b-aktif">Tergabung</span>' : '<span class="badge b-pending">Belum tergabung</span>' ?></p>
+    <?php if ($ikut): ?>
+    <form method="post" onsubmit="return confirm('Keluar dari gapoktan ini?')">
+      <?= csrf_field() ?>
+      <input type="hidden" name="act" value="keluar">
+      <input type="hidden" name="gapoktan_id" value="<?= (int)$id ?>">
+      <button class="btn btn-ghost"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar dari gapoktan</button>
+    </form>
+    <?php else: ?>
+    <form method="post">
+      <?= csrf_field() ?>
+      <input type="hidden" name="act" value="gabung">
+      <input type="hidden" name="gapoktan_id" value="<?= (int)$id ?>">
+      <button class="btn btn-green"><i class="fa-solid fa-plus"></i> Gabung gapoktan ini</button>
+    </form>
+    <?php endif; ?>
+  </div>
+  <div class="card">
+    <h3>Anggota (<?= count($anggotaGap) ?>)</h3>
+    <div class="table-wrap" style="margin-top:10px;">
+      <table>
+        <thead><tr><th>No. Anggota</th><th>Nama</th><th>HP</th></tr></thead>
+        <tbody>
+        <?php foreach ($anggotaGap as $a): ?>
+          <tr>
+            <td><?= e($a['no_anggota'] ?? '') ?></td>
+            <td><?= e($a['nama'] ?? '') ?></td>
+            <td><?= e($a['no_hp'] ?? '') ?: '—' ?></td>
+          </tr>
+        <?php endforeach; if (!$anggotaGap): ?>
+          <tr><td colspan="3">Belum ada anggota di gapoktan ini.</td></tr>
+        <?php endif; ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 <?php endif; ?>
 <?php include __DIR__ . '/includes/app_footer.php'; ?>
