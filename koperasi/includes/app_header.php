@@ -95,7 +95,7 @@ function nav_active_lembaga() {
         <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php"><i class="fa-solid fa-seedling"></i> Pupuk organik</a>
         <div class="nav-sect">Sistem</div>
         <a class="<?= nav_active('pengaturan.php') ?>" href="pengaturan.php"><i class="fa-solid fa-gear"></i> Pengaturan</a>
-        <a class="<?= nav_active('profil.php') ?>" href="profil.php"><i class="fa-solid fa-circle-user"></i> Profil</a>
+        <a class="<?= nav_active('profil.php') ?>" href="profil.php"><i class="fa-solid fa-circle-user"></i> Profil user</a>
       <?php else: ?>
         <div class="nav-sect">Data saya</div>
         <a class="<?= nav_active('profil.php') ?>" href="profil.php"><i class="fa-solid fa-circle-user"></i> Data &amp; usaha saya</a>
@@ -110,7 +110,6 @@ function nav_active_lembaga() {
         <a class="<?= nav_active('pupuk.php') ?>" href="pupuk.php"><i class="fa-solid fa-seedling"></i> Pupuk organik</a>
         <div class="nav-sect">Informasi</div>
         <a class="<?= nav_active('profil_koperasi.php') ?>" href="profil_koperasi.php"><i class="fa-solid fa-building-columns"></i> Profil koperasi</a>
-        <a href="profil_koperasi.php#ba"><i class="fa-solid fa-scroll"></i> Berita acara</a>
       <?php endif; ?>
       <a href="logout.php"><i class="fa-solid fa-right-from-bracket"></i> Keluar</a>
     </nav>

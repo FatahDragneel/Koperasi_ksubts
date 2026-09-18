@@ -1,6 +1,5 @@
 <?php
 require __DIR__ . '/config.php';
-require_login();
 $s = setting();
 $f = basename((string)($s['logo_file'] ?? ''));
 if ($f === '') {
@@ -23,6 +22,6 @@ if ($ext === 'png') {
 }
 header('Content-Type: ' . $mime);
 header('X-Content-Type-Options: nosniff');
-header('Cache-Control: private, max-age=3600');
+header('Cache-Control: public, max-age=3600');
 readfile($path);
 exit;

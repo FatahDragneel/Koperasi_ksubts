@@ -21,7 +21,11 @@ $__jenis = trim((string)($s['jenis_koperasi'] ?? '')) !== '' ? $s['jenis_koperas
 <nav class="nav">
   <div class="nav-inner">
     <a class="brand" href="index.php">
-      <div class="logo"><?= e($__inisial) ?></div>
+      <?php if (!empty($s['logo_file'])): ?>
+        <img src="logo.php" alt="Logo koperasi" style="width:44px;height:44px;border-radius:12px;object-fit:cover;background:#fff;flex:0 0 auto;">
+      <?php else: ?>
+        <div class="logo"><?= e($__inisial) ?></div>
+      <?php endif; ?>
       <div>
         <small><?= e($__jenis) ?></small>
         <strong><?= e($s['nama_koperasi'] ?? 'Koperasi') ?></strong>

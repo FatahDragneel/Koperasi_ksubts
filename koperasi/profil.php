@@ -322,7 +322,7 @@ if ($staff):
 </div>
 
 <div class="card" style="margin-top:16px;">
-  <h3>Lahan sawit saya</h3>
+  <h3>Luas lahan saya</h3>
   <div class="table-wrap" style="margin-top:10px;">
     <table>
       <thead><tr><th>Kelompok</th><th>Lokasi</th><th>Luas</th><th>Tahun tanam</th><th>Pokok</th></tr></thead>

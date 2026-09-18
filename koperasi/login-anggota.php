@@ -41,7 +41,11 @@ $s = setting();
 <div class="auth-wrap">
   <div class="auth-art">
     <a class="brand" href="index.php">
+      <?php if (!empty($s['logo_file'])): ?>
+      <img src="logo.php" alt="Logo koperasi" style="width:44px;height:44px;border-radius:12px;object-fit:cover;background:#fff;flex:0 0 auto;">
+      <?php else: ?>
       <div class="logo"><?= e(strtoupper(implode('', array_map(static function ($w) { return substr($w, 0, 1); }, array_slice(preg_split('/\s+/', trim((string)($s['nama_koperasi'] ?? 'KP'))), 0, 2))))) ?></div>
+      <?php endif; ?>
       <div><small><?= e($s['jenis_koperasi'] ?? 'Koperasi Produsen') ?></small><strong><?= e($s['nama_koperasi']) ?></strong></div>
     </a>
     <div>

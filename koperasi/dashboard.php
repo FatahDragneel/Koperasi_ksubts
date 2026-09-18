@@ -77,7 +77,7 @@ include __DIR__ . '/includes/app_header.php';
   <div class="kpi"><span><i class="fa-solid fa-inbox kpi-ic"></i>Pengajuan baru</span><b><?= (int)$kpi['pengajuan'] ?></b></div>
   <?php endif; ?>
   <div class="kpi"><span><i class="fa-solid fa-boxes-stacked kpi-ic"></i>Persediaan pupuk</span><b><?= rupiah($kpi['pupuk_stok']) ?></b></div>
-  <div class="kpi"><span><i class="fa-solid fa-sack-dollar kpi-ic"></i>Jual pupuk bulan ini</span><b><?= rupiah($kpi['pupuk_jual']) ?></b></div>
+  <div class="kpi"><span><i class="fa-solid fa-sack-dollar kpi-ic"></i>Penjualan bulan ini</span><b><?= rupiah($kpi['pupuk_jual']) ?></b></div>
 </div>
 <?php else: ?>
 <div class="kpis">
